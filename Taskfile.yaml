@@ -6,6 +6,7 @@ vars:
   NS: track-promises-prod
   WEB_IMAGE: ghcr.io/eduluma/track-promises-web
   API_IMAGE: ghcr.io/eduluma/track-promises-api
+  MIGRATE_IMAGE: ghcr.io/eduluma/track-promises-migrate
   GIT_TAG:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "local"
 
@@ -131,20 +132,24 @@ tasks:
       - '{{.ENV_SETUP}}; echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin'
 
   image:build:
-    desc: Build web and api Docker images tagged with git SHA + latest
+    desc: Build web, api, and migrate Docker images tagged with git SHA + latest
     cmds:
       - echo "🏗  Building {{.WEB_IMAGE}}:{{.GIT_TAG}}"
       - docker build -t {{.WEB_IMAGE}}:{{.GIT_TAG}} -t {{.WEB_IMAGE}}:latest -f Dockerfile.web .
       - echo "🏗  Building {{.API_IMAGE}}:{{.GIT_TAG}}"
       - docker build -t {{.API_IMAGE}}:{{.GIT_TAG}} -t {{.API_IMAGE}}:latest -f Dockerfile.api .
+      - echo "🏗  Building {{.MIGRATE_IMAGE}}:{{.GIT_TAG}}"
+      - docker build -t {{.MIGRATE_IMAGE}}:{{.GIT_TAG}} -t {{.MIGRATE_IMAGE}}:latest -f Dockerfile.migrate .
 
   image:push:
-    desc: Push web and api images to ghcr.io
+    desc: Push web, api, and migrate images to ghcr.io
     cmds:
       - docker push {{.WEB_IMAGE}}:{{.GIT_TAG}}
       - docker push {{.WEB_IMAGE}}:latest
       - docker push {{.API_IMAGE}}:{{.GIT_TAG}}
       - docker push {{.API_IMAGE}}:latest
+      - docker push {{.MIGRATE_IMAGE}}:{{.GIT_TAG}}
+      - docker push {{.MIGRATE_IMAGE}}:latest
 
   image:build-push:
     desc: Build and push both images in one step

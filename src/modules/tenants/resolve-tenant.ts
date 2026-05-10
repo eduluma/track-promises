@@ -1,4 +1,5 @@
 const localHostPattern = /^(?<slug>[a-z0-9-]+)\.localhost$/;
+const ipv4Pattern = /^\d{1,3}(\.\d{1,3}){3}$/;
 
 export function extractTenantSlugFromHost(host: string | null | undefined) {
   if (!host) {
@@ -8,6 +9,10 @@ export function extractTenantSlugFromHost(host: string | null | undefined) {
   const normalizedHost = host.toLowerCase().split(":")[0];
 
   if (normalizedHost === "localhost" || normalizedHost === "127.0.0.1") {
+    return null;
+  }
+
+  if (ipv4Pattern.test(normalizedHost)) {
     return null;
   }
 

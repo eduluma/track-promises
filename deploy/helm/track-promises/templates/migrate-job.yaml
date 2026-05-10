@@ -23,14 +23,20 @@ spec:
       {{- end }}
       initContainers:
       - name: wait-for-postgres
-        image: busybox:1.36
+        image: "{{ .Values.migrate.image.repository }}:{{ include "track-promises.imageTag" (dict "tag" .Values.migrate.image.tag "global" .Values.global) }}"
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
         command:
-        - sh
-        - -c
+        - node
+        - -e
         - |
-          until nc -z {{ include "track-promises.fullname" . }}-postgres {{ .Values.postgres.service.port }}; do
-            echo "waiting for postgres..."; sleep 3;
-          done
+          const net = require('net');
+          const host = '{{ include "track-promises.fullname" . }}-postgres';
+          const port = {{ .Values.postgres.service.port }};
+          (function check() {
+            const c = net.createConnection({ host, port });
+            c.on('connect', () => { console.log('postgres ready'); c.destroy(); process.exit(0); });
+            c.on('error', () => { c.destroy(); console.log('waiting for postgres...'); setTimeout(check, 3000); });
+          })();
       containers:
       - name: migrate
         image: "{{ .Values.migrate.image.repository }}:{{ include "track-promises.imageTag" (dict "tag" .Values.migrate.image.tag "global" .Values.global) }}"

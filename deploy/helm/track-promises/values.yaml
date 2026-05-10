@@ -114,7 +114,7 @@ postgres:
 # -- DB migration Job (runs as a post-install/post-upgrade Helm hook)
 migrate:
   image:
-    repository: ghcr.io/eduluma/track-promises-web
+    repository: ghcr.io/eduluma/track-promises-migrate
     tag: ""  # defaults to global.image.tag
 
   existingSecret: track-promises-secrets

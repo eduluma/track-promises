@@ -14,12 +14,14 @@ ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
+COPY tsconfig.json ./
 COPY apps/api ./apps/api
 COPY src/db ./src/db
 COPY src/modules ./src/modules
 COPY src/lib ./src/lib
 COPY src/config ./src/config
 COPY drizzle.config.ts ./
+COPY data ./data
 
 EXPOSE 4000
 CMD ["node_modules/.bin/tsx", "apps/api/src/server.ts"]

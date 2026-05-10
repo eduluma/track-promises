@@ -20,3 +20,7 @@ api:
   replicaCount: 1
   ingress:
     host: trackpromises-api.eduluma.org
+
+migrate:
+  image:
+    repository: ghcr.io/eduluma/track-promises-migrate
