@@ -6,6 +6,7 @@ This document is written for an implementation agent or another LLM that will bu
 
 - Keep the app config-driven wherever practical.
 - Keep business logic in reusable modules and services, not duplicated inside pages.
+- Prefer a split `web + api + worker` runtime over keeping backend behavior embedded in Next.js route handlers long term.
 - Keep UI reusable with shared components for repeated promise, voting, source, admin, moderation, and table patterns.
 - Avoid storing government identity documents or sensitive government records for user verification in MVP.
 - Design for tenant subdomains from the beginning around the canonical `tenantSlug.track-promises.com` pattern.
@@ -23,16 +24,18 @@ This document is written for an implementation agent or another LLM that will bu
 - Use `tenantSlug.track-promises.com` for production tenants and `tenantSlug.track-promises.localhost` for local development.
 - Treat tenant branding, locale, categories, voting windows, moderation thresholds, and safe feature flags as admin-editable; keep secrets, provider credentials, infrastructure wiring, and platform domains in code or environment config.
 - Use verified email plus account state as the MVP voting gate; trust score informs moderation and future privileges rather than replacing account-state enforcement.
-- Standard local dependencies are `postgres` by default and optional `redis` under a Compose profile. Add a worker service only when snapshot and reconciliation jobs arrive.
+- Standard local dependencies are `web` plus `postgres` by default and optional `redis` under a Compose profile. Add a dedicated `api` service next and add a worker service once snapshot and reconciliation jobs move out of scripts.
 - Standard Helm environments are base values plus `values-local.yaml`, `values-staging.yaml`, and `values-production.yaml`.
+- Prefer JWT-based auth for the next implementation phase and do not bring in Keycloak until SSO or federation becomes a concrete requirement.
 
 ## Recommended MVP Stack
 
 - Next.js App Router with TypeScript.
+- Fastify API service with TypeScript and OpenAPI generation.
 - Tailwind CSS and shadcn/ui-style components.
 - PostgreSQL.
 - Drizzle ORM and migrations.
-- Auth.js.
+- JWT auth with a lightweight in-product auth boundary for now.
 - Zod for config, forms, and API validation.
 - Docker Compose for local PostgreSQL and optional Redis.
 - Helm for Kubernetes deployment.
@@ -41,46 +44,39 @@ This document is written for an implementation agent or another LLM that will bu
 ## Suggested Repository Structure
 
 ```text
-src/
-  app/
-    (public)/
-    admin/
-    api/
-  components/
-    ui/
-    promises/
-    voting/
-    sources/
-    moderation/
-    admin/
+apps/
+  web/
+    src/
+      app/
+      components/
+  api/
+    src/
+      routes/
+      plugins/
+      openapi/
+  worker/
+    src/
+      jobs/
+packages/
   config/
-    defaults.ts
-    schemas.ts
-    resolve-config.ts
   db/
-    schema/
-    migrations/
-    client.ts
   modules/
-    tenants/
-    promises/
-    sources/
-    voting/
-    moderation/
-    audit/
-    auth/
-  lib/
-    permissions.ts
-    rate-limit.ts
-    tenant-context.ts
-    logger.ts
+  schemas/
 tests/
 docker-compose.yml
 charts/
   track-promises/
 ```
 
-The exact structure can change to match framework conventions, but keep domain logic reusable and testable.
+The exact structure can change to match framework conventions, but keep the shared domain logic reusable and testable across web, API, and worker runtimes.
+
+## Transition Strategy From The Current Monolith
+
+1. Keep the current Next.js route handlers working while the API service is scaffolded.
+2. Move vote, moderation, audit, and promise write paths behind the API first.
+3. Generate `openapi.json` from the API service and have the web app consume typed clients or shared request schemas.
+4. Move snapshot, reconciliation, and import scripts into the worker runtime.
+5. Remove route-local business logic from the web app once the API owns those flows.
 
 ## Configuration Plan
 
@@ -128,15 +124,15 @@ Future StackOverflow-style trust signals can include account age, consistent act
 
 ## Local Development Plan
 
-- Create `docker-compose.yml` for PostgreSQL and optional Redis.
-- Add `.env.example` with local database URL, Auth.js secret placeholder, app URL, and tenant host settings.
+- Create `docker-compose.yml` for the web app, PostgreSQL, and optional Redis, with room to add an API service next.
+- Add `.env.example` with local database URL, JWT secret placeholder, app URL, and tenant host settings.
 - Add seed scripts for `tamilnadu` and a few sample promises.
 - Keep application commands simple: install dependencies, run migrations, seed, start dev server, run tests.
 
 ## Kubernetes And Helm Plan
 
 - Add a Helm chart under `charts/track-promises`.
-- Include templates for web deployment, optional worker deployment, service, ingress, config map, secret references, service account, and autoscaling values.
+- Include templates for web deployment, API deployment, optional worker deployment, service, ingress, config map, secret references, service account, and autoscaling values.
 - Use managed PostgreSQL and managed Redis in production rather than running them in the first app chart.
 - Add values files for local-like, staging, and production.
 - Configure readiness and liveness probes.
@@ -151,12 +147,21 @@ Future StackOverflow-style trust signals can include account age, consistent act
 4. Add Drizzle, PostgreSQL schema, and migrations.
 5. Add tenant and config modules.
 6. Add seed data for `tamilnadu`.
-7. Add Auth.js and account states.
+7. Add the initial auth boundary and account states, then transition that flow to JWT-based API authentication.
 8. Add promise/source modules and public pages.
 9. Add voting windows, vote API, current vote table, and immutable vote events.
 10. Add minimal moderation review queue.
 11. Add tests for config resolution, tenant scoping, voting rules, and freeze behavior.
 12. Add initial Helm chart skeleton.
+
+## Recommended Next Architecture Sequence
+
+1. Scaffold `apps/api` with Fastify, Zod-backed validation, and OpenAPI generation.
+2. Move current Next.js API routes to the new API service behind shared modules.
+3. Add a typed API client layer to the web app.
+4. Move snapshot, reconciliation, and import scripts into `apps/worker`.
+5. Replace local session assumptions with JWT-based API authentication.
+6. Reevaluate Keycloak or Authentik only if SSO, federation, or delegated identity administration becomes necessary.
 
 ## Guardrails For The Implementer
 

@@ -9,7 +9,7 @@
 - [x] Decide if users can remove votes or only switch between up/down.
 - [x] Decide voting-window scope rules.
 - [x] Define MVP promise statuses.
-- [x] Choose recommended MVP auth provider: Auth.js.
+- [x] Choose recommended near-term auth approach: JWT-based API auth, with the current Auth.js implementation treated as transitional.
 - [x] Choose recommended MVP ORM: Drizzle.
 - [x] Choose initial hosting/database/Redis providers.
 - [x] Define config keys that must be admin-editable versus code/env-only.
@@ -59,6 +59,9 @@
 
 ## Phase 3: Scale And Discovery
 
+- [ ] Split the current Next.js runtime into separate `web`, `api`, and `worker` services.
+- [ ] Generate `openapi.json` and API docs from the new API service.
+- [ ] Move current Next.js route handlers behind typed API clients.
 - [ ] Add advanced filters for election, jurisdiction, category, status, person/party, and source.
 - [ ] Add PostgreSQL full-text search.
 - [ ] Add Redis-backed rate limiting.
@@ -88,6 +91,7 @@
 - [ ] Add dedicated analytics warehouse if product usage justifies it.
 - [ ] Partition large vote event and snapshot tables.
 - [ ] Add multi-region read strategy if needed.
+- [ ] Reevaluate dedicated identity services such as Keycloak or Authentik if SSO, federation, or delegated identity admin becomes necessary.
 - [ ] Evaluate separate database/schema isolation for very large government tenants.
 
 ## First Implementation Slice

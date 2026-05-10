@@ -2,22 +2,24 @@
 
 ## Recommended MVP Stack
 
-- Web app: Next.js App Router with TypeScript.
+- Web app: Next.js App Router with TypeScript for the frontend only.
+- API service: Fastify with TypeScript, Zod validation, and generated OpenAPI.
 - Styling: Tailwind CSS plus shadcn/ui-style components.
 - Database: PostgreSQL.
 - ORM/migrations: Drizzle.
-- Auth: Auth.js for MVP, with the option to move to a hosted identity provider later if operations require it.
+- Auth: JWT-based auth for MVP, issued by the backend auth boundary; defer Keycloak or another dedicated identity provider until SSO or federation requirements justify it.
 - Validation: Zod.
 - Cache/rate limit path: design interfaces for Redis from day one; add Upstash Redis when rate limiting, hot counters, or cache pressure make it worthwhile.
 - Background jobs: start with a simple worker or scheduled job; move to BullMQ, Inngest, Trigger.dev, or equivalent when snapshots and reconciliation mature.
-- Local development: Docker Compose for PostgreSQL, Redis when enabled, worker processes, and app dependencies.
+- Local development: Docker Compose for web, API, PostgreSQL, Redis when enabled, worker processes, and app dependencies.
 - Production deployment: Kubernetes manifests packaged with Helm charts, initially deployed to DigitalOcean Kubernetes with Neon PostgreSQL and Upstash Redis.
 
 ## Stack Notes
 
 ### Application
 
-- Next.js with TypeScript for the web app, public pages, admin screens, and API routes during MVP.
+- Next.js with TypeScript for the web app, public pages, and admin screens.
+- Fastify with TypeScript for API routes, OpenAPI generation, and service-to-service contracts.
 - React Server Components and route-level caching for read-heavy pages where appropriate.
 - Tailwind CSS and a small component system such as shadcn/ui for accessible, consistent UI.
 - Zod for request validation and shared schema checks.
@@ -34,7 +36,8 @@
 
 ### Auth And Security
 
-- Auth.js for MVP authentication.
+- Use JWT bearer tokens between the web app and API service.
+- Keep the initial identity boundary simple inside the product stack rather than introducing Keycloak immediately.
 - Verified email required for voting.
 - Rate limiting for voting, auth, search, and admin endpoints.
 - Audit logs for vote events, promise edits, status changes, and admin actions.
@@ -43,6 +46,7 @@
 - Support account states such as pending verification, verified, limited, suspended, and moderator-approved.
 - Use account state as the primary enforcement gate for voting eligibility in MVP, with trust score influencing review priority and state transitions.
 - Start trust scoring with email verification, account age, moderator decisions, and abuse signals; do not require a high trust score for baseline voting once an account is verified and not limited.
+- Revisit a dedicated identity service such as Keycloak or Authentik only when we need SSO, identity federation, social login sprawl, or delegated admin workflows that exceed the cost of a simpler JWT-based setup.
 
 ### Search
 
@@ -51,9 +55,9 @@
 
 ### Deployment
 
-- Local development: Docker Compose should start the app dependencies consistently, including PostgreSQL and optional Redis.
+- Local development: Docker Compose should start `web`, PostgreSQL, and optional Redis consistently, with the API service added as the next runtime split step.
 - Early production: Kubernetes deployment through Helm, with managed PostgreSQL and managed Redis preferred over running stateful services in the app cluster unless there is a clear operational reason.
-- Later scaling: read replicas, worker processes, table partitioning, CDN caching, horizontal pod autoscaling, and possibly a dedicated search cluster.
+- Later scaling: read replicas, a dedicated API deployment, worker processes, table partitioning, CDN caching, horizontal pod autoscaling, and possibly a dedicated search cluster.
 - Ingress should support wildcard tenant subdomains such as `*.track-promises.com`.
 
 ## Core Domain Model
@@ -156,7 +160,7 @@ Admin-editable config should include:
 
 Code or environment-only config should include:
 
-- database URLs, Redis URLs, Auth.js secrets, email provider credentials, and third-party API keys;
+- database URLs, Redis URLs, JWT signing secrets, email provider credentials, and third-party API keys;
 - base platform domains, ingress controller wiring, and wildcard DNS setup;
 - rate-limit backend selection, cache driver selection, and build-time feature gates;
 - observability sinks, secret references, and infrastructure credentials.
@@ -179,6 +183,12 @@ Suggested early module boundaries:
 - `moderation`: registration review, trust score, abuse flags, review queues.
 - `audit`: immutable admin and system action logs.
 - `auth`: sessions, account states, permissions.
+
+Suggested service boundaries after the split:
+
+- `web`: pages, admin UI, API client, session bootstrap, and SSR/edge concerns.
+- `api`: authenticated write paths, OpenAPI spec generation, validation, and backend orchestration.
+- `worker`: snapshots, reconciliation, imports, and other asynchronous jobs.
 
 ## Tenant And Subdomain Strategy
 
@@ -238,34 +248,36 @@ Suggested early module boundaries:
 
 ## Local Development Plan
 
-- Use Docker Compose for PostgreSQL by default and Redis behind an optional `cache` profile.
-- Keep the Next.js dev server running on the host machine for MVP; add a worker container only when snapshot and reconciliation jobs are introduced.
+- Use Docker Compose for `web` and PostgreSQL by default and Redis behind an optional `cache` profile.
+- Add a dedicated `api` service to Compose as the next architecture step; keep the current monolithic `web` container documented as transitional.
+- Add a worker container once snapshot and reconciliation jobs move out of ad hoc scripts.
 - Add app environment examples for database URL, auth secrets, tenant hostnames, and feature flags.
 - Provide seed scripts for local tenants such as `tamilnadu` and a small promise set.
 - Keep app source runnable outside Docker if a developer prefers local Node.js, but Docker Compose should be the documented default for dependencies.
 
 ## Kubernetes And Helm Plan
 
-- Add a Helm chart for the web app, worker process, ingress, config maps, secrets references, and service accounts.
+- Add a Helm chart for the web app, API service, worker process, ingress, config maps, secrets references, and service accounts.
 - Prefer managed PostgreSQL and managed Redis; do not run production databases inside the first app Helm chart.
 - Support separate values files for local-like, staging, and production deployments: `values-local.yaml`, `values-staging.yaml`, and `values-production.yaml`.
 - Use local-like values for developer clusters or ephemeral previews, staging for integration testing under `staging.track-promises.com`, and production for `track-promises.com` plus wildcard tenant hosts.
 - Configure readiness/liveness probes for web and worker pods.
-- Add horizontal pod autoscaling values for web pods and worker pods.
+- Add horizontal pod autoscaling values for web pods, API pods, and worker pods.
 - Add ingress values for wildcard tenant hosts and canonical platform host.
 - Keep sensitive values out of Git and reference Kubernetes secrets or external secret operators.
 
 ## Decisions Fixed For MVP
 
-- Use a monolithic Next.js app for public pages, admin flows, and API routes.
+- Target a split runtime of `web`, `api`, and `worker` in one repo; treat the current monolithic Next.js runtime as a transitional implementation state.
 - Use DigitalOcean Kubernetes for the app runtime, Neon PostgreSQL for the primary database, and Upstash Redis when Redis-backed features are enabled.
 - Model vote semantics as fulfillment sentiment and allow only up/down switching while voting is open.
 - Resolve voting windows by specificity: promise, election/campaign, tenant/jurisdiction, then platform default.
 - Use the status set `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
 - Keep tenant data row-scoped in shared tables for MVP.
 - Use `tenantSlug.track-promises.com` as the canonical production host pattern.
+- Prefer JWT-based auth for now and do not adopt Keycloak during MVP.
 
 ## Decisions Deferred After MVP
 
-- Whether Auth.js remains sufficient after operational scale increases.
+- Whether a dedicated identity service such as Keycloak or Authentik is justified by SSO, federation, or delegated identity administration.
 - Whether very large tenants should move to separate databases or schemas.

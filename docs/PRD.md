@@ -122,6 +122,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 - Public read pages should be cacheable through CDN or framework-level caching.
 - Vote writes must be transactional and idempotent where practical.
 - The voting path should avoid long-running synchronous work.
+- The first-party web app should be able to consume a documented service contract from a separately deployable API service.
 - The data model should support millions of promises, votes, vote events, and snapshots.
 - The system should support rate limiting, bot protection, and abuse monitoring.
 - Admin actions and vote changes should be auditable.
@@ -150,6 +151,8 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 - Tenant model: use shared platform tables with strict row-based tenant scoping for MVP.
 - Production tenant host pattern: `tenantSlug.track-promises.com`, with `tenantSlug.track-promises.localhost` for local development.
 - Verification model: verified email is the minimum requirement for voting; trust score and review flags adjust account state rather than replacing account-state checks.
+- Target runtime architecture: separate `web`, `api`, and `worker` services in one repo, even while the current scaffold is still in transition.
+- Auth direction: use JWT-based API authentication for now and defer Keycloak or another dedicated identity provider until SSO or federation is a real requirement.
 
 ## 11. Deferred Questions Beyond This Phase
 
