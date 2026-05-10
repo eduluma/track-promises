@@ -14,8 +14,8 @@ export default function HomePage() {
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-7 text-ink/76 sm:text-lg">
           This implementation slice turns the planning docs into a runnable baseline: tenant routing,
-          validated config resolution, promise browsing, detail pages, a local vote flow with freeze
-          rules, and deployment scaffolding.
+          validated config resolution, promise browsing, detail pages, Auth.js-backed demo sign-in,
+          voting with freeze rules, admin promise creation, and deployment scaffolding.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {tenants.map((tenant) => (

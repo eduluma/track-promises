@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 
+import { SiteHeader } from "@/components/navigation/site-header";
+
 import "./globals.css";
 
 const headingFont = Fraunces({
@@ -21,7 +23,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`}>
-      <body className="font-[var(--font-body)] text-ink antialiased">{children}</body>
+      <body className="font-[var(--font-body)] text-ink antialiased">
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

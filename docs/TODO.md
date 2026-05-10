@@ -21,29 +21,29 @@
 
 ## Phase 1: MVP Foundation
 
-- [ ] Scaffold Next.js + TypeScript app.
-- [ ] Add linting, formatting, test runner, and CI-friendly scripts.
-- [ ] Add Docker Compose for PostgreSQL and optional Redis.
-- [ ] Add `.env.example` for local development settings.
-- [ ] Add database migration setup.
-- [ ] Create initial schema for tenants, tenant config, users, promises, sources, voting windows, votes, vote events, snapshots, status history, moderation reviews, and audit logs.
-- [ ] Add seed data for a local tenant such as `tamilnadu` and a small promise set.
-- [ ] Implement tenant resolution from hostname and local fallback.
-- [ ] Implement validated config loading with platform defaults and tenant overrides.
-- [ ] Implement authentication.
-- [ ] Implement account states for pending, verified, limited, suspended, and moderator-approved users.
-- [ ] Implement admin/editor-only promise creation.
-- [ ] Build reusable promise card, vote controls, source list, status badge, table filter, and admin form components.
-- [ ] Implement promise list page.
-- [ ] Implement promise detail page.
-- [ ] Implement voting API.
-- [ ] Enforce one current vote per user per promise.
-- [ ] Enforce voting freeze rules.
-- [ ] Append immutable vote events.
-- [ ] Show aggregate counts and current user's vote.
-- [ ] Add basic registration moderation queue for suspicious or limited accounts.
-- [ ] Add focused tests for vote create/change/freeze behavior.
-- [ ] Add tests for tenant scoping and config resolution.
+- [x] Scaffold Next.js + TypeScript app.
+- [x] Add linting, formatting, test runner, and CI-friendly scripts.
+- [x] Add Docker Compose for PostgreSQL and optional Redis.
+- [x] Add `.env.example` for local development settings.
+- [x] Add database migration setup.
+- [x] Create initial schema for tenants, tenant config, users, promises, sources, voting windows, votes, vote events, snapshots, status history, moderation reviews, and audit logs.
+- [x] Add seed data for a local tenant such as `tamilnadu` and a small promise set.
+- [x] Implement tenant resolution from hostname and local fallback.
+- [x] Implement validated config loading with platform defaults and tenant overrides.
+- [x] Implement authentication.
+- [x] Implement account states for pending, verified, limited, suspended, and moderator-approved users.
+- [x] Implement admin/editor-only promise creation.
+- [x] Build reusable promise card, vote controls, source list, status badge, table filter, and admin form components.
+- [x] Implement promise list page.
+- [x] Implement promise detail page.
+- [x] Implement voting API.
+- [x] Enforce one current vote per user per promise.
+- [x] Enforce voting freeze rules.
+- [x] Append immutable vote events.
+- [x] Show aggregate counts and current user's vote.
+- [x] Add basic registration moderation queue for suspicious or limited accounts.
+- [x] Add focused tests for vote create/change/freeze behavior.
+- [x] Add tests for tenant scoping and config resolution.
 
 ## Phase 2: Auditability And History
 

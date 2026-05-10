@@ -16,6 +16,10 @@ const moderationReviews: ModerationReview[] = [
   }
 ];
 
+export { moderationReviews };
+
 export function getOpenModerationReviewsForTenant(tenantId: string) {
   return moderationReviews.filter((review) => review.tenantId === tenantId && review.status === "open");
 }
+
+export type { ModerationReview };

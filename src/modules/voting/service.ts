@@ -31,7 +31,7 @@ type CastVoteInput = {
 type VoteSummaryInput = {
   tenantId: string;
   promiseId: string;
-  userId: string;
+  userId?: string | null;
 };
 
 export class VoteError extends Error {
@@ -89,7 +89,7 @@ export function getVotingWindowStatusForPromise({ tenantId, promiseId, now = new
 
 export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSummaryInput) {
   const votes = listVotesForPromise(tenantId, promiseId);
-  const currentVote = getVoteForUser(tenantId, promiseId, userId);
+  const currentVote = userId ? getVoteForUser(tenantId, promiseId, userId) : null;
   const upvotes = votes.filter((vote) => vote.value === "up").length;
   const downvotes = votes.filter((vote) => vote.value === "down").length;
 

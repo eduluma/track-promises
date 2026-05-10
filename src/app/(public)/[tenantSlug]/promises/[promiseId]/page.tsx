@@ -5,6 +5,8 @@ import { SourceList } from "@/components/sources/source-list";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { VotePanel } from "@/components/voting/vote-panel";
 import { resolveTenantConfig } from "@/config/resolve-config";
+import { canUserVote } from "@/lib/permissions";
+import { getCurrentUser } from "@/modules/auth/session";
 import { getPromiseById } from "@/modules/promises/repository";
 import { getTenantBySlug } from "@/modules/tenants/data";
 import { getPromiseVoteSummary, getVotingWindowStatusForPromise } from "@/modules/voting/service";
@@ -27,8 +29,9 @@ export default async function PromiseDetailPage({ params }: PromiseDetailPagePro
     notFound();
   }
 
+  const user = await getCurrentUser();
   const config = resolveTenantConfig(tenant.id);
-  const summary = getPromiseVoteSummary({ tenantId: tenant.id, promiseId: promise.id, userId: "demo-user" });
+  const summary = getPromiseVoteSummary({ tenantId: tenant.id, promiseId: promise.id, userId: user?.id ?? null });
   const votingWindow = getVotingWindowStatusForPromise({ tenantId: tenant.id, promiseId: promise.id });
 
   return (
@@ -88,6 +91,8 @@ export default async function PromiseDetailPage({ params }: PromiseDetailPagePro
             tenantSlug={tenant.slug}
             initialSummary={summary}
             initialWindowState={votingWindow.state}
+            isAuthenticated={Boolean(user)}
+            canVote={Boolean(user && canUserVote(user))}
           />
         </div>
       </section>

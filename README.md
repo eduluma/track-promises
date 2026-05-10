@@ -23,7 +23,7 @@ Track Promises will provide:
 - immutable vote history and periodic snapshots for auditability;
 - config-driven behavior for jurisdictions, voting windows, moderation rules, feature flags, and tenant branding;
 - reusable modules and components so promise, voting, source, moderation, and admin workflows stay DRY;
-- government or jurisdiction-specific tenant entry points such as `tamilnadu.track-promises.com`, with the final domain still to be confirmed;
+- government or jurisdiction-specific tenant entry points such as `tamilnadu.track-promises.com`;
 - performance-first browsing, filtering, and aggregation for high-traffic periods.
 
 ## Initial Build Direction
@@ -39,7 +39,10 @@ The repository now includes a runnable initial slice with:
 - Next.js App Router and Tailwind foundation;
 - tenant-aware promise list and detail pages;
 - config resolution with platform defaults plus tenant overrides;
+- Auth.js-backed demo sign-in with verified, limited, moderator, editor, and platform-admin accounts;
 - local in-memory voting flow with freeze-window enforcement and immutable vote events;
+- admin-only promise creation with reusable filter and form components;
+- Drizzle schema, migration generation, and seed scripts for PostgreSQL foundation work;
 - focused unit tests for config resolution, voting rules, and tenant host parsing;
 - Docker Compose for PostgreSQL and optional Redis;
 - a starter Helm chart for Kubernetes deployment.
@@ -48,8 +51,18 @@ The repository now includes a runnable initial slice with:
 
 1. Install dependencies with `npm install`.
 2. Start local dependencies with `docker compose up -d`.
-3. Run the app with `npm run dev`.
-4. Run tests with `npm test` and lint with `npm run lint`.
+3. Copy `.env.example` to `.env.local` and update secrets if needed.
+4. Generate database migrations with `npm run db:generate`.
+5. Run the app with `npm run dev`.
+6. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
+
+Demo accounts for local sign-in:
+
+- `demo@track-promises.local` / `demo-password`
+- `editor@track-promises.local` / `editor-password`
+- `moderator@track-promises.local` / `moderator-password`
+- `admin@track-promises.local` / `admin-password`
+- `limited@track-promises.local` / `limited-password`
 
 Path-based tenant routes work immediately, for example `http://localhost:3000/tamilnadu`.
 Host-based tenant routing also works through middleware when using a host such as `http://tamilnadu.localhost:3000`.

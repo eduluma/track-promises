@@ -51,6 +51,8 @@ const seedVotes: VoteRecord[] = [
   }
 ];
 
+export { seedVotes };
+
 function keyForVote(vote: Pick<VoteRecord, "tenantId" | "promiseId" | "userId">) {
   return `${vote.tenantId}:${vote.promiseId}:${vote.userId}`;
 }

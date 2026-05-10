@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 
 import type { VotingState } from "@/modules/voting/service";
@@ -8,6 +9,8 @@ type VotePanelProps = {
   tenantSlug: string;
   promiseId: string;
   initialWindowState: VotingState;
+  canVote: boolean;
+  isAuthenticated: boolean;
   initialSummary: {
     upvotes: number;
     downvotes: number;
@@ -17,7 +20,7 @@ type VotePanelProps = {
   };
 };
 
-export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindowState }: VotePanelProps) {
+export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindowState, canVote, isAuthenticated }: VotePanelProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [windowState, setWindowState] = useState(initialWindowState);
@@ -48,14 +51,18 @@ export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindow
     });
   };
 
-  const buttonsDisabled = windowState !== "open" || isPending;
+  const buttonsDisabled = windowState !== "open" || isPending || !canVote;
 
   return (
     <aside className="rounded-[1.5rem] border border-ink/10 bg-sand/75 p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-moss">Voting</p>
       <h2 className="mt-2 text-2xl font-semibold text-ink">Current sentiment</h2>
       <p className="mt-3 text-sm leading-6 text-ink/70">
-        Local scaffold uses a verified demo account and enforces the configured voting window.
+        {isAuthenticated
+          ? canVote
+            ? "Signed-in accounts can vote while the tenant voting window is open."
+            : "This signed-in account is not eligible to vote until verification or moderation is complete."
+          : "Sign in with a seeded demo account to cast votes and test account-state enforcement."}
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3 text-center">
@@ -96,6 +103,15 @@ export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindow
         <p>Window state: {windowState}</p>
         <p className="mt-2">Immutable vote events captured: {summary.eventCount}</p>
       </div>
+
+      {!isAuthenticated ? (
+        <Link
+          href={`/login?redirectTo=/${tenantSlug}/promises/${promiseId}`}
+          className="mt-4 inline-flex rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/75 transition hover:border-moss/35 hover:text-ink"
+        >
+          Sign in to vote
+        </Link>
+      ) : null}
 
       {errorMessage ? <p className="mt-4 text-sm font-medium text-[#b42318]">{errorMessage}</p> : null}
     </aside>

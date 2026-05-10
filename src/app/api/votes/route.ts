@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { canAccessTenant } from "@/lib/permissions";
+import { getCurrentUser } from "@/modules/auth/session";
 import { getTenantBySlug } from "@/modules/tenants/data";
 import { VoteError, castVote } from "@/modules/voting/service";
 
@@ -11,6 +13,12 @@ const voteSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Sign in is required to vote." }, { status: 401 });
+  }
+
   const parsed = voteSchema.safeParse(await request.json());
 
   if (!parsed.success) {
@@ -23,16 +31,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown tenant." }, { status: 404 });
   }
 
+  if (!canAccessTenant(user, tenant.id)) {
+    return NextResponse.json({ error: "This account cannot vote in that tenant." }, { status: 403 });
+  }
+
   try {
     const result = castVote({
       tenantId: tenant.id,
       promiseId: parsed.data.promiseId,
-      user: {
-        id: "demo-user",
-        email: "demo@track-promises.local",
-        emailVerified: true,
-        state: "verified"
-      },
+      user,
       value: parsed.data.value
     });
 
