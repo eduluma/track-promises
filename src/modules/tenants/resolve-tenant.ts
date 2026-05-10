@@ -16,6 +16,12 @@ export function extractTenantSlugFromHost(host: string | null | undefined) {
     return null;
   }
 
+  // Treat the platform root domain itself as no-tenant (path-based routing)
+  const platformDomain = process.env.TRACK_PROMISES_PLATFORM_DOMAIN;
+  if (platformDomain && normalizedHost === platformDomain.toLowerCase().split(":")[0]) {
+    return null;
+  }
+
   const localMatch = normalizedHost.match(localHostPattern);
   if (localMatch?.groups?.slug) {
     return localMatch.groups.slug;
