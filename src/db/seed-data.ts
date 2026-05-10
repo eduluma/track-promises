@@ -35,6 +35,8 @@ export function getFoundationSeedData() {
             summary: timeline.summary,
             officeTitle: timeline.officeTitle,
             officeHolder: timeline.officeHolder,
+            resultsPublishedAt: timeline.resultsPublishedAt ? new Date(timeline.resultsPublishedAt) : null,
+            termStartAt: timeline.termStartAt ? new Date(timeline.termStartAt) : null,
             isDefault: timeline.default
         }))
     );

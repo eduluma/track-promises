@@ -6,6 +6,9 @@ export type Timeline = {
     summary: string;
     officeTitle: string;
     officeHolder: string;
+    resultsPublishedAt: string | null;
+    termStartAt: string | null;
+    termLengthMonths: number;
     default: boolean;
 };
 
@@ -18,6 +21,9 @@ const timelineRecords: Timeline[] = [
         summary: "Track the 2026 state cycle, office context, and every promise record under a stable jurisdiction and timeline URL.",
         officeTitle: "Chief Minister",
         officeHolder: "M. K. Stalin",
+        resultsPublishedAt: "2026-05-04T00:00:00.000Z",
+        termStartAt: "2026-05-10T00:00:00.000Z",
+        termLengthMonths: 60,
         default: true
     },
     {
@@ -28,6 +34,9 @@ const timelineRecords: Timeline[] = [
         summary: "Legacy seeded demo timeline kept for local development fixtures and transition-period database seeds.",
         officeTitle: "Chief Minister",
         officeHolder: "Demo seed context",
+        resultsPublishedAt: null,
+        termStartAt: "2026-01-01T00:00:00.000Z",
+        termLengthMonths: 12,
         default: false
     },
     {
@@ -38,6 +47,9 @@ const timelineRecords: Timeline[] = [
         summary: "Track the 2029 national cycle with separate public context and promise records under a country and timeline path.",
         officeTitle: "Prime Minister",
         officeHolder: "Pending 2029 result",
+        resultsPublishedAt: null,
+        termStartAt: null,
+        termLengthMonths: 60,
         default: true
     },
     {
@@ -48,6 +60,9 @@ const timelineRecords: Timeline[] = [
         summary: "Track the 2026 Kerala assembly cycle across multiple competing fronts under one state timeline.",
         officeTitle: "Chief Minister",
         officeHolder: "Pinarayi Vijayan",
+        resultsPublishedAt: "2026-05-04T00:00:00.000Z",
+        termStartAt: null,
+        termLengthMonths: 60,
         default: true
     }
 ];

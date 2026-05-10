@@ -2,6 +2,7 @@ import type { TenantConfig } from "@/config/schemas";
 import type { RecentElectionOverview } from "@/modules/promises/data";
 import type { Tenant } from "@/modules/tenants/data";
 import type { Timeline } from "@/modules/timelines/data";
+import type { TimelineScoreProjection } from "@/modules/timelines/score";
 
 type TimelineHeroProps = {
     tenant: Tenant;
@@ -9,6 +10,7 @@ type TimelineHeroProps = {
     config: TenantConfig;
     promiseCount: number;
     reviewCount: number;
+    timelineScore: TimelineScoreProjection;
     recentElectionOverview?: RecentElectionOverview | null;
 };
 
@@ -16,8 +18,22 @@ const integerFormatter = new Intl.NumberFormat("en-IN");
 const percentFormatter = new Intl.NumberFormat("en-IN", {
     maximumFractionDigits: 2
 });
+const dateFormatter = new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC"
+});
 
-export function TimelineHero({ tenant, timeline, config, promiseCount, reviewCount, recentElectionOverview }: TimelineHeroProps) {
+function formatDisplayDate(value: string | null) {
+    if (!value) {
+        return "Awaiting confirmation";
+    }
+
+    return dateFormatter.format(new Date(value));
+}
+
+export function TimelineHero({ tenant, timeline, config, promiseCount, reviewCount, timelineScore, recentElectionOverview }: TimelineHeroProps) {
     return (
         <section className="overflow-hidden rounded-[2rem] border border-white/75 bg-white/70 p-8 shadow-card backdrop-blur sm:p-10">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -32,15 +48,53 @@ export function TimelineHero({ tenant, timeline, config, promiseCount, reviewCou
                         <span className="rounded-full bg-sand/80 px-3 py-1">Vote meaning: {config.voteMeaning}</span>
                     </div>
                 </div>
-                <div className="grid min-w-[14rem] gap-3 text-sm text-ink/75">
+                <div className="grid min-w-[17rem] gap-3 text-sm text-ink/75">
+                    <div className="rounded-2xl border border-ink/10 bg-moss p-4 text-white">
+                        <p className="text-xs uppercase tracking-[0.18em] text-white/72">Timeline score</p>
+                        <p className="mt-2 text-4xl font-semibold">{timelineScore.score}</p>
+                        <p className="mt-2 text-sm text-white/78">Public delivery estimate across assessed promises.</p>
+                    </div>
                     <div className="rounded-2xl border border-ink/10 bg-sand/70 p-4">
                         <p className="text-xs uppercase tracking-[0.18em] text-moss">Current timeline</p>
                         <p className="mt-2">{timeline.title}</p>
+                        <p className="mt-1 text-xs text-ink/60">Results: {formatDisplayDate(timeline.resultsPublishedAt)}</p>
+                        <p className="mt-1 text-xs text-ink/60">Promise clock: {formatDisplayDate(timeline.termStartAt)}</p>
                     </div>
                     <div className="rounded-2xl border border-ink/10 bg-sand/70 p-4">
                         <p className="text-xs uppercase tracking-[0.18em] text-moss">Open records</p>
                         <p className="mt-2">{promiseCount} promises · {reviewCount} moderation reviews</p>
                     </div>
+                </div>
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <div className="rounded-2xl border border-ink/10 bg-sand/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-moss">Assessed progress</p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">{timelineScore.assessedPromiseProgressPercent}%</p>
+                    <p className="mt-1 text-sm text-ink/60">Average across promises with votes.</p>
+                </div>
+                <div className="rounded-2xl border border-ink/10 bg-sand/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-moss">Term elapsed</p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">{timelineScore.termElapsedPercent}%</p>
+                    <p className="mt-1 text-sm text-ink/60">
+                        {timeline.termStartAt
+                            ? `Month ${Math.min(Math.ceil(timelineScore.elapsedMonths), timeline.termLengthMonths)} of ${timeline.termLengthMonths}.`
+                            : "Clock starts once the government takes office."}
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-ink/10 bg-sand/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-moss">Pace</p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">{timelineScore.paceDelta >= 0 ? "+" : ""}{timelineScore.paceDelta}</p>
+                    <p className="mt-1 text-sm text-ink/60">Points ahead of or behind the term clock.</p>
+                </div>
+                <div className="rounded-2xl border border-ink/10 bg-sand/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-moss">Coverage</p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">{timelineScore.assessmentCoveragePercent}%</p>
+                    <p className="mt-1 text-sm text-ink/60">{timelineScore.assessedPromiseCount} of {timelineScore.promiseCount} promises assessed.</p>
+                </div>
+                <div className="rounded-2xl border border-ink/10 bg-sand/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-moss">Assessments</p>
+                    <p className="mt-2 text-2xl font-semibold text-ink">{timelineScore.totalVotes}</p>
+                    <p className="mt-1 text-sm text-ink/60">Projection refreshed {new Date(timelineScore.calculatedAt).toLocaleString()}.</p>
                 </div>
             </div>
             {recentElectionOverview ? (

@@ -20,6 +20,7 @@ Track Promises will provide:
 - a public promise database with source links and status history;
 - timeline-aware public URLs such as `/{jurisdiction}/{timeline}` so a state or country can have separate election or term workspaces;
 - compact delivery-stage assessments by registered users, from not started through completed;
+- a timeline-level public score that rolls up assessed promise progress and compares it with the office term clock;
 - one current vote per user per promise, with the ability to change that vote until voting is frozen;
 - immutable vote history and periodic completion snapshots for auditability;
 - config-driven behavior for jurisdictions, voting windows, moderation rules, feature flags, and tenant branding;
@@ -55,6 +56,7 @@ The repository now includes a runnable initial slice with:
 - a separate Fastify API service for vote, promise creation, and moderation-review write paths;
 - timeline-aware public pages and promise detail routes using `/{jurisdiction}/{timeline}/promises/{unique-id}`;
 - local in-memory delivery-stage assessment flow with freeze-window enforcement and immutable vote events;
+- timeline hero scoring with assessed-progress, term-elapsed, pace, and coverage metrics;
 - admin-only promise creation with reusable filter and form components;
 - vote snapshot capture, aggregate reconciliation, and historical delivery-progress charts;
 - admin audit views plus moderator review workflow and trust-score signals;
@@ -70,7 +72,7 @@ The current runnable stack is in a transition phase: a dedicated `api` service e
 
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env`; the task commands source that file before running Docker Compose.
-3. Start the app stack with `task up` so local database migrations are applied before the app services come up.
+3. Start the app stack with `task up`. It now tears down stale Compose containers, reruns local migrations, and recreates fresh `web` and `api` containers so the runtime age matches the current restart.
 4. Open `http://localhost:3300` to see the app.
 5. The Compose stack publishes the web app on `localhost:3300`, the API service on `localhost:4300`, and PostgreSQL on `localhost:5440`; PostgreSQL and Redis still stay on the internal Docker network for app-to-app traffic. Override `APP_PORT`, `API_PORT`, or `DB_PORT` in `.env` if those ports are occupied on your machine, then keep using those same values for local commands.
 6. Check the API service with `http://localhost:4300/health`.

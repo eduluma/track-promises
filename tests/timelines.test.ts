@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { listPromisesForTenant } from "@/modules/promises/repository";
 import { loadTimelineContent } from "@/modules/timelines/content";
 import { getDefaultTimelineForTenant, getTimelineBySlug } from "@/modules/timelines/data";
+import { getTimelineScoreProjection } from "@/modules/timelines/score";
 
 describe("timeline routing model", () => {
     it("returns the default timeline for a tenant", () => {
@@ -26,5 +27,21 @@ describe("timeline routing model", () => {
         expect(timeline?.title).toBe("India 2029");
         expect(markdownContent?.html).toContain("Tamil Nadu 2026");
         expect(htmlContent?.html).toContain("India 2029");
+    });
+
+    it("derives a timeline score projection with term metadata", () => {
+        const score = getTimelineScoreProjection({
+            tenantId: "tenant-tamilnadu",
+            timelineSlug: "2026",
+            now: new Date("2026-05-10T00:00:00.000Z")
+        });
+        const timeline = getTimelineBySlug("tenant-tamilnadu", "2026");
+
+        expect(score.score).toBeGreaterThan(0);
+        expect(score.termLengthMonths).toBe(60);
+        expect(score.assessedPromiseCount).toBeGreaterThan(0);
+        expect(score.termElapsedPercent).toBe(0);
+        expect(timeline?.resultsPublishedAt).toBe("2026-05-04T00:00:00.000Z");
+        expect(timeline?.termStartAt).toBe("2026-05-10T00:00:00.000Z");
     });
 });

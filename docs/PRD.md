@@ -100,6 +100,8 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 ### Aggregates And History
 
 - Show stage counts, weighted completion percentage, dominant stage, and the user's current assessment.
+- Show a timeline-level public score at the top of each timeline page, backed by assessed promise progress plus office-term metadata such as term start date and term length in months.
+- Show term-aware context with that score, including elapsed term percentage, assessment coverage, and whether current delivery is ahead of or behind the term clock.
 - Store periodic completion snapshots for historical review.
 - Provide reconciliation between current votes, event history, cached counters, and snapshots.
 

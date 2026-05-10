@@ -11,6 +11,7 @@ import { getRecentElectionOverviewForTimeline, listPromisesForTenant } from "@/m
 import { getTenantBySlug } from "@/modules/tenants/data";
 import { loadTimelineContent } from "@/modules/timelines/content";
 import { getTimelineBySlug } from "@/modules/timelines/data";
+import { getTimelineScoreProjection } from "@/modules/timelines/score";
 
 type TimelinePageProps = {
     params: Promise<{ tenantSlug: string; timelineSlug: string }>;
@@ -42,6 +43,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
     });
     const reviews = getOpenModerationReviewsForTenant(tenant.id);
     const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
+    const timelineScore = getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug });
     const canVote = Boolean(user && canUserVote(user));
     const sharedSearchParams = {
         category,
@@ -57,6 +59,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
                 config={config}
                 promiseCount={promises.length}
                 reviewCount={reviews.length}
+                timelineScore={timelineScore}
                 recentElectionOverview={recentElectionOverview}
             />
             {overviewContent ? (

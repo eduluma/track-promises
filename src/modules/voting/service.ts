@@ -2,7 +2,8 @@ import { resolveTenantConfig } from "@/config/resolve-config";
 import { canUserVote, type DemoUser } from "@/lib/permissions";
 import { getPromiseById } from "@/modules/promises/repository";
 import { appendAuditLog } from "@/modules/audit/logs";
-import { createEmptyVoteCounts, getVoteOption, voteOptions, type VoteValue } from "@/modules/voting/assessment";
+import { calculateVoteAggregate, type VoteValue } from "@/modules/voting/assessment";
+import { upsertTimelineScoreProjection } from "@/modules/timelines/score";
 import {
   appendVoteEvent,
   getVoteForUser,
@@ -100,29 +101,14 @@ export function getVotingWindowStatusForPromise({ tenantId, promiseId, now = new
 export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSummaryInput) {
   const votes = listVotesForPromise(tenantId, promiseId);
   const currentVote = userId ? getVoteForUser(tenantId, promiseId, userId) : null;
-  const counts = createEmptyVoteCounts();
-
-  for (const vote of votes) {
-    counts[vote.value] += 1;
-  }
-
-  const totalVotes = votes.length;
-  const weightedTotal = votes.reduce((total, vote) => total + getVoteOption(vote.value).weight, 0);
-  const completionPercent = totalVotes === 0 ? 0 : Math.round(weightedTotal / totalVotes);
-  const dominantVote = voteOptions.reduce<VoteValue | null>((current, option) => {
-    if (!current || counts[option.value] > counts[current]) {
-      return option.value;
-    }
-
-    return current;
-  }, null);
+  const aggregate = calculateVoteAggregate(votes);
 
   return {
-    counts,
-    completionPercent,
-    dominantVote: totalVotes === 0 ? null : dominantVote,
+    counts: aggregate.counts,
+    completionPercent: aggregate.completionPercent,
+    dominantVote: aggregate.dominantVote,
     currentVote: currentVote?.value ?? null,
-    totalVotes,
+    totalVotes: aggregate.totalVotes,
     eventCount: listVoteEventsForPromise(tenantId, promiseId).length
   } satisfies VoteSummary;
 }
@@ -182,6 +168,24 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
     metadata: {
       previousValue: eventRecord.previousValue,
       newValue: eventRecord.newValue
+    },
+    createdAt: timestamp
+  });
+  const projection = upsertTimelineScoreProjection({ tenantId, timelineSlug: promise.timelineSlug, now });
+  appendAuditLog({
+    tenantId,
+    actorId: user.id,
+    action: "timeline_score.recalculated",
+    entityType: "timeline",
+    entityId: promise.timelineSlug,
+    metadata: {
+      score: projection.score,
+      assessedPromiseCount: projection.assessedPromiseCount,
+      promiseCount: projection.promiseCount,
+      totalVotes: projection.totalVotes,
+      termElapsedPercent: projection.termElapsedPercent,
+      formulaVersion: projection.formulaVersion,
+      triggerPromiseId: promiseId
     },
     createdAt: timestamp
   });

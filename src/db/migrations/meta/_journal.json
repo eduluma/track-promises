@@ -15,6 +15,13 @@
       "when": 1778397253538,
       "tag": "0001_outgoing_annihilus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778448533068,
+      "tag": "0002_supreme_energizer",
+      "breakpoints": true
     }
   ]
 }

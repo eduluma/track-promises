@@ -45,14 +45,17 @@ tasks:
       - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} --profile tools run --rm migrate'
 
   up:
-    desc: Start the local Docker Compose stack and apply database migrations
+    desc: Recreate the local Docker Compose stack and apply database migrations
     deps:
-      - compose:migrate
+      - compose:config
     cmds:
-      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} down --remove-orphans'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d postgres'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} --profile tools run --rm migrate'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d --force-recreate --remove-orphans'
 
   compose:up:
-    desc: Start the local Docker Compose stack and apply database migrations
+    desc: Recreate the local Docker Compose stack and apply database migrations
     cmds:
       - task: up
 
@@ -70,6 +73,5 @@ tasks:
     desc: Build the app and deploy the local Docker Compose stack
     deps:
       - build
-      - compose:migrate
     cmds:
-      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d'
+      - task: up

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getTimelineScoreProjection } from "@/modules/timelines/score";
 import { VoteError, castVote, getPromiseVoteSummary, resolveVotingState } from "@/modules/voting/service";
 
 describe("voting rules", () => {
@@ -57,5 +58,35 @@ describe("voting rules", () => {
         now: new Date("2027-01-02T00:00:00.000Z")
       })
     ).toThrowError(VoteError);
+  });
+
+  it("refreshes the timeline score projection when a vote changes", () => {
+    const before = getTimelineScoreProjection({
+      tenantId: "tenant-tamilnadu",
+      timelineSlug: "2026",
+      now: new Date("2026-05-15T00:00:00.000Z")
+    });
+
+    castVote({
+      tenantId: "tenant-tamilnadu",
+      promiseId: "tn-2026-tvk-free-electricity-200-units",
+      user: {
+        id: "observer-3",
+        email: "observer-3@track-promises.local",
+        emailVerified: true,
+        state: "verified"
+      },
+      value: "completed",
+      now: new Date("2026-05-15T00:00:00.000Z")
+    });
+
+    const after = getTimelineScoreProjection({
+      tenantId: "tenant-tamilnadu",
+      timelineSlug: "2026",
+      now: new Date("2026-05-15T00:00:00.000Z")
+    });
+
+    expect(after.score).toBeGreaterThan(before.score);
+    expect(after.totalVotes).toBe(before.totalVotes + 1);
   });
 });

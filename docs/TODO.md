@@ -73,6 +73,8 @@
 - [x] Add inline quick-vote controls and compact vote trends on timeline promise cards.
 - [x] Add a reusable delivery-plan model for recurring and milestone-based promises.
 - [x] Replace binary up/down voting with delivery-stage assessments and weighted completion snapshots.
+- [x] Add timeline-level public progress scoring with term-length metadata and write-through recalculation.
+- [x] Add timeline office-start and result-publication dates so public scoring uses the real promise clock.
 - [x] Add normalized database tables for timelines, alliances, and timeline-alliance memberships.
 - [x] Add source-backed research notes for 2026 Kerala, West Bengal, Assam, and Puducherry election material.
 - [x] Add import-ready JSON datasets for Kerala 2026 front promises and Tamil Nadu 2026 TVK promises.

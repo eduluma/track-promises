@@ -27,6 +27,30 @@ type VoteStore = {
 const seedVotes: VoteRecord[] = [
   {
     tenantId: "tenant-tamilnadu",
+    promiseId: "tn-2026-tvk-free-electricity-200-units",
+    userId: "demo-user",
+    value: "started",
+    createdAt: "2026-04-13T00:00:00.000Z",
+    updatedAt: "2026-04-13T00:00:00.000Z"
+  },
+  {
+    tenantId: "tenant-tamilnadu",
+    promiseId: "tn-2026-tvk-free-electricity-200-units",
+    userId: "observer-1",
+    value: "in_progress",
+    createdAt: "2026-04-20T00:00:00.000Z",
+    updatedAt: "2026-04-20T00:00:00.000Z"
+  },
+  {
+    tenantId: "tenant-tamilnadu",
+    promiseId: "tn-2026-tvk-water-pipeline-connections",
+    userId: "observer-2",
+    value: "not_started",
+    createdAt: "2026-05-01T00:00:00.000Z",
+    updatedAt: "2026-05-01T00:00:00.000Z"
+  },
+  {
+    tenantId: "tenant-tamilnadu",
     promiseId: "promise-power",
     userId: "demo-user",
     value: "in_progress",

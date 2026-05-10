@@ -100,6 +100,8 @@ export const timelines = pgTable(
     summary: text("summary").notNull(),
     officeTitle: text("office_title").notNull(),
     officeHolder: text("office_holder").notNull(),
+    resultsPublishedAt: timestamp("results_published_at", { withTimezone: true }),
+    termStartAt: timestamp("term_start_at", { withTimezone: true }),
     isDefault: boolean("is_default").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()

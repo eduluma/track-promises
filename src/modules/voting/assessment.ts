@@ -9,6 +9,13 @@ export type VoteOption = {
     weight: number;
 };
 
+export type VoteAggregate = {
+    counts: Record<VoteValue, number>;
+    completionPercent: number;
+    dominantVote: VoteValue | null;
+    totalVotes: number;
+};
+
 export const voteOptions: VoteOption[] = [
     {
         value: "not_started",
@@ -62,4 +69,30 @@ export function formatVoteValue(value: VoteValue | null | undefined) {
     }
 
     return getVoteOption(value).label;
+}
+
+export function calculateVoteAggregate(votes: Array<{ value: VoteValue }>): VoteAggregate {
+    const counts = createEmptyVoteCounts();
+
+    for (const vote of votes) {
+        counts[vote.value] += 1;
+    }
+
+    const totalVotes = votes.length;
+    const weightedTotal = votes.reduce((total, vote) => total + getVoteOption(vote.value).weight, 0);
+    const completionPercent = totalVotes === 0 ? 0 : Math.round(weightedTotal / totalVotes);
+    const dominantVote = voteOptions.reduce<VoteValue | null>((current, option) => {
+        if (!current || counts[option.value] > counts[current]) {
+            return option.value;
+        }
+
+        return current;
+    }, null);
+
+    return {
+        counts,
+        completionPercent,
+        dominantVote: totalVotes === 0 ? null : dominantVote,
+        totalVotes
+    };
 }
