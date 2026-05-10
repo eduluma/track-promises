@@ -8,3 +8,5 @@ coverage
 .llm/*
 !.llm/.gitkeep
 !.llm/README.md
+
+local/

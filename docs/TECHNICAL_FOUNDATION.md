@@ -11,7 +11,7 @@
 - Cache/rate limit path: design interfaces for Redis from day one; add Upstash Redis when rate limiting, hot counters, or cache pressure make it worthwhile.
 - Background jobs: start with a simple worker or scheduled job; move to BullMQ, Inngest, Trigger.dev, or equivalent when snapshots and reconciliation mature.
 - Local development: Docker Compose for PostgreSQL, Redis when enabled, worker processes, and app dependencies.
-- Production deployment: Kubernetes manifests packaged with Helm charts.
+- Production deployment: Kubernetes manifests packaged with Helm charts, initially deployed to DigitalOcean Kubernetes with Neon PostgreSQL and Upstash Redis.
 
 ## Stack Notes
 
@@ -41,6 +41,8 @@
 - Avoid collecting or storing government identity documents in MVP.
 - Add trust-score and moderation hooks so real-user confidence can improve over time without sensitive identity storage.
 - Support account states such as pending verification, verified, limited, suspended, and moderator-approved.
+- Use account state as the primary enforcement gate for voting eligibility in MVP, with trust score influencing review priority and state transitions.
+- Start trust scoring with email verification, account age, moderator decisions, and abuse signals; do not require a high trust score for baseline voting once an account is verified and not limited.
 
 ### Search
 
@@ -52,7 +54,7 @@
 - Local development: Docker Compose should start the app dependencies consistently, including PostgreSQL and optional Redis.
 - Early production: Kubernetes deployment through Helm, with managed PostgreSQL and managed Redis preferred over running stateful services in the app cluster unless there is a clear operational reason.
 - Later scaling: read replicas, worker processes, table partitioning, CDN caching, horizontal pod autoscaling, and possibly a dedicated search cluster.
-- Ingress should support wildcard tenant subdomains such as `*.track-promises.com` after the final domain is chosen.
+- Ingress should support wildcard tenant subdomains such as `*.track-promises.com`.
 
 ## Core Domain Model
 
@@ -144,6 +146,21 @@ Key fields: id, tenant id, subject type, subject id, reason, status, assigned mo
 - Prefer configuration for categories, promise statuses, voting windows, feature flags, trust thresholds, branding, locale, and tenant routing.
 - Keep security-sensitive settings in environment variables or secret stores, not tenant-editable config.
 
+Admin-editable config should include:
+
+- tenant name, branding, locale, and public copy;
+- category lists and the fixed MVP status set presentation labels;
+- voting-window entries and scope assignments;
+- moderation thresholds, review-routing settings, and safe feature flags;
+- tenant hostname mappings within approved platform domains.
+
+Code or environment-only config should include:
+
+- database URLs, Redis URLs, Auth.js secrets, email provider credentials, and third-party API keys;
+- base platform domains, ingress controller wiring, and wildcard DNS setup;
+- rate-limit backend selection, cache driver selection, and build-time feature gates;
+- observability sinks, secret references, and infrastructure credentials.
+
 ## Module And Component Strategy
 
 - Organize code by domain modules instead of scattering logic by route only.
@@ -169,8 +186,10 @@ Suggested early module boundaries:
 - Support local development hostnames such as `tamilnadu.localhost` or path-based fallbacks if wildcard local DNS is inconvenient.
 - Store tenant slug and hostname mappings in the database.
 - Use tenant id in all tenant-scoped tables and repository queries.
+- Keep tenancy row-based for MVP, with shared platform tables and strict tenant scoping in repositories, services, and tests.
+- Use `tenantSlug.track-promises.com` as the canonical production pattern and `tenantSlug.track-promises.localhost` as the local pattern.
 - Add authorization checks so tenant admins can only manage their own tenant unless they have platform-admin privileges.
-- Configure Kubernetes ingress for wildcard hosts once the production domain is finalized.
+- Configure Kubernetes ingress for wildcard hosts using the canonical production domain pattern.
 
 ## Vote Write Path
 
@@ -219,7 +238,8 @@ Suggested early module boundaries:
 
 ## Local Development Plan
 
-- Use Docker Compose for PostgreSQL and optional Redis.
+- Use Docker Compose for PostgreSQL by default and Redis behind an optional `cache` profile.
+- Keep the Next.js dev server running on the host machine for MVP; add a worker container only when snapshot and reconciliation jobs are introduced.
 - Add app environment examples for database URL, auth secrets, tenant hostnames, and feature flags.
 - Provide seed scripts for local tenants such as `tamilnadu` and a small promise set.
 - Keep app source runnable outside Docker if a developer prefers local Node.js, but Docker Compose should be the documented default for dependencies.
@@ -228,19 +248,24 @@ Suggested early module boundaries:
 
 - Add a Helm chart for the web app, worker process, ingress, config maps, secrets references, and service accounts.
 - Prefer managed PostgreSQL and managed Redis; do not run production databases inside the first app Helm chart.
-- Support separate values files for local-like, staging, and production deployments.
+- Support separate values files for local-like, staging, and production deployments: `values-local.yaml`, `values-staging.yaml`, and `values-production.yaml`.
+- Use local-like values for developer clusters or ephemeral previews, staging for integration testing under `staging.track-promises.com`, and production for `track-promises.com` plus wildcard tenant hosts.
 - Configure readiness/liveness probes for web and worker pods.
 - Add horizontal pod autoscaling values for web pods and worker pods.
 - Add ingress values for wildcard tenant hosts and canonical platform host.
 - Keep sensitive values out of Git and reference Kubernetes secrets or external secret operators.
 
-## Architecture Decisions To Confirm Before Implementation
+## Decisions Fixed For MVP
 
-- Monolithic Next.js app for MVP versus split frontend/API services from day one.
-- Whether Auth.js remains enough after MVP or should be replaced by a hosted identity provider.
-- Hosted database and Redis provider.
-- Scope model for voting windows.
-- Whether vote deletion is allowed.
-- Final production domain and wildcard subdomain pattern.
-- Exact account trust and moderation rules for granting voting privileges.
-- Whether tenant data isolation remains row-based or eventually moves to separate databases/schemas for large government tenants.
+- Use a monolithic Next.js app for public pages, admin flows, and API routes.
+- Use DigitalOcean Kubernetes for the app runtime, Neon PostgreSQL for the primary database, and Upstash Redis when Redis-backed features are enabled.
+- Model vote semantics as fulfillment sentiment and allow only up/down switching while voting is open.
+- Resolve voting windows by specificity: promise, election/campaign, tenant/jurisdiction, then platform default.
+- Use the status set `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
+- Keep tenant data row-scoped in shared tables for MVP.
+- Use `tenantSlug.track-promises.com` as the canonical production host pattern.
+
+## Decisions Deferred After MVP
+
+- Whether Auth.js remains sufficient after operational scale increases.
+- Whether very large tenants should move to separate databases or schemas.

@@ -8,9 +8,23 @@ This document is written for an implementation agent or another LLM that will bu
 - Keep business logic in reusable modules and services, not duplicated inside pages.
 - Keep UI reusable with shared components for repeated promise, voting, source, admin, moderation, and table patterns.
 - Avoid storing government identity documents or sensitive government records for user verification in MVP.
-- Design for tenant subdomains from the beginning, even if the final domain is not confirmed.
+- Design for tenant subdomains from the beginning around the canonical `tenantSlug.track-promises.com` pattern.
 - Use Docker Compose for local development dependencies.
 - Deploy to Kubernetes with Helm.
+
+## Phase 0 Decisions Locked For Implementation
+
+- Treat votes as public sentiment on whether a promise is on track for fulfillment.
+- Allow users to switch between upvote and downvote while the voting window is open, but do not support self-service vote removal in MVP.
+- Resolve voting windows by specificity in this order: promise override, election or campaign override, tenant or jurisdiction default, then platform default.
+- Use the MVP status set `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
+- Keep promise creation limited to admins and editors in MVP.
+- Keep tenant data in shared platform tables with strict row-based tenant scoping.
+- Use `tenantSlug.track-promises.com` for production tenants and `tenantSlug.track-promises.localhost` for local development.
+- Treat tenant branding, locale, categories, voting windows, moderation thresholds, and safe feature flags as admin-editable; keep secrets, provider credentials, infrastructure wiring, and platform domains in code or environment config.
+- Use verified email plus account state as the MVP voting gate; trust score informs moderation and future privileges rather than replacing account-state enforcement.
+- Standard local dependencies are `postgres` by default and optional `redis` under a Compose profile. Add a worker service only when snapshot and reconciliation jobs arrive.
+- Standard Helm environments are base values plus `values-local.yaml`, `values-staging.yaml`, and `values-production.yaml`.
 
 ## Recommended MVP Stack
 
@@ -22,6 +36,7 @@ This document is written for an implementation agent or another LLM that will bu
 - Zod for config, forms, and API validation.
 - Docker Compose for local PostgreSQL and optional Redis.
 - Helm for Kubernetes deployment.
+- DigitalOcean Kubernetes as the initial app host, with Neon PostgreSQL and Upstash Redis as the first managed data providers.
 
 ## Suggested Repository Structure
 
@@ -95,7 +110,7 @@ Security secrets, auth secrets, database URLs, and provider credentials must rem
 - Resolve tenant from hostname first.
 - Support local development with hostnames such as `tamilnadu.localhost` or with a path/query fallback when local wildcard DNS is inconvenient.
 - Seed a sample tenant with slug `tamilnadu`.
-- Plan for a future hostname such as `tamilnadu.track-promises.com`; final domain is TBD.
+- Plan for hostnames such as `tamilnadu.track-promises.com` in production and `tamilnadu.track-promises.localhost` locally.
 - Enforce tenant scoping in repository/query helpers and tests.
 
 ## Registration, Verification, And Moderation Plan

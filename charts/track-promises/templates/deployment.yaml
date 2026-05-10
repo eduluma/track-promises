@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "track-promises.fullname" . }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "track-promises.name" . }}

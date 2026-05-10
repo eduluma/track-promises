@@ -5,19 +5,19 @@
 - [x] Capture initial product idea.
 - [x] Draft PRD.
 - [x] Draft technical foundation.
-- [ ] Decide MVP vote meaning: fulfillment sentiment, agreement, trust, or another label.
-- [ ] Decide if users can remove votes or only switch between up/down.
-- [ ] Decide voting-window scope rules.
-- [ ] Define MVP promise statuses.
+- [x] Decide MVP vote meaning: fulfillment sentiment, agreement, trust, or another label.
+- [x] Decide if users can remove votes or only switch between up/down.
+- [x] Decide voting-window scope rules.
+- [x] Define MVP promise statuses.
 - [x] Choose recommended MVP auth provider: Auth.js.
 - [x] Choose recommended MVP ORM: Drizzle.
-- [ ] Choose initial hosting/database/Redis providers.
-- [ ] Define config keys that must be admin-editable versus code/env-only.
-- [ ] Define tenant model and final subdomain pattern.
-- [ ] Define real-user verification and trust-score rules.
-- [ ] Decide moderation privileges and review workflow.
-- [ ] Decide Docker Compose service list for MVP.
-- [ ] Define Kubernetes/Helm deployment environments and values files.
+- [x] Choose initial hosting/database/Redis providers.
+- [x] Define config keys that must be admin-editable versus code/env-only.
+- [x] Define tenant model and final subdomain pattern.
+- [x] Define real-user verification and trust-score rules.
+- [x] Decide moderation privileges and review workflow.
+- [x] Decide Docker Compose service list for MVP.
+- [x] Define Kubernetes/Helm deployment environments and values files.
 
 ## Phase 1: MVP Foundation
 

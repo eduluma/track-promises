@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  tag: staging
+
+ingress:
+  enabled: true
+  host: staging.track-promises.com
+  wildcardHost: "*.staging.track-promises.com"
+
+env:
+  NEXTAUTH_URL: https://staging.track-promises.com

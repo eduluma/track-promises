@@ -21,7 +21,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 - Support public browsing during traffic spikes without overloading the primary database.
 - Create a foundation that can grow to millions of records and visits.
 - Make product behavior config-driven wherever practical, including jurisdictions, voting windows, feature flags, moderation thresholds, and tenant branding.
-- Support jurisdiction or government-specific subdomains, such as `tamilnadu.track-promises.com`, with the final domain name still undecided.
+- Support jurisdiction or government-specific subdomains using the canonical production pattern `tenantSlug.track-promises.com` and the local development pattern `tenantSlug.track-promises.localhost`.
 - Keep implementation modular and reusable so core promise, voting, source, admin, and moderation flows are not duplicated.
 
 ## 4. Non-Goals For MVP
@@ -68,29 +68,32 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Voting
 
+- Voting represents public sentiment about whether a promise is on track for fulfillment.
 - Require authentication and verified email before voting.
 - Allow exactly one current vote per user per promise.
 - Support vote values of upvote and downvote.
-- Allow a user to change their vote while the voting window is open.
-- Enforce configurable voting windows at global, election, jurisdiction, or promise level.
+- Allow a user to switch between upvote and downvote while the voting window is open, but do not allow self-service vote removal to a neutral state in MVP.
+- Enforce one effective voting window per promise using this precedence order: promise override, election/campaign override, tenant/jurisdiction default, then platform default.
 - Freeze voting at the configured time while preserving public access to totals and history.
 - Append an immutable vote event whenever a vote is created or changed.
 
 ### Registration, Verification, And Moderation
 
 - Avoid storing government identity documents or sensitive government records unless a future legal/privacy review explicitly approves it.
-- Require basic account verification before voting, starting with verified email and rate limits.
-- Design for StackOverflow-style trust and moderation signals, such as account age, reputation/trust score, voting history, reviewer approvals, and abuse flags.
-- Support a probation or limited-voting state for new or suspicious accounts.
-- Allow moderators/admins to review suspicious accounts, bot-like voting patterns, and abuse reports.
+- Require verified email before voting and combine it with account-state checks and rate limits.
+- Support account states of `pending`, `verified`, `limited`, `suspended`, and `moderator_approved`.
+- Use a lightweight trust score for review priority and future privileges, with signals from account age, stable voting history, moderator decisions, and abuse flags.
+- Support a probation or limited-voting state for suspicious accounts, velocity anomalies, or unresolved review flags.
+- Allow tenant moderators and platform admins to review suspicious accounts, bot-like voting patterns, and abuse reports, while editors remain content-focused.
 - Preserve account and moderation audit trails without exposing sensitive data publicly.
 
 ### Configuration And Tenancy
 
 - Store configurable product behavior in database-backed or file-backed configuration rather than hard-coded constants where practical.
-- Support tenant/jurisdiction configuration for name, slug, domain/subdomain, branding, locale, categories, promise statuses, voting windows, and feature flags.
-- Resolve tenant context from hostnames such as `tamilnadu.track-promises.com`, path-based fallbacks, or admin-selected tenant context.
+- Support tenant/jurisdiction configuration for name, slug, domain/subdomain, branding, locale, categories, promise statuses, voting windows, moderation thresholds, and safe feature flags.
+- Resolve tenant context from hostnames such as `tamilnadu.track-promises.com`, local hostnames such as `tamilnadu.track-promises.localhost`, or path-based fallbacks when local wildcard DNS is inconvenient.
 - Keep global platform defaults with per-tenant overrides.
+- Keep tenant data in shared platform tables for MVP, with strict `tenant_id` scoping in repositories, services, and tests.
 - Ensure tenant isolation in queries so records for one jurisdiction are not accidentally shown or modified under another tenant.
 
 ### Aggregates And History
@@ -101,7 +104,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Admin/Editor Tools
 
-- Create, update, and archive promise records.
+- Create, update, and archive promise records, with creation limited to admins and editors in MVP.
 - Manage source links and verification status.
 - Manage promise status and status history.
 - View audit logs for sensitive actions.
@@ -137,15 +140,19 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 - Admins can add and update promises without engineering support.
 - Search and filters remain responsive as record counts grow.
 
-## 10. Open Product Decisions
+## 10. Resolved MVP Decisions
 
-- Should voting represent public sentiment about fulfillment, trustworthiness, priority, or agreement?
-- Should users be able to remove a vote entirely, or only switch between up/down?
-- Should freeze dates be configured per election, promise, jurisdiction, or all of the above?
-- What are the exact promise statuses for MVP?
-- Who can create promises: only admins/editors, or trusted community contributors later?
-- How should disputed fulfillment claims be reviewed?
-- What trust score or reputation rules should grant voting, moderation, or review privileges?
-- What signals are acceptable for real-user verification without storing sensitive government identity records?
-- Should each government/jurisdiction tenant have fully separate data boundaries or shared platform tables with strict tenant scoping?
-- What is the final production domain pattern for tenant subdomains?
+- Vote meaning: upvotes and downvotes represent public sentiment about whether a promise is on track for fulfillment.
+- Vote lifecycle: users can switch between upvote and downvote while voting is open, but they cannot remove a vote to neutral in MVP.
+- Voting-window scope: resolve the effective window by specificity using promise, election/campaign, tenant/jurisdiction, then platform defaults.
+- MVP promise statuses: `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
+- Promise creation: only admins and editors can create promises in MVP.
+- Tenant model: use shared platform tables with strict row-based tenant scoping for MVP.
+- Production tenant host pattern: `tenantSlug.track-promises.com`, with `tenantSlug.track-promises.localhost` for local development.
+- Verification model: verified email is the minimum requirement for voting; trust score and review flags adjust account state rather than replacing account-state checks.
+
+## 11. Deferred Questions Beyond This Phase
+
+- When trusted community contributors should be allowed to submit promises or sources.
+- How disputed fulfillment claims should escalate beyond the initial moderator and editor workflow.
+- Whether large tenants should eventually move from shared row-based tenancy to separate databases or schemas.
