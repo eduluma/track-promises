@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+coverage
+.DS_Store
+.env.local
+.env
+.llm/*
+!.llm/.gitkeep
+!.llm/README.md

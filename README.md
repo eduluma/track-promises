@@ -31,3 +31,35 @@ Track Promises will provide:
 Start with a focused MVP: promise records, source links, authentication, voting, voting-window rules, aggregate counts, and admin promise management. Use Next.js, TypeScript, PostgreSQL, Drizzle, Auth.js, Docker Compose for local development, and a cache-ready design that can add Redis when traffic or rate limiting needs justify it.
 
 The implementation should be deployable to Kubernetes with Helm. Add snapshots, richer audit tools, search, moderation, tenant-specific subdomains, and scaling layers in phases.
+
+## Current Scaffold
+
+The repository now includes a runnable initial slice with:
+
+- Next.js App Router and Tailwind foundation;
+- tenant-aware promise list and detail pages;
+- config resolution with platform defaults plus tenant overrides;
+- local in-memory voting flow with freeze-window enforcement and immutable vote events;
+- focused unit tests for config resolution, voting rules, and tenant host parsing;
+- Docker Compose for PostgreSQL and optional Redis;
+- a starter Helm chart for Kubernetes deployment.
+
+## Local Development
+
+1. Install dependencies with `npm install`.
+2. Start local dependencies with `docker compose up -d`.
+3. Run the app with `npm run dev`.
+4. Run tests with `npm test` and lint with `npm run lint`.
+
+Path-based tenant routes work immediately, for example `http://localhost:3000/tamilnadu`.
+Host-based tenant routing also works through middleware when using a host such as `http://tamilnadu.localhost:3000`.
+
+## Repo-Local LLM Notes
+
+The built-in Copilot memory store used by this workspace lives outside the repository and is not relocated by editing project files.
+
+For repository-specific scratch notes, prompts, or exported memory snapshots, use `.llm/` at the repo root:
+
+- `.llm/README.md` documents the convention.
+- Everything else under `.llm/` is gitignored.
+- A practical pattern is to copy durable notes from the external memory store into `.llm/memories/` when you want local, repo-bound context without committing it.
