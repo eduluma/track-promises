@@ -90,6 +90,7 @@ The exact structure can change to match framework conventions, but keep the shar
 Config should cover:
 
 - tenant name, slug, branding, locale, and domain/subdomain;
+- election timelines and alliance definitions for each tenant;
 - promise categories and statuses;
 - voting windows and freeze rules;
 - feature flags;
@@ -154,6 +155,14 @@ Future StackOverflow-style trust signals can include account age, consistent act
 11. Add tests for config resolution, tenant scoping, voting rules, and freeze behavior.
 12. Add initial Helm chart skeleton.
 
+## Alliance-Aware Data Guidance
+
+- Model election timelines such as Tamil Nadu 2026 as a container that can hold multiple alliances.
+- Link each promise to tenant, state or jurisdiction, election timeline, and alliance metadata.
+- Prefer a first-class `alliance` concept over encoding alliance names only inside a generic `personParty` string.
+- Keep sample and seed data rich enough to show at least two alliances in the same state-year election with multiple promises each.
+- Preserve room for candidate-level promises later, but treat alliance-level grouping as the minimum campaign structure for multi-alliance elections.
+
 ## Recommended Next Architecture Sequence
 
 1. Scaffold `apps/api` with Fastify, Zod-backed validation, and OpenAPI generation.
@@ -166,6 +175,7 @@ Future StackOverflow-style trust signals can include account age, consistent act
 ## Guardrails For The Implementer
 
 - Do not hard-code Tamil Nadu or any single government into business logic; it should be seed/config data.
+- Do not assume one alliance per election timeline; a single state-year election can contain several alliances with separate promises.
 - Do not duplicate tenant filtering logic in every route; centralize it in repository helpers or middleware.
 - Do not place long-running work in the synchronous voting request path.
 - Do not store government identity documents in MVP.

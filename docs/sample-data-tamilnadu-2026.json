@@ -1,0 +1,107 @@
+{
+    "tenant": {
+        "slug": "tamilnadu",
+        "name": "Tamil Nadu",
+        "jurisdiction": "Tamil Nadu",
+        "country": "India"
+    },
+    "timeline": {
+        "slug": "2026",
+        "year": 2026,
+        "election": "Tamil Nadu Assembly Election 2026"
+    },
+    "alliances": [
+        {
+            "id": "tn-2026-progress-alliance",
+            "slug": "progress-alliance",
+            "name": "Progress Alliance",
+            "memberParties": [ "Example Reform Party", "Green Tamil Movement" ],
+            "promises": [
+                {
+                    "id": "promise-urban-buses",
+                    "title": "Add 2,000 electric buses across major Tamil Nadu cities",
+                    "description": "Procure and deploy electric buses in Chennai, Coimbatore, Madurai, and Tiruchirappalli with route-by-route delivery targets.",
+                    "category": "Transport",
+                    "state": "Tamil Nadu",
+                    "year": 2026,
+                    "election": "Tamil Nadu Assembly Election 2026",
+                    "alliance": "Progress Alliance",
+                    "personParty": "Example Reform Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "Progress Alliance Manifesto",
+                            "url": "https://example.org/tamilnadu-2026/progress-alliance/transport",
+                            "excerpt": "We will add 2,000 electric buses across major Tamil Nadu cities in the first two years."
+                        }
+                    ]
+                },
+                {
+                    "id": "promise-climate-jobs",
+                    "title": "Launch a coastal climate jobs mission",
+                    "description": "Create district-level public works and resilience jobs focused on coastal protection, mangrove restoration, and flood mitigation.",
+                    "category": "Jobs",
+                    "state": "Tamil Nadu",
+                    "year": 2026,
+                    "election": "Tamil Nadu Assembly Election 2026",
+                    "alliance": "Progress Alliance",
+                    "personParty": "Green Tamil Movement",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "Progress Alliance Jobs Charter",
+                            "url": "https://example.org/tamilnadu-2026/progress-alliance/jobs",
+                            "excerpt": "A coastal climate jobs mission will employ local youth in resilience and restoration projects."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "tn-2026-people-first-front",
+            "slug": "people-first-front",
+            "name": "People First Front",
+            "memberParties": [ "People First Party", "Justice Congress" ],
+            "promises": [
+                {
+                    "id": "promise-ration-digitization",
+                    "title": "Digitize ration delivery audits statewide",
+                    "description": "Publish taluk-level dashboards for ration stock, delivery dates, and grievance resolution across the public distribution system.",
+                    "category": "Welfare",
+                    "state": "Tamil Nadu",
+                    "year": 2026,
+                    "election": "Tamil Nadu Assembly Election 2026",
+                    "alliance": "People First Front",
+                    "personParty": "People First Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "People First Front Manifesto",
+                            "url": "https://example.org/tamilnadu-2026/people-first-front/welfare",
+                            "excerpt": "A statewide ration audit dashboard will be open to the public and updated monthly."
+                        }
+                    ]
+                },
+                {
+                    "id": "promise-rural-clinics",
+                    "title": "Upgrade 500 rural clinics with round-the-clock staffing",
+                    "description": "Upgrade primary health centres with staffing guarantees, diagnostics, and medicine availability disclosures.",
+                    "category": "Health",
+                    "state": "Tamil Nadu",
+                    "year": 2026,
+                    "election": "Tamil Nadu Assembly Election 2026",
+                    "alliance": "People First Front",
+                    "personParty": "Justice Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "People First Front Health Pledge",
+                            "url": "https://example.org/tamilnadu-2026/people-first-front/health",
+                            "excerpt": "We will upgrade 500 rural clinics with staffing and medicine disclosure standards."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

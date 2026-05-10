@@ -2,7 +2,7 @@
 
 ## 1. Product Summary
 
-Track Promises is a public accountability platform for political promises. It helps people browse promises made by candidates or elected officials, inspect the sources behind those promises, vote on public sentiment, and track fulfillment over time.
+Track Promises is a public accountability platform for political promises. It helps people browse promises made by candidates, alliances, parties, or elected officials, inspect the sources behind those promises, vote on public sentiment, and track fulfillment over time.
 
 The first product should be simple, trustworthy, and scalable: a searchable promise database, authenticated up/down voting, transparent source records, and historical vote/status tracking.
 
@@ -44,7 +44,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ## 6. Core User Stories
 
-- As a visitor, I can browse promises by election, jurisdiction, category, status, and person/party.
+- As a visitor, I can browse promises by state or jurisdiction, election year or timeline, alliance, category, status, and person/party.
 - As a visitor, I can open a promise detail page and see the claim, source links, current status, vote totals, and update history.
 - As a registered user, I can upvote or downvote a promise once.
 - As a registered user, I can change my vote while the voting window is open.
@@ -62,7 +62,8 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Promise Records
 
-- Store title, description, category, jurisdiction, election/campaign, person/party, status, and timestamps.
+- Store title, description, category, state or jurisdiction, election/campaign, election year or timeline, alliance, person/party, status, and timestamps.
+- Link each promise to a single tenant, state or jurisdiction, election timeline, and alliance so the same state-year election can hold multiple alliances with separate manifestos and promise sets.
 - Attach one or more source records with URL, publisher, quote/excerpt, captured date, and verification metadata.
 - Maintain status history when a promise changes state.
 
@@ -113,9 +114,16 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Discovery
 
-- Browse and filter by jurisdiction, election, category, status, person/party, and source.
+- Browse and filter by state or jurisdiction, election year or timeline, alliance, category, status, person/party, and source.
 - Search promise titles and descriptions.
 - Sort by recent activity, highest score, most disputed, and newest.
+
+### Alliance-Aware Election Modeling
+
+- A single state-year election timeline such as Tamil Nadu 2026 may contain multiple alliances.
+- Each alliance may publish many promises, and each promise should belong to exactly one alliance within that timeline.
+- Alliance membership should remain editable because parties may regroup between elections.
+- Promise pages and admin workflows should surface the alliance alongside the state and election year so users can immediately understand campaign context.
 
 ## 8. Non-Functional Requirements
 

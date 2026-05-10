@@ -88,7 +88,13 @@ Key fields: id, tenant id, config key, config value, schema version, updated by,
 
 Represents a public promise being tracked.
 
-Key fields: id, tenant id, title, description, category, jurisdiction, election/campaign, person/party, status, created/updated timestamps.
+Key fields: id, tenant id, timeline slug or election year, title, description, category, jurisdiction, election/campaign, alliance id or alliance name, person/party, status, created/updated timestamps.
+
+### Alliance
+
+Represents a campaign grouping within a tenant and election timeline.
+
+Key fields: id, tenant id, timeline slug or election year, name, slug, jurisdiction, election label, alliance type, member parties, created/updated timestamps.
 
 ### PromiseSource
 
@@ -177,6 +183,7 @@ Code or environment-only config should include:
 Suggested early module boundaries:
 
 - `tenants`: hostname resolution, tenant config, branding, feature flags.
+- `alliances`: alliance records, timeline membership, display labels, and alliance-aware filters.
 - `promises`: promise records, status, browse/search queries.
 - `sources`: source links, quotes, verification metadata.
 - `voting`: current votes, vote events, aggregate counts, voting windows.
@@ -230,9 +237,10 @@ Suggested service boundaries after the split:
 - `votes`: `(promise_id, updated_at)`.
 - `vote_events`: `(promise_id, created_at)`.
 - `vote_snapshots`: `(promise_id, snapshot_at)`.
-- `promises`: `(tenant_id, jurisdiction, election_id)` or equivalent campaign scope.
+- `promises`: `(tenant_id, jurisdiction, timeline_slug, alliance_id)` or equivalent campaign scope.
 - `promises`: `(tenant_id, category, status)`.
 - `promises`: full-text index on title and description.
+- `alliances`: unique `(tenant_id, timeline_slug, slug)`.
 - `tenant_configs`: unique `(tenant_id, config_key)`.
 - `moderation_reviews`: `(tenant_id, status, created_at)`.
 
