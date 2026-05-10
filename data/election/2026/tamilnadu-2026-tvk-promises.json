@@ -10,6 +10,53 @@
         "year": 2026,
         "election": "Tamil Nadu Assembly Election 2026"
     },
+    "recentElectionOverview": {
+        "election": "Tamil Nadu Legislative Assembly election 2021",
+        "year": 2021,
+        "summary": "The DMK-led Secular Progressive Alliance ended a decade of AIADMK rule and won 159 of 234 seats, returning M. K. Stalin to power as chief minister.",
+        "officeTitle": "Chief Minister",
+        "officeHolder": "M. K. Stalin",
+        "officeHolderParty": "DMK",
+        "totalVotesCast": 46344590,
+        "turnoutPercent": 73.63,
+        "registeredVoters": 62943693,
+        "resultBreakdown": [
+            {
+                "label": "Secular Progressive Alliance",
+                "alliance": "Secular Progressive Alliance",
+                "party": "DMK-led front",
+                "votes": 20982088,
+                "voteSharePercent": 45.38,
+                "seats": 159,
+                "isWinner": true
+            },
+            {
+                "label": "National Democratic Alliance",
+                "alliance": "National Democratic Alliance",
+                "party": "AIADMK-led front",
+                "votes": 18363499,
+                "voteSharePercent": 39.71,
+                "seats": 75
+            },
+            {
+                "label": "Non-alliance parties",
+                "party": "NTK, MNM, AMMK and others",
+                "votes": 6919189,
+                "voteSharePercent": 14.9,
+                "seats": 0
+            }
+        ],
+        "sources": [
+            {
+                "label": "Wikipedia summary and alliance result table",
+                "url": "https://en.wikipedia.org/wiki/2021_Tamil_Nadu_Legislative_Assembly_election"
+            },
+            {
+                "label": "Election Commission detailed results PDF",
+                "url": "https://archive.org/download/httpseci.gov.infilesfile13680-tamil-nadu-general-legislative-election-2021/10-%20Detailed%20Results.pdf"
+            }
+        ]
+    },
     "alliances": [
         {
             "id": "tn-2026-tvk",

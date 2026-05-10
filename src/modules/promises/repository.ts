@@ -1,4 +1,4 @@
-import { promiseRecords, type PromiseSource } from "@/modules/promises/data";
+import { getRecentElectionOverview, promiseRecords, type PromiseSource } from "@/modules/promises/data";
 import { getPromiseVoteSummary } from "@/modules/voting/service";
 import type { PromiseStatus } from "@/config/schemas";
 import { appendAuditLog } from "@/modules/audit/logs";
@@ -48,6 +48,10 @@ export function getPromiseById(tenantId: string, promiseId: string, timelineSlug
         (timelineSlug ? promise.timelineSlug === timelineSlug : true)
     ) ?? null
   );
+}
+
+export function getRecentElectionOverviewForTimeline(tenantId: string, timelineSlug: string) {
+  return getRecentElectionOverview(tenantId, timelineSlug);
 }
 
 export function createPromise(input: CreatePromiseInput) {

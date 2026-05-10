@@ -6,7 +6,7 @@ import { TableFilter } from "@/components/ui/table-filter";
 import { resolveTenantConfig } from "@/config/resolve-config";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getOpenModerationReviewsForTenant } from "@/modules/moderation/reviews";
-import { listPromisesForTenant } from "@/modules/promises/repository";
+import { getRecentElectionOverviewForTimeline, listPromisesForTenant } from "@/modules/promises/repository";
 import { getTenantBySlug } from "@/modules/tenants/data";
 import { loadTimelineContent } from "@/modules/timelines/content";
 import { getTimelineBySlug } from "@/modules/timelines/data";
@@ -40,6 +40,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
         status: status && config.statuses.includes(status as (typeof config.statuses)[number]) ? (status as (typeof config.statuses)[number]) : null
     });
     const reviews = getOpenModerationReviewsForTenant(tenant.id);
+    const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
     const sharedSearchParams = {
         category,
         status
@@ -48,7 +49,14 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
 
     return (
         <main className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8 sm:px-10">
-            <TimelineHero tenant={tenant} timeline={timeline} config={config} promiseCount={promises.length} reviewCount={reviews.length} />
+            <TimelineHero
+                tenant={tenant}
+                timeline={timeline}
+                config={config}
+                promiseCount={promises.length}
+                reviewCount={reviews.length}
+                recentElectionOverview={recentElectionOverview}
+            />
             {overviewContent ? (
                 <section className="mt-8 rounded-[1.75rem] border border-white/80 bg-white/75 p-6 shadow-card">
                     <div className="flex flex-wrap items-center justify-between gap-3">

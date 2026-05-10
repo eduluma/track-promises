@@ -269,6 +269,8 @@ export const resolveModerationRouteSchema = {
 } as const;
 
 export function registerApiDocumentation(app: FastifyInstance) {
+    const serverUrl = process.env.TRACK_PROMISES_API_BASE_URL ?? `http://localhost:${process.env.API_PORT ?? "4300"}`;
+
     app.register(swagger, {
         openapi: {
             openapi: "3.0.3",
@@ -277,7 +279,7 @@ export function registerApiDocumentation(app: FastifyInstance) {
                 version: "0.1.0",
                 description: "Write-path API service for voting, promise administration, and moderation workflows."
             },
-            servers: [{ url: "http://localhost:4000", description: "Local development" }],
+            servers: [{ url: serverUrl, description: "Local development" }],
             tags: [
                 { name: "system", description: "Operational endpoints" },
                 { name: "votes", description: "Vote submission endpoints" },

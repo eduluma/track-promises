@@ -26,7 +26,9 @@ function normalizeBaseUrl(baseUrl: string) {
 }
 
 async function postJson<TPayload>(path: string, body: unknown, user: ApiUserContext): Promise<ApiHandlerResult<TPayload>> {
-    const baseUrl = normalizeBaseUrl(process.env.TRACK_PROMISES_API_BASE_URL ?? "http://localhost:4000");
+    const baseUrl = normalizeBaseUrl(
+        process.env.TRACK_PROMISES_API_BASE_URL ?? `http://localhost:${process.env.API_PORT ?? "4300"}`
+    );
     const response = await fetch(`${baseUrl}${path}`, {
         method: "POST",
         headers: {

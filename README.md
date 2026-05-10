@@ -71,10 +71,10 @@ The current runnable stack is in a transition phase: a dedicated `api` service e
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env`; the task commands source that file before running Docker Compose.
 3. Start the app stack with `task up` so local database migrations are applied before the app services come up.
-4. Open `http://localhost:43000` to see the app.
-5. The Compose stack publishes the web app on `localhost:43000`, the API service on `localhost:44000`, and PostgreSQL on `localhost:5440`; PostgreSQL and Redis still stay on the internal Docker network for app-to-app traffic. Override `APP_PORT`, `API_PORT`, or `DB_PORT` in `.env` if those ports are occupied on your machine.
-6. Check the API service with `http://localhost:44000/health`.
-7. Browse generated API docs at `http://localhost:44000/docs` and regenerate the checked-in spec with `npm run api:openapi`.
+4. Open `http://localhost:3300` to see the app.
+5. The Compose stack publishes the web app on `localhost:3300`, the API service on `localhost:4300`, and PostgreSQL on `localhost:5440`; PostgreSQL and Redis still stay on the internal Docker network for app-to-app traffic. Override `APP_PORT`, `API_PORT`, or `DB_PORT` in `.env` if those ports are occupied on your machine, then keep using those same values for local commands.
+6. Check the API service with `http://localhost:4300/health`.
+7. Browse generated API docs at `http://localhost:4300/docs` and regenerate the checked-in spec with `npm run api:openapi`.
 8. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
 9. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
 10. Run the API service directly outside Compose with `npm run api:dev`.
@@ -89,8 +89,8 @@ Demo accounts for local sign-in:
 - `admin@track-promises.local` / `admin-password`
 - `limited@track-promises.local` / `limited-password`
 
-Path-based tenant routes work immediately, for example `http://localhost:43000/tamilnadu/2026`.
-Host-based tenant routing also works through middleware when using a host such as `http://tamilnadu.localhost:43000`.
+Path-based tenant routes work immediately, for example `http://localhost:3300/tamilnadu/2026`.
+Host-based tenant routing also works through middleware when using a host such as `http://tamilnadu.localhost:3300`.
 
 ## Repo-Local LLM Notes
 

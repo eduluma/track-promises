@@ -19,6 +19,35 @@ export type PromiseStatusHistoryEntry = {
   changedAt: string;
 };
 
+export type RecentElectionOverviewSource = {
+  label: string;
+  url: string;
+};
+
+export type RecentElectionOverviewResult = {
+  label: string;
+  alliance?: string;
+  party?: string;
+  votes: number;
+  voteSharePercent: number;
+  seats?: number;
+  isWinner?: boolean;
+};
+
+export type RecentElectionOverview = {
+  election: string;
+  year: number;
+  summary: string;
+  officeTitle: string;
+  officeHolder: string;
+  officeHolderParty: string;
+  totalVotesCast: number;
+  turnoutPercent: number;
+  registeredVoters: number;
+  resultBreakdown: RecentElectionOverviewResult[];
+  sources: RecentElectionOverviewSource[];
+};
+
 export type PromiseRecord = {
   id: string;
   tenantId: string;
@@ -51,6 +80,7 @@ type PromiseDatasetDocument = {
     year: number;
     election: string;
   };
+  recentElectionOverview?: RecentElectionOverview;
   alliances: Array<{
     id: string;
     slug: string;
@@ -71,12 +101,18 @@ type PromiseDatasetDocument = {
   }>;
 };
 
+const promiseDatasetDirectory = path.join(process.cwd(), "data", "election", "2026");
+
 function getTenantIdFromSlug(slug: string) {
   return slug === "india" ? "tenant-india-2029" : `tenant-${slug}`;
 }
 
+function getOverviewKey(tenantId: string, timelineSlug: string) {
+  return `${tenantId}::${timelineSlug}`;
+}
+
 function readPromiseDataset(fileName: string): PromiseDatasetDocument {
-  const filePath = path.join(process.cwd(), "docs", fileName);
+  const filePath = path.join(promiseDatasetDirectory, fileName);
 
   return JSON.parse(readFileSync(filePath, "utf8")) as PromiseDatasetDocument;
 }
@@ -122,10 +158,28 @@ function toImportedPromiseRecords(dataset: PromiseDatasetDocument): PromiseRecor
   );
 }
 
-const importedPromiseRecords = [
-  ...toImportedPromiseRecords(readPromiseDataset("kerala-2026-front-promises.json")),
-  ...toImportedPromiseRecords(readPromiseDataset("tamilnadu-2026-tvk-promises.json"))
+const importedPromiseDatasets = [
+  readPromiseDataset("kerala-2026-front-promises.json"),
+  readPromiseDataset("tamilnadu-2026-tvk-promises.json")
 ];
+
+const importedPromiseRecords = importedPromiseDatasets.flatMap((dataset) => toImportedPromiseRecords(dataset));
+
+const recentElectionOverviewRecords = new Map(
+  importedPromiseDatasets.flatMap((dataset) => {
+    const overview = dataset.recentElectionOverview;
+
+    if (!overview) {
+      return [];
+    }
+
+    return [[getOverviewKey(getTenantIdFromSlug(dataset.tenant.slug), dataset.timeline.slug), overview] as const];
+  })
+);
+
+export function getRecentElectionOverview(tenantId: string, timelineSlug: string) {
+  return recentElectionOverviewRecords.get(getOverviewKey(tenantId, timelineSlug)) ?? null;
+}
 
 export const promiseRecords: PromiseRecord[] = [
   ...importedPromiseRecords,

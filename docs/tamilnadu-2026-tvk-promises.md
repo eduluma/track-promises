@@ -12,6 +12,16 @@ For this example, the tracking context would be:
 - Source type: manifesto or public campaign promise document
 - Tracking unit: one promise per record
 
+## Recent Election Snapshot
+
+- Most recent completed assembly election: `Tamil Nadu Legislative Assembly election 2021`
+- Chief Minister returned to office: `M. K. Stalin` (`DMK`)
+- Votes cast: `46,344,590`
+- Turnout: `73.63%`
+- Registered voters: `62,943,693`
+- Winning front: `Secular Progressive Alliance` with `20,982,088` votes, `45.38%` vote share, and `159` seats
+- Main opposition front: `National Democratic Alliance` with `18,363,499` votes, `39.71%` vote share, and `75` seats
+
 ## Why This Matters
 
 This is the real shape of the problem the product is solving.

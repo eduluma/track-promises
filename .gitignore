@@ -10,3 +10,4 @@ coverage
 !.llm/README.md
 
 local/
+to_delete/

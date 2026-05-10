@@ -17,7 +17,7 @@ const timelineRecords: Timeline[] = [
         title: "Tamil Nadu 2026",
         summary: "Track the 2026 state cycle, office context, and every promise record under a stable jurisdiction and timeline URL.",
         officeTitle: "Chief Minister",
-        officeHolder: "Demo profile placeholder",
+        officeHolder: "M. K. Stalin",
         default: true
     },
     {
@@ -27,7 +27,7 @@ const timelineRecords: Timeline[] = [
         title: "India 2029",
         summary: "Track the 2029 national cycle with separate public context and promise records under a country and timeline path.",
         officeTitle: "Prime Minister",
-        officeHolder: "Demo profile placeholder",
+        officeHolder: "Pending 2029 result",
         default: true
     },
     {
@@ -37,7 +37,7 @@ const timelineRecords: Timeline[] = [
         title: "Kerala 2026",
         summary: "Track the 2026 Kerala assembly cycle across multiple competing fronts under one state timeline.",
         officeTitle: "Chief Minister",
-        officeHolder: "Demo profile placeholder",
+        officeHolder: "Pinarayi Vijayan",
         default: true
     }
 ];

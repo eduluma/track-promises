@@ -7,11 +7,17 @@ import { importPromisesFromJson, parsePromiseDataset } from "@/modules/promises/
 
 describe("promise json import", () => {
     it("parses the Tamil Nadu dataset into import rows", () => {
-        const jsonText = readFileSync(resolve(process.cwd(), "docs/tamilnadu-2026-tvk-promises.json"), "utf8");
+        const jsonText = readFileSync(resolve(process.cwd(), "data/election/2026/tamilnadu-2026-tvk-promises.json"), "utf8");
         const dataset = parsePromiseDataset(jsonText);
 
         expect(dataset.tenant.slug).toBe("tamilnadu");
         expect(dataset.timeline.slug).toBe("2026");
+        expect(dataset.recentElectionOverview).toEqual(
+            expect.objectContaining({
+                officeHolder: "M. K. Stalin",
+                officeHolderParty: "DMK"
+            })
+        );
         expect(dataset.rows).toHaveLength(38);
         expect(dataset.alliances).toEqual([
             expect.objectContaining({ slug: "tvk", promiseCount: 38 })

@@ -13,12 +13,12 @@ This index collects the current working notes for 2026 state and union territory
 
 ## Import-Ready JSON
 
-- `tamilnadu-2026-tvk-promises.json`
+- `../data/election/2026/tamilnadu-2026-tvk-promises.json`
   - structured from the official TVK manifesto chapter pages on `vijay.com`
-  - ready to map into the existing sample import shape of tenant, timeline, alliance, and promises
-- `kerala-2026-front-promises.json`
+  - includes a recent-election snapshot for the 2021 assembly result so the public timeline can show mandate context above the 2026 promises
+- `../data/election/2026/kerala-2026-front-promises.json`
   - structured from the Kerala front promise notes and linked source coverage
-  - ready to map one tenant timeline to multiple competing fronts
+  - includes a recent-election snapshot for the 2021 assembly result so the public timeline can show mandate context above the 2026 promises
 
 ## Election-Structure Notes
 
@@ -35,5 +35,6 @@ This index collects the current working notes for 2026 state and union territory
 ## Recommended Next Steps
 
 1. Add these Tamil Nadu and Kerala JSON files to seed, fixture, or admin import workflows.
-2. Collect full manifesto texts for West Bengal, Assam, and Puducherry where only election-page structure is available today.
-3. Add these tenants and timelines into seed or fixture data once the import shape is settled.
+2. Collect structured recent-election snapshots for West Bengal, Assam, and Puducherry so their future timelines can render the same mandate overview.
+3. Collect full manifesto texts for West Bengal, Assam, and Puducherry where only election-page structure is available today.
+4. Add these tenants and timelines into seed or fixture data once the import shape is settled.

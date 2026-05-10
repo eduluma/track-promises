@@ -41,23 +41,30 @@ function loadEnvFile(filePath) {
 
 loadEnvFile(path.join(process.cwd(), ".env"));
 
-const command = process.argv[2] ?? "dev";
-const nextArguments = process.argv.slice(3);
-const hasExplicitPort = nextArguments.some((argument, index) => {
-    if (argument === "--port" || argument === "-p") {
-        return true;
-    }
+const mode = process.argv[2] ?? "dev";
 
-    return argument.startsWith("--port=") || argument.startsWith("-p=") || argument.startsWith("-p") && index > 0;
-});
-const port = process.env.APP_PORT ?? "3000";
-const nextBin = path.join(process.cwd(), "node_modules", "next", "dist", "bin", "next");
+if (process.env.PORT === undefined && process.env.API_PORT) {
+    process.env.PORT = process.env.API_PORT;
+}
 
-const portArguments = hasExplicitPort ? [] : ["--port", port];
+const command =
+    mode === "dev"
+        ? ["tsx", "watch", "apps/api/src/server.ts"]
+        : mode === "start"
+            ? ["tsx", "apps/api/src/server.ts"]
+            : mode === "openapi"
+                ? ["tsx", "apps/api/src/write-openapi.ts"]
+                : null;
 
-const child = spawn(process.execPath, [nextBin, command, ...portArguments, ...nextArguments], {
+if (!command) {
+    console.error(`Unknown api mode: ${mode}`);
+    process.exit(1);
+}
+
+const child = spawn("npx", command, {
     stdio: "inherit",
-    env: process.env
+    env: process.env,
+    shell: process.platform === "win32"
 });
 
 child.on("error", (error) => {

@@ -10,6 +10,17 @@ For this election, the tracking context is:
 - Source type: manifesto, campaign comparison article, and election page
 - Tracking unit: one promise per record
 
+## Recent Election Snapshot
+
+- Most recent completed assembly election: `Kerala Legislative Assembly election 2021`
+- Chief Minister returned to office: `Pinarayi Vijayan` (`CPI(M)`)
+- Votes cast: `20,903,233`
+- Turnout: `76.00%`
+- Registered voters: `27,503,768`
+- Winning front: `Left Democratic Front` with `10,555,616` votes, `45.43%` vote share, and `99` seats
+- Main opposition front: `United Democratic Front` with `8,196,813` votes, `39.47%` vote share, and `41` seats
+- Third bloc: `National Democratic Alliance` with `2,582,289` votes, `12.41%` vote share, and `0` seats
+
 ## Why This Matters
 
 Kerala is a clear example of why the product has to support multiple fronts within one election timeline.

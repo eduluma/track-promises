@@ -12,6 +12,35 @@ const promiseSourceInputSchema = z.object({
     verificationStatus: z.enum(["verified", "pending"]).optional()
 });
 
+const recentElectionSourceSchema = z.object({
+    label: z.string().min(1),
+    url: z.string().url()
+});
+
+const recentElectionResultSchema = z.object({
+    label: z.string().min(1),
+    alliance: z.string().min(1).optional(),
+    party: z.string().min(1).optional(),
+    votes: z.number().int().nonnegative(),
+    voteSharePercent: z.number().nonnegative(),
+    seats: z.number().int().nonnegative().optional(),
+    isWinner: z.boolean().optional()
+});
+
+const recentElectionOverviewSchema = z.object({
+    election: z.string().min(1),
+    year: z.number().int(),
+    summary: z.string().min(1),
+    officeTitle: z.string().min(1),
+    officeHolder: z.string().min(1),
+    officeHolderParty: z.string().min(1),
+    totalVotesCast: z.number().int().nonnegative(),
+    turnoutPercent: z.number().nonnegative(),
+    registeredVoters: z.number().int().nonnegative(),
+    resultBreakdown: z.array(recentElectionResultSchema).min(1),
+    sources: z.array(recentElectionSourceSchema).min(1)
+});
+
 const datasetPromiseSchema = z
     .object({
         id: z.string().min(1).optional(),
@@ -43,6 +72,7 @@ const promiseDatasetSchema = z.object({
         year: z.number().int(),
         election: z.string().min(1)
     }),
+    recentElectionOverview: recentElectionOverviewSchema.optional(),
     alliances: z.array(
         z.object({
             id: z.string().min(1),
@@ -68,6 +98,8 @@ type JsonPromiseRow = {
     sources: JsonPromiseSource[];
 };
 
+type JsonRecentElectionOverview = z.infer<typeof recentElectionOverviewSchema>;
+
 export function parsePromiseDataset(jsonText: string) {
     const dataset = promiseDatasetSchema.parse(JSON.parse(jsonText));
     const rows: JsonPromiseRow[] = dataset.alliances.flatMap((alliance) =>
@@ -86,6 +118,7 @@ export function parsePromiseDataset(jsonText: string) {
     return {
         tenant: dataset.tenant,
         timeline: dataset.timeline,
+        recentElectionOverview: (dataset.recentElectionOverview ?? null) as JsonRecentElectionOverview | null,
         alliances: dataset.alliances.map((alliance) => ({
             id: alliance.id,
             slug: alliance.slug,
@@ -118,4 +151,4 @@ export function importPromisesFromJson({
     );
 }
 
-export type { JsonPromiseRow, JsonPromiseSource };
+export type { JsonPromiseRow, JsonPromiseSource, JsonRecentElectionOverview };
