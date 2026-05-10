@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { promiseStatusSchema } from "@/config/schemas";
 import { createPromise } from "@/modules/promises/repository";
-import type { PromiseSource } from "@/modules/promises/data";
+import type { PromiseDeliveryPlan, PromiseSource } from "@/modules/promises/data";
 
 const promiseSourceInputSchema = z.object({
     publisher: z.string().min(1),
@@ -41,6 +41,23 @@ const recentElectionOverviewSchema = z.object({
     sources: z.array(recentElectionSourceSchema).min(1)
 });
 
+const deliveryCheckpointSchema = z.object({
+    label: z.string().min(1),
+    description: z.string().min(1).optional(),
+    dueAt: z.string().datetime().optional(),
+    completedAt: z.string().datetime().nullable().optional(),
+    status: z.enum(["planned", "in_progress", "met", "missed"])
+});
+
+const deliveryPlanSchema = z.object({
+    model: z.enum(["one_time", "milestone", "recurring"]),
+    summary: z.string().min(1),
+    cadenceLabel: z.string().min(1).optional(),
+    targetLabel: z.string().min(1).optional(),
+    currentPhaseLabel: z.string().min(1).optional(),
+    checkpoints: z.array(deliveryCheckpointSchema).default([])
+});
+
 const datasetPromiseSchema = z
     .object({
         id: z.string().min(1).optional(),
@@ -54,6 +71,7 @@ const datasetPromiseSchema = z
         alliance: z.string().min(1).optional(),
         personParty: z.string().min(1),
         status: promiseStatusSchema,
+        deliveryPlan: deliveryPlanSchema.optional(),
         sources: z.array(promiseSourceInputSchema).default([])
     })
     .refine((row) => Boolean(row.jurisdiction ?? row.state), {
@@ -95,6 +113,7 @@ type JsonPromiseRow = {
     election: string;
     personParty: string;
     status: z.infer<typeof promiseStatusSchema>;
+    deliveryPlan?: PromiseDeliveryPlan;
     sources: JsonPromiseSource[];
 };
 
@@ -111,6 +130,7 @@ export function parsePromiseDataset(jsonText: string) {
             election: promise.election,
             personParty: promise.personParty,
             status: promise.status,
+            deliveryPlan: promise.deliveryPlan,
             sources: promise.sources
         }))
     );

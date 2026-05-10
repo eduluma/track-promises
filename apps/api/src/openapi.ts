@@ -9,6 +9,7 @@ import {
     voteRequestSchema
 } from "@/modules/api/contracts";
 import { API_USER_CONTEXT_HEADER } from "@/modules/api/user-context";
+import { voteValueOrder } from "@/modules/voting/assessment";
 
 const userContextHeaderSchema = {
     type: "object",
@@ -42,14 +43,21 @@ const healthResponseSchema = {
 
 const voteSummarySchema = {
     type: "object",
-    required: ["upvotes", "downvotes", "score", "currentVote", "eventCount"],
+    required: ["counts", "completionPercent", "dominantVote", "currentVote", "totalVotes", "eventCount"],
     properties: {
-        upvotes: { type: "integer" },
-        downvotes: { type: "integer" },
-        score: { type: "integer" },
-        currentVote: {
-            anyOf: [{ type: "string", enum: ["up", "down"] }, { type: "null" }]
+        counts: {
+            type: "object",
+            required: [...voteValueOrder],
+            properties: Object.fromEntries(voteValueOrder.map((value) => [value, { type: "integer" }]))
         },
+        completionPercent: { type: "integer" },
+        dominantVote: {
+            anyOf: [{ type: "string", enum: [...voteValueOrder] }, { type: "null" }]
+        },
+        currentVote: {
+            anyOf: [{ type: "string", enum: [...voteValueOrder] }, { type: "null" }]
+        },
+        totalVotes: { type: "integer" },
         eventCount: { type: "integer" }
     },
     additionalProperties: false
@@ -63,9 +71,9 @@ const voteEventSchema = {
         promiseId: { type: "string" },
         userId: { type: "string" },
         previousValue: {
-            anyOf: [{ type: "string", enum: ["up", "down"] }, { type: "null" }]
+            anyOf: [{ type: "string", enum: [...voteValueOrder] }, { type: "null" }]
         },
-        newValue: { type: "string", enum: ["up", "down"] },
+        newValue: { type: "string", enum: [...voteValueOrder] },
         eventType: { type: "string", enum: ["created", "changed"] },
         createdAt: { type: "string", format: "date-time" }
     },

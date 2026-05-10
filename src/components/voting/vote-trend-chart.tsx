@@ -8,13 +8,12 @@ export function VoteTrendChart({ snapshots }: VoteTrendChartProps) {
     if (snapshots.length === 0) {
         return (
             <section className="rounded-[1.5rem] border border-ink/10 bg-sand/70 p-5">
-                <h2 className="text-lg font-semibold text-ink">Historical vote trend</h2>
-                <p className="mt-3 text-sm leading-6 text-ink/70">No snapshots have been captured yet. Run the snapshot worker to start charting historical sentiment.</p>
+                <h2 className="text-lg font-semibold text-ink">Historical delivery trend</h2>
+                <p className="mt-3 text-sm leading-6 text-ink/70">No snapshots have been captured yet. Run the snapshot worker to start charting crowd-estimated delivery progress.</p>
             </section>
         );
     }
 
-    const maxScore = Math.max(...snapshots.map((snapshot) => Math.max(snapshot.upvotes, snapshot.downvotes, Math.abs(snapshot.score))), 1);
     const chartWidth = 320;
     const chartHeight = 140;
     const stepX = snapshots.length === 1 ? 0 : chartWidth / (snapshots.length - 1);
@@ -22,7 +21,7 @@ export function VoteTrendChart({ snapshots }: VoteTrendChartProps) {
     const points = snapshots
         .map((snapshot, index) => {
             const x = index * stepX;
-            const y = chartHeight - ((snapshot.score + maxScore) / (maxScore * 2)) * chartHeight;
+            const y = chartHeight - (snapshot.completionPercent / 100) * chartHeight;
             return `${x},${Number(y.toFixed(2))}`;
         })
         .join(" ");
@@ -31,8 +30,8 @@ export function VoteTrendChart({ snapshots }: VoteTrendChartProps) {
         <section className="rounded-[1.5rem] border border-ink/10 bg-sand/70 p-5">
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-lg font-semibold text-ink">Historical vote trend</h2>
-                    <p className="mt-1 text-sm text-ink/65">Score snapshots captured by the Phase 2 worker pipeline.</p>
+                    <h2 className="text-lg font-semibold text-ink">Historical delivery trend</h2>
+                    <p className="mt-1 text-sm text-ink/65">Completion snapshots captured by the Phase 2 worker pipeline.</p>
                 </div>
                 <span className="rounded-full border border-ink/10 bg-white/70 px-3 py-1 text-xs uppercase tracking-[0.18em] text-moss">
                     {snapshots.length} snapshots
@@ -40,11 +39,13 @@ export function VoteTrendChart({ snapshots }: VoteTrendChartProps) {
             </div>
             <div className="mt-5 overflow-x-auto">
                 <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-40 min-w-[20rem] fill-none">
-                    <line x1="0" x2={chartWidth} y1={chartHeight / 2} y2={chartHeight / 2} className="stroke-ink/15" strokeWidth="1" />
+                    <line x1="0" x2={chartWidth} y1={chartHeight} y2={chartHeight} className="stroke-ink/15" strokeWidth="1" />
+                    <line x1="0" x2={chartWidth} y1="0" y2="0" className="stroke-ink/10" strokeWidth="1" />
+                    <line x1="0" x2={chartWidth} y1={chartHeight / 2} y2={chartHeight / 2} className="stroke-ink/10" strokeWidth="1" />
                     <polyline points={points} className="stroke-clay" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
                     {snapshots.map((snapshot, index) => {
                         const x = index * stepX;
-                        const y = chartHeight - ((snapshot.score + maxScore) / (maxScore * 2)) * chartHeight;
+                        const y = chartHeight - (snapshot.completionPercent / 100) * chartHeight;
                         return <circle key={snapshot.id} cx={x} cy={y} r="4" className="fill-moss" />;
                     })}
                 </svg>
@@ -53,9 +54,8 @@ export function VoteTrendChart({ snapshots }: VoteTrendChartProps) {
                 {snapshots.map((snapshot) => (
                     <div key={snapshot.id} className="rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/72">
                         <p className="font-medium text-ink">{new Date(snapshot.snapshotAt).toLocaleDateString()}</p>
-                        <p className="mt-2">Upvotes: {snapshot.upvotes}</p>
-                        <p>Downvotes: {snapshot.downvotes}</p>
-                        <p>Score: {snapshot.score}</p>
+                        <p className="mt-2">Completion: {snapshot.completionPercent}%</p>
+                        <p>Assessors: {snapshot.totalVotes}</p>
                     </div>
                 ))}
             </div>

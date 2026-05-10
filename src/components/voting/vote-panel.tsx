@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
-import type { VotingState } from "@/modules/voting/service";
+import { formatVoteValue, voteOptions, type VoteValue } from "@/modules/voting/assessment";
+import type { VoteSummary, VotingState } from "@/modules/voting/service";
 
 type VotePanelProps = {
   tenantSlug: string;
@@ -12,13 +13,7 @@ type VotePanelProps = {
   initialWindowState: VotingState;
   canVote: boolean;
   isAuthenticated: boolean;
-  initialSummary: {
-    upvotes: number;
-    downvotes: number;
-    score: number;
-    currentVote: "up" | "down" | null;
-    eventCount: number;
-  };
+  initialSummary: VoteSummary;
 };
 
 export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary, initialWindowState, canVote, isAuthenticated }: VotePanelProps) {
@@ -27,7 +22,7 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
   const [windowState, setWindowState] = useState(initialWindowState);
   const [isPending, startTransition] = useTransition();
 
-  const submitVote = (value: "up" | "down") => {
+  const submitVote = (value: VoteValue) => {
     startTransition(async () => {
       setErrorMessage(null);
       const response = await fetch("/api/votes", {
@@ -56,53 +51,64 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
 
   return (
     <aside className="rounded-[1.5rem] border border-ink/10 bg-sand/75 p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-moss">Voting</p>
-      <h2 className="mt-2 text-2xl font-semibold text-ink">Current sentiment</h2>
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-moss">Public assessment</p>
+      <h2 className="mt-2 text-2xl font-semibold text-ink">Current delivery stage</h2>
       <p className="mt-3 text-sm leading-6 text-ink/70">
         {isAuthenticated
           ? canVote
-            ? "Signed-in accounts can vote while the tenant voting window is open."
+            ? "Choose the stage that best reflects what has actually been delivered so far."
             : "This signed-in account is not eligible to vote until verification or moderation is complete."
-          : "Sign in with a seeded demo account to cast votes and test account-state enforcement."}
+          : "Sign in with a seeded demo account to submit a delivery-stage assessment."}
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3 text-center">
         <div className="rounded-2xl bg-white/70 p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Upvotes</p>
-          <p className="mt-2 text-2xl font-semibold text-ink">{summary.upvotes}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Completion</p>
+          <p className="mt-2 text-2xl font-semibold text-ink">{summary.completionPercent}%</p>
         </div>
         <div className="rounded-2xl bg-white/70 p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Downvotes</p>
-          <p className="mt-2 text-2xl font-semibold text-ink">{summary.downvotes}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Leading stage</p>
+          <p className="mt-2 text-lg font-semibold text-ink">{formatVoteValue(summary.dominantVote)}</p>
         </div>
         <div className="rounded-2xl bg-white/70 p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Score</p>
-          <p className="mt-2 text-2xl font-semibold text-ink">{summary.score}</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-ink/55">Assessors</p>
+          <p className="mt-2 text-2xl font-semibold text-ink">{summary.totalVotes}</p>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3">
-        <button
-          type="button"
-          onClick={() => submitVote("up")}
-          disabled={buttonsDisabled}
-          className="rounded-2xl bg-moss px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-moss/40"
-        >
-          Upvote {summary.currentVote === "up" ? "(current)" : ""}
-        </button>
-        <button
-          type="button"
-          onClick={() => submitVote("down")}
-          disabled={buttonsDisabled}
-          className="rounded-2xl bg-clay px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-clay/40"
-        >
-          Downvote {summary.currentVote === "down" ? "(current)" : ""}
-        </button>
+      <div className="mt-6 flex flex-wrap gap-3">
+        {voteOptions.map((option) => {
+          const isCurrent = summary.currentVote === option.value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => submitVote(option.value)}
+              disabled={buttonsDisabled}
+              className={`rounded-full border px-4 py-3 text-sm font-semibold transition ${isCurrent
+                  ? "border-moss bg-moss text-white"
+                  : "border-ink/10 bg-white/80 text-ink hover:border-moss/35"
+                } disabled:cursor-not-allowed disabled:opacity-50`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2 text-xs text-ink/65">
+        {voteOptions.map((option) => (
+          <span key={option.value} className="rounded-full bg-white/70 px-3 py-1">
+            {option.shortLabel} {summary.counts[option.value]}
+          </span>
+        ))}
       </div>
 
       <div className="mt-5 rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/70">
         <p>Window state: {windowState}</p>
-        <p className="mt-2">Immutable vote events captured: {summary.eventCount}</p>
+        <p className="mt-2">Your current assessment: {formatVoteValue(summary.currentVote)}</p>
+        <p className="mt-2">Immutable assessment events captured: {summary.eventCount}</p>
       </div>
 
       {!isAuthenticated ? (
@@ -110,7 +116,7 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
           href={`/login?redirectTo=/${tenantSlug}/${timelineSlug}/promises/${promiseId}`}
           className="mt-4 inline-flex rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/75 transition hover:border-moss/35 hover:text-ink"
         >
-          Sign in to vote
+          Sign in to assess
         </Link>
       ) : null}
 

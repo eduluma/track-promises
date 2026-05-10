@@ -1,4 +1,4 @@
-import { getRecentElectionOverview, promiseRecords, type PromiseSource } from "@/modules/promises/data";
+import { getRecentElectionOverview, promiseRecords, type PromiseDeliveryPlan, type PromiseSource } from "@/modules/promises/data";
 import { getPromiseVoteSummary } from "@/modules/voting/service";
 import type { PromiseStatus } from "@/config/schemas";
 import { appendAuditLog } from "@/modules/audit/logs";
@@ -20,6 +20,7 @@ type CreatePromiseInput = {
   election: string;
   personParty: string;
   status: PromiseStatus;
+  deliveryPlan?: PromiseDeliveryPlan;
   sources?: CreatePromiseSourceInput[];
   actorId: string;
 };
@@ -76,6 +77,7 @@ export function createPromise(input: CreatePromiseInput) {
     election: input.election,
     personParty: input.personParty,
     status: input.status,
+    deliveryPlan: input.deliveryPlan,
     createdAt: timestamp,
     updatedAt: timestamp,
     sources,

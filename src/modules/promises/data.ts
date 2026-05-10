@@ -19,6 +19,23 @@ export type PromiseStatusHistoryEntry = {
   changedAt: string;
 };
 
+export type PromiseDeliveryCheckpoint = {
+  label: string;
+  description?: string;
+  dueAt?: string;
+  completedAt?: string | null;
+  status: "planned" | "in_progress" | "met" | "missed";
+};
+
+export type PromiseDeliveryPlan = {
+  model: "one_time" | "milestone" | "recurring";
+  summary: string;
+  cadenceLabel?: string;
+  targetLabel?: string;
+  currentPhaseLabel?: string;
+  checkpoints: PromiseDeliveryCheckpoint[];
+};
+
 export type RecentElectionOverviewSource = {
   label: string;
   url: string;
@@ -63,6 +80,7 @@ export type PromiseRecord = {
   updatedAt: string;
   sources: PromiseSource[];
   statusHistory: PromiseStatusHistoryEntry[];
+  deliveryPlan?: PromiseDeliveryPlan;
 };
 
 type PromiseDatasetSource = Pick<PromiseSource, "publisher" | "url" | "excerpt"> &
@@ -96,6 +114,7 @@ type PromiseDatasetDocument = {
       election: string;
       personParty: string;
       status: PromiseStatus;
+      deliveryPlan?: PromiseDeliveryPlan;
       sources?: PromiseDatasetSource[];
     }>;
   }>;
@@ -145,6 +164,7 @@ function toImportedPromiseRecords(dataset: PromiseDatasetDocument): PromiseRecor
           capturedAt: source.capturedAt ?? createdAt,
           verificationStatus: source.verificationStatus ?? "pending"
         })),
+        deliveryPlan: promise.deliveryPlan,
         statusHistory: [
           {
             previousStatus: null,

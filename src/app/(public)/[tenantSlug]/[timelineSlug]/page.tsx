@@ -4,6 +4,7 @@ import { PromiseCard } from "@/components/promises/promise-card";
 import { TimelineHero } from "@/components/timelines/timeline-hero";
 import { TableFilter } from "@/components/ui/table-filter";
 import { resolveTenantConfig } from "@/config/resolve-config";
+import { canUserVote } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getOpenModerationReviewsForTenant } from "@/modules/moderation/reviews";
 import { getRecentElectionOverviewForTimeline, listPromisesForTenant } from "@/modules/promises/repository";
@@ -41,6 +42,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
     });
     const reviews = getOpenModerationReviewsForTenant(tenant.id);
     const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
+    const canVote = Boolean(user && canUserVote(user));
     const sharedSearchParams = {
         category,
         status
@@ -92,7 +94,14 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
             </section>
             <section className="mt-10 grid gap-6">
                 {promises.map((promise) => (
-                    <PromiseCard key={promise.id} tenantSlug={tenant.slug} timelineSlug={timeline.slug} promise={promise} />
+                    <PromiseCard
+                        key={promise.id}
+                        tenantSlug={tenant.slug}
+                        timelineSlug={timeline.slug}
+                        isAuthenticated={Boolean(user)}
+                        canVote={canVote}
+                        promise={promise}
+                    />
                 ))}
             </section>
         </main>

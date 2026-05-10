@@ -1,4 +1,4 @@
-type VoteValue = "up" | "down";
+import type { VoteValue } from "@/modules/voting/assessment";
 
 export type VoteRecord = {
   tenantId: string;
@@ -29,7 +29,7 @@ const seedVotes: VoteRecord[] = [
     tenantId: "tenant-tamilnadu",
     promiseId: "promise-power",
     userId: "demo-user",
-    value: "up",
+    value: "in_progress",
     createdAt: "2026-04-13T00:00:00.000Z",
     updatedAt: "2026-04-13T00:00:00.000Z"
   },
@@ -37,7 +37,7 @@ const seedVotes: VoteRecord[] = [
     tenantId: "tenant-tamilnadu",
     promiseId: "promise-power",
     userId: "observer-1",
-    value: "down",
+    value: "started",
     createdAt: "2026-04-13T00:00:00.000Z",
     updatedAt: "2026-04-13T00:00:00.000Z"
   },
@@ -45,7 +45,7 @@ const seedVotes: VoteRecord[] = [
     tenantId: "tenant-tamilnadu",
     promiseId: "promise-school-meals",
     userId: "observer-2",
-    value: "up",
+    value: "completed",
     createdAt: "2026-05-01T00:00:00.000Z",
     updatedAt: "2026-05-01T00:00:00.000Z"
   }

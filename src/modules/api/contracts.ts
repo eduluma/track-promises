@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { promiseStatusSchema } from "@/config/schemas";
+import { voteValueOrder } from "@/modules/voting/assessment";
 
 const accountStateValues = ["pending", "verified", "limited", "suspended", "moderator_approved"] as const;
 const userRoleValues = ["user", "editor", "moderator", "tenant_admin", "platform_admin"] as const;
@@ -17,7 +18,7 @@ export const apiUserContextSchema = z.object({
 export const voteRequestSchema = z.object({
     promiseId: z.string().min(1),
     tenantSlug: z.string().min(1),
-    value: z.enum(["up", "down"])
+    value: z.enum(voteValueOrder)
 });
 
 export const createPromiseRequestSchema = z.object({

@@ -519,6 +519,33 @@
                     "alliance": "Tamilaga Vettri Kazhagam",
                     "personParty": "Tamilaga Vettri Kazhagam",
                     "status": "planned",
+                    "deliveryPlan": {
+                        "model": "recurring",
+                        "summary": "Track this as an ongoing household benefit rather than a one-off promise: monitor whether the subsidy remains funded, delivered, and available every billing cycle.",
+                        "cadenceLabel": "Monthly billing cycle",
+                        "targetLabel": "200 free units per household each month",
+                        "currentPhaseLabel": "Awaiting tariff order and budget allocation",
+                        "checkpoints": [
+                            {
+                                "label": "Issue tariff order",
+                                "description": "Publish the government order or tariff revision that creates the recurring entitlement.",
+                                "dueAt": "2026-07-01T00:00:00.000Z",
+                                "status": "planned"
+                            },
+                            {
+                                "label": "Fund first full billing cycle",
+                                "description": "Confirm the first monthly cycle where eligible families actually receive the benefit on their electricity bills.",
+                                "dueAt": "2026-08-01T00:00:00.000Z",
+                                "status": "planned"
+                            },
+                            {
+                                "label": "Sustain six consecutive cycles",
+                                "description": "Verify that the benefit continues without interruption across multiple billing periods.",
+                                "dueAt": "2027-01-01T00:00:00.000Z",
+                                "status": "planned"
+                            }
+                        ]
+                    },
                     "sources": [
                         {
                             "publisher": "TVK Manifesto 2026 - Electricity & Basic Amenities",
@@ -538,6 +565,32 @@
                     "alliance": "Tamilaga Vettri Kazhagam",
                     "personParty": "Tamilaga Vettri Kazhagam",
                     "status": "planned",
+                    "deliveryPlan": {
+                        "model": "milestone",
+                        "summary": "Track household pipeline coverage as a rollout with district-by-district milestones until all targeted connections are commissioned.",
+                        "targetLabel": "Universal household pipeline coverage",
+                        "currentPhaseLabel": "Awaiting district rollout plan",
+                        "checkpoints": [
+                            {
+                                "label": "Publish district rollout schedule",
+                                "description": "Release a district-wise timeline that shows which regions receive pipeline work first.",
+                                "dueAt": "2026-07-15T00:00:00.000Z",
+                                "status": "planned"
+                            },
+                            {
+                                "label": "Complete first tranche districts",
+                                "description": "Confirm the first batch of districts has active household connections.",
+                                "dueAt": "2026-12-31T00:00:00.000Z",
+                                "status": "planned"
+                            },
+                            {
+                                "label": "Reach statewide completion",
+                                "description": "Verify full household coverage across Tamil Nadu.",
+                                "dueAt": "2027-12-31T00:00:00.000Z",
+                                "status": "planned"
+                            }
+                        ]
+                    },
                     "sources": [
                         {
                             "publisher": "TVK Manifesto 2026 - Electricity & Basic Amenities",

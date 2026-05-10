@@ -1,6 +1,6 @@
 # Track Promises
 
-Track Promises is a civic accountability web app for collecting public political promises, tracking their progress, and letting registered users vote on public sentiment around each promise.
+Track Promises is a civic accountability web app for collecting public political promises, tracking their progress, and letting registered users submit delivery-stage assessments for each promise.
 
 The product should be designed for high-traffic public browsing, bursty voting activity, and long-lived historical records. The foundation must support millions of visits and millions of promise, vote, and audit records without forcing an early rewrite.
 
@@ -19,9 +19,9 @@ Track Promises will provide:
 
 - a public promise database with source links and status history;
 - timeline-aware public URLs such as `/{jurisdiction}/{timeline}` so a state or country can have separate election or term workspaces;
-- StackOverflow-style up/down voting by registered users;
+- compact delivery-stage assessments by registered users, from not started through completed;
 - one current vote per user per promise, with the ability to change that vote until voting is frozen;
-- immutable vote history and periodic snapshots for auditability;
+- immutable vote history and periodic completion snapshots for auditability;
 - config-driven behavior for jurisdictions, voting windows, moderation rules, feature flags, and tenant branding;
 - reusable modules and components so promise, voting, source, moderation, and admin workflows stay DRY;
 - government or jurisdiction-specific tenant entry points such as `tamilnadu.track-promises.com`;
@@ -54,9 +54,9 @@ The repository now includes a runnable initial slice with:
 - Auth.js-backed demo sign-in with verified, limited, moderator, editor, and platform-admin accounts in the current transitional implementation;
 - a separate Fastify API service for vote, promise creation, and moderation-review write paths;
 - timeline-aware public pages and promise detail routes using `/{jurisdiction}/{timeline}/promises/{unique-id}`;
-- local in-memory voting flow with freeze-window enforcement and immutable vote events;
+- local in-memory delivery-stage assessment flow with freeze-window enforcement and immutable vote events;
 - admin-only promise creation with reusable filter and form components;
-- vote snapshot capture, aggregate reconciliation, and historical sentiment charts;
+- vote snapshot capture, aggregate reconciliation, and historical delivery-progress charts;
 - admin audit views plus moderator review workflow and trust-score signals;
 - CSV import tooling for promise backfills;
 - Drizzle schema, migration generation, and seed scripts for PostgreSQL foundation work;

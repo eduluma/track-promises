@@ -5,8 +5,8 @@
 - [x] Capture initial product idea.
 - [x] Draft PRD.
 - [x] Draft technical foundation.
-- [x] Decide MVP vote meaning: fulfillment sentiment, agreement, trust, or another label.
-- [x] Decide if users can remove votes or only switch between up/down.
+- [x] Decide MVP vote meaning: delivery-stage assessment rather than binary sentiment.
+- [x] Decide if users can remove votes or only switch between delivery-stage assessments.
 - [x] Decide voting-window scope rules.
 - [x] Define MVP promise statuses.
 - [x] Choose recommended near-term auth approach: JWT-based API auth, with the current Auth.js implementation treated as transitional.
@@ -70,6 +70,9 @@
 - [x] Ensure `task up` applies database migrations before the local stack comes up.
 - [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
 - [ ] Add advanced filters for election year, timeline, alliance, jurisdiction, category, status, person/party, and source.
+- [x] Add inline quick-vote controls and compact vote trends on timeline promise cards.
+- [x] Add a reusable delivery-plan model for recurring and milestone-based promises.
+- [x] Replace binary up/down voting with delivery-stage assessments and weighted completion snapshots.
 - [x] Add normalized database tables for timelines, alliances, and timeline-alliance memberships.
 - [x] Add source-backed research notes for 2026 Kerala, West Bengal, Assam, and Puducherry election material.
 - [x] Add import-ready JSON datasets for Kerala 2026 front promises and Tamil Nadu 2026 TVK promises.
@@ -121,7 +124,7 @@ When implementation starts, build this vertical slice first:
 5. Seed data for a `tamilnadu` tenant and a few promises.
 6. Tenant resolution from hostname or local fallback.
 7. Promise list and detail pages using reusable components.
-8. Authenticated up/down voting with vote changes.
+8. Authenticated delivery-stage assessments with vote changes.
 9. Basic freeze-date enforcement.
 10. Account verification states and a minimal moderation queue.
 11. Tests for voting rules, tenant scoping, and config resolution.

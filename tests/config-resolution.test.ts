@@ -7,7 +7,7 @@ describe("resolveTenantConfig", () => {
     const config = resolveTenantConfig("tenant-tamilnadu");
 
     expect(config.categories).toContain("Energy");
-    expect(config.voteMeaning).toContain("on track for delivery");
+    expect(config.voteMeaning).toContain("stage");
     expect(config.features.voting).toBe(true);
   });
 

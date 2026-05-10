@@ -24,6 +24,12 @@ describe("promise json import", () => {
             expect.objectContaining({ slug: "tvk", promiseCount: 38 })
         ]);
         expect(dataset.rows[0]?.sources.length).toBeGreaterThan(0);
+        expect(dataset.rows.find((row) => row.title.includes("200 units of free electricity"))?.deliveryPlan).toEqual(
+            expect.objectContaining({
+                model: "recurring",
+                cadenceLabel: "Monthly billing cycle"
+            })
+        );
     });
 
     it("imports json rows and preserves source evidence", () => {
@@ -58,6 +64,19 @@ describe("promise json import", () => {
                                 alliance: "Test Front",
                                 personParty: "Test Party",
                                 status: "planned",
+                                deliveryPlan: {
+                                    model: "recurring",
+                                    summary: "Track this promise every month after the dashboard launches.",
+                                    cadenceLabel: "Monthly",
+                                    targetLabel: "One dashboard refresh per month",
+                                    checkpoints: [
+                                        {
+                                            label: "Launch dashboard",
+                                            dueAt: "2026-06-01T00:00:00.000Z",
+                                            status: "planned"
+                                        }
+                                    ]
+                                },
                                 sources: [
                                     {
                                         publisher: "Test Manifesto",
@@ -84,5 +103,11 @@ describe("promise json import", () => {
                 verificationStatus: "verified"
             })
         ]);
+        expect(imported[0]?.deliveryPlan).toEqual(
+            expect.objectContaining({
+                model: "recurring",
+                cadenceLabel: "Monthly"
+            })
+        );
     });
 });

@@ -21,6 +21,16 @@ const timelineRecords: Timeline[] = [
         default: true
     },
     {
+        id: "timeline-tamilnadu-demo",
+        tenantId: "tenant-tamilnadu",
+        slug: "demo",
+        title: "Tamil Nadu Demo",
+        summary: "Legacy seeded demo timeline kept for local development fixtures and transition-period database seeds.",
+        officeTitle: "Chief Minister",
+        officeHolder: "Demo seed context",
+        default: false
+    },
+    {
         id: "timeline-india-2029",
         tenantId: "tenant-india-2029",
         slug: "2029",

@@ -15,8 +15,8 @@ This document is written for an implementation agent or another LLM that will bu
 
 ## Phase 0 Decisions Locked For Implementation
 
-- Treat votes as public sentiment on whether a promise is on track for fulfillment.
-- Allow users to switch between upvote and downvote while the voting window is open, but do not support self-service vote removal in MVP.
+- Treat votes as public delivery-stage assessments rather than binary sentiment.
+- Allow users to switch between delivery-stage assessments while the voting window is open, but do not support self-service vote removal in MVP.
 - Resolve voting windows by specificity in this order: promise override, election or campaign override, tenant or jurisdiction default, then platform default.
 - Use the MVP status set `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
 - Keep promise creation limited to admins and editors in MVP.
@@ -150,7 +150,7 @@ Future StackOverflow-style trust signals can include account age, consistent act
 6. Add seed data for `tamilnadu`.
 7. Add the initial auth boundary and account states, then transition that flow to JWT-based API authentication.
 8. Add promise/source modules and public pages.
-9. Add voting windows, vote API, current vote table, and immutable vote events.
+9. Add voting windows, delivery-stage assessment API, current vote table, and immutable vote events.
 10. Add minimal moderation review queue.
 11. Add tests for config resolution, tenant scoping, voting rules, and freeze behavior.
 12. Add initial Helm chart skeleton.

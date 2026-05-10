@@ -32,12 +32,13 @@ describe("voting rules", () => {
         emailVerified: true,
         state: "verified"
       },
-      value: "down",
+      value: "completed",
       now: new Date("2026-06-01T00:00:00.000Z")
     });
 
     expect(result.event?.eventType).toBe("changed");
-    expect(result.summary.currentVote).toBe("down");
+    expect(result.summary.currentVote).toBe("completed");
+    expect(result.summary.completionPercent).toBeGreaterThan(before.completionPercent);
     expect(result.summary.eventCount).toBe(before.eventCount + 1);
   });
 
@@ -52,7 +53,7 @@ describe("voting rules", () => {
           emailVerified: true,
           state: "verified"
         },
-        value: "up",
+        value: "in_progress",
         now: new Date("2027-01-02T00:00:00.000Z")
       })
     ).toThrowError(VoteError);

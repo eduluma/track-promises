@@ -50,15 +50,15 @@ describe("Fastify API service", () => {
             payload: {
                 tenantSlug: "tamilnadu",
                 promiseId: "promise-power",
-                value: "up"
+                value: "in_progress"
             }
         });
 
         expect(response.statusCode).toBe(200);
 
         const payload = response.json();
-        expect(payload.summary.currentVote).toBe("up");
-        expect(typeof payload.summary.score).toBe("number");
+        expect(payload.summary.currentVote).toBe("in_progress");
+        expect(typeof payload.summary.completionPercent).toBe("number");
     });
 
     it("creates a promise through the API service", async () => {

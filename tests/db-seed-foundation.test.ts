@@ -7,13 +7,13 @@ describe("foundation seed data", () => {
         const data = getFoundationSeedData();
         const tamilNaduPromises = data.promises.filter((promise) => promise.tenantId === "tenant-tamilnadu");
 
-        expect(data.timelines.map((timeline) => timeline.slug)).toEqual(expect.arrayContaining(["2026", "2029"]));
+        expect(data.timelines.map((timeline) => timeline.slug)).toEqual(expect.arrayContaining(["2026", "2029", "demo"]));
         expect(data.alliances.map((alliance) => alliance.name)).toEqual(
-            expect.arrayContaining(["Alliance for Growth", "Forward India"])
+            expect.arrayContaining(["Alliance for Growth", "Forward India", "Tamilaga Vettri Kazhagam"])
         );
-        expect(data.timelineAlliances).toHaveLength(2);
+        expect(data.timelineAlliances.length).toBeGreaterThanOrEqual(3);
         expect(tamilNaduPromises.every((promise) => Boolean(promise.timelineId))).toBe(true);
         expect(tamilNaduPromises.every((promise) => Boolean(promise.timelineAllianceId))).toBe(true);
-        expect(new Set(tamilNaduPromises.map((promise) => promise.timelineAllianceId)).size).toBe(1);
+        expect(new Set(tamilNaduPromises.map((promise) => promise.timelineAllianceId)).size).toBeGreaterThanOrEqual(2);
     });
 });

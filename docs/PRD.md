@@ -2,9 +2,9 @@
 
 ## 1. Product Summary
 
-Track Promises is a public accountability platform for political promises. It helps people browse promises made by candidates, alliances, parties, or elected officials, inspect the sources behind those promises, vote on public sentiment, and track fulfillment over time.
+Track Promises is a public accountability platform for political promises. It helps people browse promises made by candidates, alliances, parties, or elected officials, inspect the sources behind those promises, submit delivery-stage assessments, and track fulfillment over time.
 
-The first product should be simple, trustworthy, and scalable: a searchable promise database, authenticated up/down voting, transparent source records, and historical vote/status tracking.
+The first product should be simple, trustworthy, and scalable: a searchable promise database, authenticated delivery-stage assessments, transparent source records, and historical vote/status tracking.
 
 ## 2. Problem Statement
 
@@ -15,7 +15,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 ## 3. Goals
 
 - Build a reliable public database of political promises.
-- Let registered users upvote or downvote each promise based on their current assessment.
+- Let registered users submit a delivery-stage assessment for each promise based on what has actually been delivered.
 - Allow users to change their vote until a configured freeze date.
 - Preserve immutable vote history and aggregate snapshots for later review.
 - Support public browsing during traffic spikes without overloading the primary database.
@@ -46,7 +46,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 - As a visitor, I can browse promises by state or jurisdiction, election year or timeline, alliance, category, status, and person/party.
 - As a visitor, I can open a promise detail page and see the claim, source links, current status, vote totals, and update history.
-- As a registered user, I can upvote or downvote a promise once.
+- As a registered user, I can submit one current delivery-stage assessment for a promise.
 - As a registered user, I can change my vote while the voting window is open.
 - As a registered user, I can see whether voting is open, frozen, or closed.
 - As an admin/editor, I can create and edit promise records.
@@ -69,11 +69,11 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Voting
 
-- Voting represents public sentiment about whether a promise is on track for fulfillment.
+- Voting represents the public's current assessment of what delivery stage a promise has reached.
 - Require authentication and verified email before voting.
 - Allow exactly one current vote per user per promise.
-- Support vote values of upvote and downvote.
-- Allow a user to switch between upvote and downvote while the voting window is open, but do not allow self-service vote removal to a neutral state in MVP.
+- Support vote values of `not_started`, `started`, `in_progress`, `mostly_done`, and `completed`.
+- Allow a user to switch between delivery-stage assessments while the voting window is open, but do not allow self-service vote removal to a neutral state in MVP.
 - Enforce one effective voting window per promise using this precedence order: promise override, election/campaign override, tenant/jurisdiction default, then platform default.
 - Freeze voting at the configured time while preserving public access to totals and history.
 - Append an immutable vote event whenever a vote is created or changed.
@@ -99,8 +99,8 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ### Aggregates And History
 
-- Show upvote count, downvote count, score, and user's current vote.
-- Store periodic vote snapshots for historical review.
+- Show stage counts, weighted completion percentage, dominant stage, and the user's current assessment.
+- Store periodic completion snapshots for historical review.
 - Provide reconciliation between current votes, event history, cached counters, and snapshots.
 
 ### Admin/Editor Tools
@@ -116,7 +116,7 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 - Browse and filter by state or jurisdiction, election year or timeline, alliance, category, status, person/party, and source.
 - Search promise titles and descriptions.
-- Sort by recent activity, highest score, most disputed, and newest.
+- Sort by recent activity, highest completion estimate, most disputed, and newest.
 
 ### Alliance-Aware Election Modeling
 
@@ -151,8 +151,8 @@ Track Promises should reduce that ambiguity by creating a durable public record 
 
 ## 10. Resolved MVP Decisions
 
-- Vote meaning: upvotes and downvotes represent public sentiment about whether a promise is on track for fulfillment.
-- Vote lifecycle: users can switch between upvote and downvote while voting is open, but they cannot remove a vote to neutral in MVP.
+- Vote meaning: each vote captures the public's assessment of the current delivery stage, not a simple thumbs up/down sentiment.
+- Vote lifecycle: users can switch between delivery-stage assessments while voting is open, but they cannot remove a vote to neutral in MVP.
 - Voting-window scope: resolve the effective window by specificity using promise, election/campaign, tenant/jurisdiction, then platform defaults.
 - MVP promise statuses: `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
 - Promise creation: only admins and editors can create promises in MVP.

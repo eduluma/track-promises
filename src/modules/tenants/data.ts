@@ -17,7 +17,7 @@ const tenants: Tenant[] = [
     slug: "tamilnadu",
     jurisdictionType: "State",
     primaryDomain: "tamilnadu.track-promises.localhost",
-    tagline: "Monitor campaign commitments, evidence, and fulfillment sentiment across the state.",
+    tagline: "Monitor campaign commitments, evidence, and delivery-stage assessments across the state.",
     brandColor: "#a14524"
   },
   {
@@ -35,7 +35,7 @@ const tenants: Tenant[] = [
     slug: "kerala",
     jurisdictionType: "State",
     primaryDomain: "kerala.track-promises.localhost",
-    tagline: "Track competing front commitments, evidence, and fulfillment sentiment across Kerala.",
+    tagline: "Track competing front commitments, evidence, and delivery-stage assessments across Kerala.",
     brandColor: "#0c6b58"
   }
 ];
@@ -55,7 +55,7 @@ const tenantConfigOverrides: Record<string, Partial<TenantConfig>> = {
       "Environment",
       "Energy"
     ],
-    voteMeaning: "Public sentiment on whether this promise is on track for delivery.",
+    voteMeaning: "Public assessment of the stage this promise has reached so far.",
     moderationThreshold: 2
   },
   "tenant-india-2029": {
@@ -68,7 +68,7 @@ const tenantConfigOverrides: Record<string, Partial<TenantConfig>> = {
   },
   "tenant-kerala": {
     categories: ["Welfare", "Jobs", "Health", "Housing", "Transport", "Infrastructure"],
-    voteMeaning: "Public sentiment on whether each front's election promise is on track for delivery.",
+    voteMeaning: "Public assessment of the stage each front promise has reached so far.",
     moderationThreshold: 2
   }
 };

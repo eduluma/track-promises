@@ -72,8 +72,11 @@
                   "value": {
                     "type": "string",
                     "enum": [
-                      "up",
-                      "down"
+                      "not_started",
+                      "started",
+                      "in_progress",
+                      "mostly_done",
+                      "completed"
                     ]
                   }
                 },
@@ -113,35 +116,80 @@
                     "summary": {
                       "type": "object",
                       "required": [
-                        "upvotes",
-                        "downvotes",
-                        "score",
+                        "counts",
+                        "completionPercent",
+                        "dominantVote",
                         "currentVote",
+                        "totalVotes",
                         "eventCount"
                       ],
                       "properties": {
-                        "upvotes": {
+                        "counts": {
+                          "type": "object",
+                          "required": [
+                            "not_started",
+                            "started",
+                            "in_progress",
+                            "mostly_done",
+                            "completed"
+                          ],
+                          "properties": {
+                            "not_started": {
+                              "type": "integer"
+                            },
+                            "started": {
+                              "type": "integer"
+                            },
+                            "in_progress": {
+                              "type": "integer"
+                            },
+                            "mostly_done": {
+                              "type": "integer"
+                            },
+                            "completed": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "completionPercent": {
                           "type": "integer"
                         },
-                        "downvotes": {
-                          "type": "integer"
-                        },
-                        "score": {
-                          "type": "integer"
-                        },
-                        "currentVote": {
+                        "dominantVote": {
                           "anyOf": [
                             {
                               "type": "string",
                               "enum": [
-                                "up",
-                                "down"
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
                               ]
                             },
                             {
                               "type": "null"
                             }
                           ]
+                        },
+                        "currentVote": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "totalVotes": {
+                          "type": "integer"
                         },
                         "eventCount": {
                           "type": "integer"
@@ -177,8 +225,11 @@
                                 {
                                   "type": "string",
                                   "enum": [
-                                    "up",
-                                    "down"
+                                    "not_started",
+                                    "started",
+                                    "in_progress",
+                                    "mostly_done",
+                                    "completed"
                                   ]
                                 },
                                 {
@@ -189,8 +240,11 @@
                             "newValue": {
                               "type": "string",
                               "enum": [
-                                "up",
-                                "down"
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
                               ]
                             },
                             "eventType": {

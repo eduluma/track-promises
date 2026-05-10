@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { PromiseDeliveryPlanPanel } from "@/components/promises/promise-delivery-plan";
 import { SourceList } from "@/components/sources/source-list";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { VoteTrendChart } from "@/components/voting/vote-trend-chart";
@@ -101,20 +102,22 @@ export default async function TimelinePromiseDetailPage({ params }: TimelineProm
                             </div>
                         </section>
 
+                        {promise.deliveryPlan ? <PromiseDeliveryPlanPanel deliveryPlan={promise.deliveryPlan} /> : null}
+
                         <section className="rounded-[1.5rem] border border-ink/10 bg-sand/70 p-5">
                             <h2 className="text-lg font-semibold text-ink">Aggregate reconciliation</h2>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
                                 <div className="rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/72">
-                                    <p className="font-medium text-ink">Current score</p>
-                                    <p className="mt-2 text-2xl font-semibold text-ink">{reconciliation.currentScore}</p>
+                                    <p className="font-medium text-ink">Current completion</p>
+                                    <p className="mt-2 text-2xl font-semibold text-ink">{reconciliation.currentCompletionPercent}%</p>
                                 </div>
                                 <div className="rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/72">
                                     <p className="font-medium text-ink">Latest snapshot</p>
-                                    <p className="mt-2 text-2xl font-semibold text-ink">{reconciliation.snapshotScore ?? "-"}</p>
+                                    <p className="mt-2 text-2xl font-semibold text-ink">{typeof reconciliation.snapshotCompletionPercent === "number" ? `${reconciliation.snapshotCompletionPercent}%` : "-"}</p>
                                 </div>
                                 <div className="rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/72">
                                     <p className="font-medium text-ink">Drift</p>
-                                    <p className="mt-2 text-2xl font-semibold text-ink">{reconciliation.drift.score}</p>
+                                    <p className="mt-2 text-2xl font-semibold text-ink">{reconciliation.drift.completionPercent}%</p>
                                 </div>
                             </div>
                         </section>

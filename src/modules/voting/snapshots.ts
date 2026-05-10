@@ -1,15 +1,15 @@
 import { listPromisesForTenant } from "@/modules/promises/repository";
 import { listTenants } from "@/modules/tenants/data";
 import { appendAuditLog } from "@/modules/audit/logs";
+import { getVoteOption } from "@/modules/voting/assessment";
 import { listVoteEventsForPromise, listVotesForPromise } from "@/modules/voting/store";
 
 export type VoteSnapshotRecord = {
     id: string;
     tenantId: string;
     promiseId: string;
-    upvotes: number;
-    downvotes: number;
-    score: number;
+    totalVotes: number;
+    completionPercent: number;
     snapshotAt: string;
     generationSource: "seed" | "worker" | "reconciliation";
 };
@@ -18,16 +18,13 @@ export type VoteAggregateReconciliation = {
     tenantId: string;
     promiseId: string;
     snapshotAt: string | null;
-    currentUpvotes: number;
-    currentDownvotes: number;
-    currentScore: number;
-    snapshotUpvotes: number | null;
-    snapshotDownvotes: number | null;
-    snapshotScore: number | null;
+    currentTotalVotes: number;
+    currentCompletionPercent: number;
+    snapshotTotalVotes: number | null;
+    snapshotCompletionPercent: number | null;
     drift: {
-        upvotes: number;
-        downvotes: number;
-        score: number;
+        totalVotes: number;
+        completionPercent: number;
     };
     voteEventCount: number;
     status: "aligned" | "drift_detected" | "missing_snapshot";
@@ -42,9 +39,8 @@ const seedSnapshots: VoteSnapshotRecord[] = [
         id: "snapshot:tenant-tamilnadu:promise-power:2026-04-15",
         tenantId: "tenant-tamilnadu",
         promiseId: "promise-power",
-        upvotes: 1,
-        downvotes: 1,
-        score: 0,
+        totalVotes: 2,
+        completionPercent: 38,
         snapshotAt: "2026-04-15T00:00:00.000Z",
         generationSource: "seed"
     },
@@ -52,9 +48,8 @@ const seedSnapshots: VoteSnapshotRecord[] = [
         id: "snapshot:tenant-tamilnadu:promise-school-meals:2026-05-01",
         tenantId: "tenant-tamilnadu",
         promiseId: "promise-school-meals",
-        upvotes: 1,
-        downvotes: 0,
-        score: 1,
+        totalVotes: 1,
+        completionPercent: 100,
         snapshotAt: "2026-05-01T00:00:00.000Z",
         generationSource: "seed"
     }
@@ -76,13 +71,12 @@ function createSnapshotId(tenantId: string, promiseId: string, snapshotAt: strin
 
 function computeVoteAggregate(tenantId: string, promiseId: string) {
     const votes = listVotesForPromise(tenantId, promiseId);
-    const upvotes = votes.filter((vote) => vote.value === "up").length;
-    const downvotes = votes.filter((vote) => vote.value === "down").length;
+    const totalVotes = votes.length;
+    const weightedTotal = votes.reduce((total, vote) => total + getVoteOption(vote.value).weight, 0);
 
     return {
-        upvotes,
-        downvotes,
-        score: upvotes - downvotes
+        totalVotes,
+        completionPercent: totalVotes === 0 ? 0 : Math.round(weightedTotal / totalVotes)
     };
 }
 
@@ -166,16 +160,13 @@ export function reconcileVoteAggregateForPromise(tenantId: string, promiseId: st
             tenantId,
             promiseId,
             snapshotAt: null,
-            currentUpvotes: currentAggregate.upvotes,
-            currentDownvotes: currentAggregate.downvotes,
-            currentScore: currentAggregate.score,
-            snapshotUpvotes: null,
-            snapshotDownvotes: null,
-            snapshotScore: null,
+            currentTotalVotes: currentAggregate.totalVotes,
+            currentCompletionPercent: currentAggregate.completionPercent,
+            snapshotTotalVotes: null,
+            snapshotCompletionPercent: null,
             drift: {
-                upvotes: currentAggregate.upvotes,
-                downvotes: currentAggregate.downvotes,
-                score: currentAggregate.score
+                totalVotes: currentAggregate.totalVotes,
+                completionPercent: currentAggregate.completionPercent
             },
             voteEventCount,
             status: "missing_snapshot"
@@ -183,24 +174,21 @@ export function reconcileVoteAggregateForPromise(tenantId: string, promiseId: st
     }
 
     const drift = {
-        upvotes: currentAggregate.upvotes - latestSnapshot.upvotes,
-        downvotes: currentAggregate.downvotes - latestSnapshot.downvotes,
-        score: currentAggregate.score - latestSnapshot.score
+        totalVotes: currentAggregate.totalVotes - latestSnapshot.totalVotes,
+        completionPercent: currentAggregate.completionPercent - latestSnapshot.completionPercent
     };
 
     return {
         tenantId,
         promiseId,
         snapshotAt: latestSnapshot.snapshotAt,
-        currentUpvotes: currentAggregate.upvotes,
-        currentDownvotes: currentAggregate.downvotes,
-        currentScore: currentAggregate.score,
-        snapshotUpvotes: latestSnapshot.upvotes,
-        snapshotDownvotes: latestSnapshot.downvotes,
-        snapshotScore: latestSnapshot.score,
+        currentTotalVotes: currentAggregate.totalVotes,
+        currentCompletionPercent: currentAggregate.completionPercent,
+        snapshotTotalVotes: latestSnapshot.totalVotes,
+        snapshotCompletionPercent: latestSnapshot.completionPercent,
         drift,
         voteEventCount,
-        status: drift.upvotes === 0 && drift.downvotes === 0 && drift.score === 0 ? "aligned" : "drift_detected"
+        status: drift.totalVotes === 0 && drift.completionPercent === 0 ? "aligned" : "drift_detected"
     };
 }
 

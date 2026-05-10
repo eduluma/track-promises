@@ -2,6 +2,7 @@ import { resolveTenantConfig } from "@/config/resolve-config";
 import { canUserVote, type DemoUser } from "@/lib/permissions";
 import { getPromiseById } from "@/modules/promises/repository";
 import { appendAuditLog } from "@/modules/audit/logs";
+import { createEmptyVoteCounts, getVoteOption, voteOptions, type VoteValue } from "@/modules/voting/assessment";
 import {
   appendVoteEvent,
   getVoteForUser,
@@ -12,8 +13,16 @@ import {
   type VoteRecord
 } from "@/modules/voting/store";
 
-export type VoteValue = "up" | "down";
 export type VotingState = "scheduled" | "open" | "frozen" | "closed";
+
+export type VoteSummary = {
+  counts: Record<VoteValue, number>;
+  completionPercent: number;
+  dominantVote: VoteValue | null;
+  currentVote: VoteValue | null;
+  totalVotes: number;
+  eventCount: number;
+};
 
 type VotingWindow = {
   startAt: string;
@@ -91,16 +100,31 @@ export function getVotingWindowStatusForPromise({ tenantId, promiseId, now = new
 export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSummaryInput) {
   const votes = listVotesForPromise(tenantId, promiseId);
   const currentVote = userId ? getVoteForUser(tenantId, promiseId, userId) : null;
-  const upvotes = votes.filter((vote) => vote.value === "up").length;
-  const downvotes = votes.filter((vote) => vote.value === "down").length;
+  const counts = createEmptyVoteCounts();
+
+  for (const vote of votes) {
+    counts[vote.value] += 1;
+  }
+
+  const totalVotes = votes.length;
+  const weightedTotal = votes.reduce((total, vote) => total + getVoteOption(vote.value).weight, 0);
+  const completionPercent = totalVotes === 0 ? 0 : Math.round(weightedTotal / totalVotes);
+  const dominantVote = voteOptions.reduce<VoteValue | null>((current, option) => {
+    if (!current || counts[option.value] > counts[current]) {
+      return option.value;
+    }
+
+    return current;
+  }, null);
 
   return {
-    upvotes,
-    downvotes,
-    score: upvotes - downvotes,
+    counts,
+    completionPercent,
+    dominantVote: totalVotes === 0 ? null : dominantVote,
     currentVote: currentVote?.value ?? null,
+    totalVotes,
     eventCount: listVoteEventsForPromise(tenantId, promiseId).length
-  };
+  } satisfies VoteSummary;
 }
 
 export function castVote({ tenantId, promiseId, user, value, now = new Date() }: CastVoteInput) {

@@ -30,7 +30,7 @@ export const promiseStatusEnum = pgEnum("promise_status", [
 ]);
 
 export const sourceVerificationStatusEnum = pgEnum("source_verification_status", ["verified", "pending"]);
-export const voteValueEnum = pgEnum("vote_value", ["up", "down"]);
+export const voteValueEnum = pgEnum("vote_value", ["not_started", "started", "in_progress", "mostly_done", "completed"]);
 export const votingScopeTypeEnum = pgEnum("voting_scope_type", ["platform", "tenant", "election", "promise"]);
 export const moderationSubjectTypeEnum = pgEnum("moderation_subject_type", ["account", "vote", "source", "promise"]);
 export const moderationStatusEnum = pgEnum("moderation_status", ["open", "in_review", "resolved", "dismissed"]);
@@ -271,9 +271,8 @@ export const voteSnapshots = pgTable(
     promiseId: text("promise_id")
       .notNull()
       .references(() => promises.id, { onDelete: "cascade" }),
-    upvotes: integer("upvotes").notNull().default(0),
-    downvotes: integer("downvotes").notNull().default(0),
-    score: integer("score").notNull().default(0),
+    totalVotes: integer("total_votes").notNull().default(0),
+    completionPercent: integer("completion_percent").notNull().default(0),
     snapshotAt: timestamp("snapshot_at", { withTimezone: true }).notNull(),
     generationSource: text("generation_source").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()

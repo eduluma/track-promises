@@ -3,7 +3,7 @@ import type { TenantConfig } from "@/config/schemas";
 export const platformDefaults: TenantConfig = {
   categories: ["Economy", "Infrastructure", "Education", "Health"],
   statuses: ["planned", "in_progress", "fulfilled", "delayed", "disputed"],
-  voteMeaning: "Public sentiment on whether the promise is being fulfilled.",
+  voteMeaning: "Public assessment of the promise's current delivery stage.",
   moderationThreshold: 3,
   features: {
     voting: true,

@@ -112,7 +112,7 @@ Key fields: id, tenant id, scope type, scope id, start date, freeze date, end da
 
 Stores the current vote for fast lookups.
 
-Key fields: id, promise id, user id, value, created/updated timestamps.
+Key fields: id, promise id, user id, delivery-stage value, created/updated timestamps.
 
 Important constraint: unique `(promise_id, user_id)`.
 
@@ -126,7 +126,7 @@ Key fields: id, promise id, user id, previous value, new value, event type, time
 
 Stores historical aggregate totals.
 
-Key fields: id, promise id, upvotes, downvotes, score, snapshot timestamp, generation source.
+Key fields: id, promise id, total votes, weighted completion percent, snapshot timestamp, generation source.
 
 ### PromiseStatusHistory
 
@@ -278,7 +278,7 @@ Suggested service boundaries after the split:
 
 - Target a split runtime of `web`, `api`, and `worker` in one repo; treat the current monolithic Next.js runtime as a transitional implementation state.
 - Use DigitalOcean Kubernetes for the app runtime, Neon PostgreSQL for the primary database, and Upstash Redis when Redis-backed features are enabled.
-- Model vote semantics as fulfillment sentiment and allow only up/down switching while voting is open.
+- Model vote semantics as delivery-stage assessments and allow switching between stage values while voting is open.
 - Resolve voting windows by specificity: promise, election/campaign, tenant/jurisdiction, then platform default.
 - Use the status set `planned`, `in_progress`, `fulfilled`, `delayed`, and `disputed`.
 - Keep tenant data row-scoped in shared tables for MVP.
