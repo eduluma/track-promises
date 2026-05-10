@@ -16,21 +16,13 @@ export function extractTenantSlugFromHost(host: string | null | undefined) {
     return null;
   }
 
-  // Treat the platform root domain itself as no-tenant (path-based routing)
-  const platformDomain = process.env.TRACK_PROMISES_PLATFORM_DOMAIN;
-  if (platformDomain && normalizedHost === platformDomain.toLowerCase().split(":")[0]) {
-    return null;
-  }
-
+  // Local dev: {slug}.localhost or {slug}.track-promises.localhost
   const localMatch = normalizedHost.match(localHostPattern);
   if (localMatch?.groups?.slug) {
     return localMatch.groups.slug;
   }
 
-  const parts = normalizedHost.split(".");
-  if (parts.length >= 3) {
-    return parts[0];
-  }
-
+  // Production uses path-based routing only — no subdomain extraction from
+  // real domains, to avoid treating the platform root domain as a tenant slug.
   return null;
 }
