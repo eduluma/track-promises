@@ -6,6 +6,7 @@
     "dev": "next dev",
     "api:dev": "tsx watch apps/api/src/server.ts",
     "api:start": "tsx apps/api/src/server.ts",
+    "api:openapi": "tsx apps/api/src/write-openapi.ts",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write .",
@@ -20,6 +21,8 @@
     "import:promises": "tsx src/scripts/import-promises.ts"
   },
   "dependencies": {
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.6",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.6.1",
     "next": "^15.0.0",
@@ -27,7 +30,8 @@
     "postgres": "^3.4.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

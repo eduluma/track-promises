@@ -7,6 +7,13 @@ import {
     type ApiHandlerResult
 } from "@/modules/api/handlers";
 import { API_USER_CONTEXT_HEADER, decodeApiUserContext } from "@/modules/api/user-context";
+import {
+    createPromiseRouteSchema,
+    healthRouteSchema,
+    registerApiDocumentation,
+    resolveModerationRouteSchema,
+    voteRouteSchema
+} from "./openapi";
 
 function getRequestUser(request: FastifyRequest) {
     const rawHeader = request.headers[API_USER_CONTEXT_HEADER];
@@ -22,20 +29,32 @@ function sendResult(reply: FastifyReply, result: ApiHandlerResult<unknown>) {
 export function buildApiApp() {
     const app = Fastify({ logger: false });
 
-    app.get("/health", async () => ({ status: "ok", service: "track-promises-api" }));
+    app.register((api, _options, done) => {
+        registerApiDocumentation(api);
 
-    app.post("/votes", async (request, reply) => {
-        return sendResult(reply, handleCastVote(request.body, getRequestUser(request)));
-    });
+        api.after(() => {
+            api.get("/health", { schema: healthRouteSchema }, async () => ({ status: "ok", service: "track-promises-api" }));
 
-    app.post("/admin/promises", async (request, reply) => {
-        return sendResult(reply, handleCreatePromise(request.body, getRequestUser(request)));
-    });
+            api.get("/openapi.json", { schema: { hide: true } }, async () => {
+                return api.swagger();
+            });
 
-    app.post("/admin/moderation/reviews/:reviewId", async (request, reply) => {
-        const params = request.params as { reviewId: string };
+            api.post("/votes", { schema: voteRouteSchema }, async (request, reply) => {
+                return sendResult(reply, handleCastVote(request.body, getRequestUser(request)));
+            });
 
-        return sendResult(reply, handleResolveModerationReview(params.reviewId, request.body, getRequestUser(request)));
+            api.post("/admin/promises", { schema: createPromiseRouteSchema }, async (request, reply) => {
+                return sendResult(reply, handleCreatePromise(request.body, getRequestUser(request)));
+            });
+
+            api.post("/admin/moderation/reviews/:reviewId", { schema: resolveModerationRouteSchema }, async (request, reply) => {
+                const params = request.params as { reviewId: string };
+
+                return sendResult(reply, handleResolveModerationReview(params.reviewId, request.body, getRequestUser(request)));
+            });
+        });
+
+        done();
     });
 
     return app;

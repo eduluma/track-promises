@@ -65,7 +65,7 @@
 - [ ] Split the current Next.js runtime into separate `web`, `api`, and `worker` services.
 - [x] Extract the existing vote, promise-admin, and moderation write handlers into shared API modules.
 - [x] Add a separate Fastify API service for the existing write-path endpoints.
-- [ ] Generate `openapi.json` and API docs from the new API service.
+- [x] Generate `openapi.json` and API docs from the new API service.
 - [x] Move current Next.js route handlers behind typed API clients.
 - [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
 - [ ] Add advanced filters for election, jurisdiction, category, status, person/party, and source.

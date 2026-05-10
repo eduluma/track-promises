@@ -28,6 +28,18 @@ describe("Fastify API service", () => {
         expect(response.json()).toEqual({ status: "ok", service: "track-promises-api" });
     });
 
+    it("serves an OpenAPI document for the write endpoints", async () => {
+        const response = await app.inject({ method: "GET", url: "/openapi.json" });
+
+        expect(response.statusCode).toBe(200);
+
+        const payload = response.json();
+        expect(payload.openapi).toBe("3.0.3");
+        expect(payload.paths["/votes"]).toBeDefined();
+        expect(payload.paths["/admin/promises"]).toBeDefined();
+        expect(payload.paths["/admin/moderation/reviews/{reviewId}"]).toBeDefined();
+    });
+
     it("casts a vote through the API service", async () => {
         const response = await app.inject({
             method: "POST",

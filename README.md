@@ -74,11 +74,12 @@ The current runnable stack is in a transition phase: a dedicated `api` service e
 4. Open `http://localhost:43000` to see the app.
 5. The Compose stack publishes the web app on `localhost:43000` and the API service on `localhost:44000`; PostgreSQL and Redis stay on the internal Docker network to avoid host-port collisions. Override `APP_PORT` or `API_PORT` if those ports are occupied on your machine.
 6. Check the API service with `http://localhost:44000/health`.
-7. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
-8. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
-9. Run the API service directly outside Compose with `npm run api:dev`.
-10. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
-11. Use `task compose:deploy` to run the app build and bring the Compose stack up in one command, `task compose:down` to stop it, and `task --list-all` to see the available local automation tasks.
+7. Browse generated API docs at `http://localhost:44000/docs` and regenerate the checked-in spec with `npm run api:openapi`.
+8. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
+9. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
+10. Run the API service directly outside Compose with `npm run api:dev`.
+11. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
+12. Use `task compose:deploy` to run the app build and bring the Compose stack up in one command, `task compose:down` to stop it, and `task --list-all` to see the available local automation tasks.
 
 Demo accounts for local sign-in:
 
