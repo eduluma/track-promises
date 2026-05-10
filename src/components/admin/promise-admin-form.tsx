@@ -9,16 +9,18 @@ import type { Tenant } from "@/modules/tenants/data";
 type PromiseAdminFormProps = {
     tenants: Tenant[];
     defaultTenantSlug: string;
+    timelinesByTenant: Record<string, { slug: string; title: string }[]>;
     categoriesByTenant: Record<string, string[]>;
     statuses: PromiseStatus[];
 };
 
-export function PromiseAdminForm({ tenants, defaultTenantSlug, categoriesByTenant, statuses }: PromiseAdminFormProps) {
+export function PromiseAdminForm({ tenants, defaultTenantSlug, timelinesByTenant, categoriesByTenant, statuses }: PromiseAdminFormProps) {
     const router = useRouter();
     const [tenantSlug, setTenantSlug] = useState(defaultTenantSlug);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
     const categories = categoriesByTenant[tenantSlug] ?? [];
+    const timelines = timelinesByTenant[tenantSlug] ?? [];
 
     return (
         <form
@@ -45,7 +47,7 @@ export function PromiseAdminForm({ tenants, defaultTenantSlug, categoriesByTenan
                         return;
                     }
 
-                    router.push(`/${payload.tenantSlug}/promises/${payload.promise.id}`);
+                    router.push(`/${payload.tenantSlug}/${payload.timelineSlug}/promises/${payload.promise.id}`);
                     router.refresh();
                 });
             }}
@@ -66,6 +68,18 @@ export function PromiseAdminForm({ tenants, defaultTenantSlug, categoriesByTenan
                         ))}
                     </select>
                 </label>
+                <label className="text-sm font-medium text-ink">
+                    Timeline
+                    <select name="timelineSlug" className="mt-2 w-full rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm">
+                        {timelines.map((timeline) => (
+                            <option key={timeline.slug} value={timeline.slug}>
+                                {timeline.title}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
                 <label className="text-sm font-medium text-ink">
                     Category
                     <select name="category" className="mt-2 w-full rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm">

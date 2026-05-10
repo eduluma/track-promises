@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 
 type PromiseCardProps = {
   tenantSlug: string;
+  timelineSlug: string;
   promise: PromiseRecord & {
     voteSummary: {
       upvotes: number;
@@ -16,10 +17,10 @@ type PromiseCardProps = {
   };
 };
 
-export function PromiseCard({ tenantSlug, promise }: PromiseCardProps) {
+export function PromiseCard({ tenantSlug, timelineSlug, promise }: PromiseCardProps) {
   return (
     <Link
-      href={`/${tenantSlug}/promises/${promise.id}`}
+      href={`/${tenantSlug}/${timelineSlug}/promises/${promise.id}`}
       className="group rounded-[1.75rem] border border-white/80 bg-white/75 p-6 shadow-card transition hover:-translate-y-1"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">

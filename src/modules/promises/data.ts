@@ -19,6 +19,7 @@ export type PromiseStatusHistoryEntry = {
 export type PromiseRecord = {
   id: string;
   tenantId: string;
+  timelineSlug: string;
   title: string;
   description: string;
   category: string;
@@ -36,6 +37,7 @@ export const promiseRecords: PromiseRecord[] = [
   {
     id: "promise-power",
     tenantId: "tenant-tamilnadu",
+    timelineSlug: "2026",
     title: "Deliver uninterrupted power to industrial districts",
     description:
       "Upgrade substations and transmission links across major industrial corridors to cut outage time and improve manufacturing reliability.",
@@ -82,6 +84,7 @@ export const promiseRecords: PromiseRecord[] = [
   {
     id: "promise-school-meals",
     tenantId: "tenant-tamilnadu",
+    timelineSlug: "2026",
     title: "Expand school meal coverage to all government higher secondary students",
     description:
       "Increase school meal program eligibility with district-by-district rollout and published funding milestones.",
@@ -120,6 +123,7 @@ export const promiseRecords: PromiseRecord[] = [
   {
     id: "promise-jobs",
     tenantId: "tenant-india-2029",
+    timelineSlug: "2029",
     title: "Create a public dashboard for quarterly job targets",
     description:
       "Publish a national dashboard that tracks quarterly job creation targets against official labour data releases.",

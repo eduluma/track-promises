@@ -23,9 +23,9 @@ const tenants: Tenant[] = [
   {
     id: "tenant-india-2029",
     name: "India 2029",
-    slug: "india-2029",
+    slug: "india",
     jurisdictionType: "Election",
-    primaryDomain: "india-2029.track-promises.localhost",
+    primaryDomain: "india.track-promises.localhost",
     tagline: "Prototype a national election workspace without hard-coding jurisdiction logic.",
     brandColor: "#54694b"
   }

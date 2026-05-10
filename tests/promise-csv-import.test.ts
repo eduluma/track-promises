@@ -17,10 +17,11 @@ Transit dashboard,Publish a city transit dashboard with monthly uptime data,Infr
             csvText: `title,description,category,jurisdiction,election,personParty,status
 Water audit,Publish annual district water audits with downloadable source data,Health,Tamil Nadu,State Election 2026,Alliance for Growth,in_progress`,
             tenantId: "tenant-tamilnadu",
+            timelineSlug: "2026",
             actorId: "editor-user"
         });
 
         expect(imported).toHaveLength(1);
-        expect(getPromiseById("tenant-tamilnadu", imported[0]!.id)?.title).toBe("Water audit");
+        expect(getPromiseById("tenant-tamilnadu", imported[0]!.id, "2026")?.title).toBe("Water audit");
     });
 });

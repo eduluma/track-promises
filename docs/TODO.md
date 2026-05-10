@@ -36,6 +36,8 @@
 - [x] Build reusable promise card, vote controls, source list, status badge, table filter, and admin form components.
 - [x] Implement promise list page.
 - [x] Implement promise detail page.
+- [x] Support timeline-aware public routes like `/{jurisdiction}/{timeline}` and promise detail URLs under that timeline.
+- [x] Load optional jurisdiction-timeline overview content from repo-managed `README.md` or `index.html` files.
 - [x] Implement voting API.
 - [x] Enforce one current vote per user per promise.
 - [x] Enforce voting freeze rules.
@@ -60,8 +62,11 @@
 ## Phase 3: Scale And Discovery
 
 - [ ] Split the current Next.js runtime into separate `web`, `api`, and `worker` services.
+- [x] Extract the existing vote, promise-admin, and moderation write handlers into shared API modules.
+- [x] Add a separate Fastify API service for the existing write-path endpoints.
 - [ ] Generate `openapi.json` and API docs from the new API service.
-- [ ] Move current Next.js route handlers behind typed API clients.
+- [x] Move current Next.js route handlers behind typed API clients.
+- [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
 - [ ] Add advanced filters for election, jurisdiction, category, status, person/party, and source.
 - [ ] Add PostgreSQL full-text search.
 - [ ] Add Redis-backed rate limiting.

@@ -79,15 +79,18 @@ export function parsePromiseCsv(csvText: string) {
 export function importPromisesFromCsv({
     csvText,
     tenantId,
+    timelineSlug,
     actorId
 }: {
     csvText: string;
     tenantId: string;
+    timelineSlug: string;
     actorId: string;
 }) {
     return parsePromiseCsv(csvText).map((row) =>
         createPromise({
             tenantId,
+            timelineSlug,
             actorId,
             ...row
         })

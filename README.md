@@ -18,12 +18,14 @@ Political candidates and elected officials make promises during campaigns and wh
 Track Promises will provide:
 
 - a public promise database with source links and status history;
+- timeline-aware public URLs such as `/{jurisdiction}/{timeline}` so a state or country can have separate election or term workspaces;
 - StackOverflow-style up/down voting by registered users;
 - one current vote per user per promise, with the ability to change that vote until voting is frozen;
 - immutable vote history and periodic snapshots for auditability;
 - config-driven behavior for jurisdictions, voting windows, moderation rules, feature flags, and tenant branding;
 - reusable modules and components so promise, voting, source, moderation, and admin workflows stay DRY;
 - government or jurisdiction-specific tenant entry points such as `tamilnadu.track-promises.com`;
+- optional timeline overview content loaded from repo files such as `content/timelines/tamilnadu/2026/README.md` or `content/timelines/india/2029/index.html`;
 - performance-first browsing, filtering, and aggregation for high-traffic periods.
 
 ## Initial Build Direction
@@ -35,11 +37,12 @@ The implementation should be deployable to Kubernetes with Helm. Add snapshots, 
 ## Architecture Direction
 
 - Preferred runtime shape is `web + api + worker` in a single repo.
-- The current codebase still contains Next.js route handlers as a transitional implementation detail, not the long-term API boundary.
+- The current codebase now includes a separate Fastify API service and thin Next.js route adapters as a transitional bridge, not the long-term API boundary.
 - The target API service should own write paths, OpenAPI generation, and backend business workflows.
 - For auth, prefer JWT bearer tokens for the near term and keep identity provider integration lightweight.
 - Do not introduce Keycloak in MVP unless we specifically need external SSO, federation, or centralized identity administration.
 - If that need appears later, evaluate Keycloak or Authentik as a dedicated identity service rather than baking identity logic into the app containers.
+- Because the current reads still use process-local in-memory stores, the web app defaults to a local typed API transport for now; flipping the web runtime to remote API transport is a separate cutover step once those reads move behind shared persistence or API-backed reads.
 
 ## Current Scaffold
 
@@ -49,6 +52,8 @@ The repository now includes a runnable initial slice with:
 - tenant-aware promise list and detail pages;
 - config resolution with platform defaults plus tenant overrides;
 - Auth.js-backed demo sign-in with verified, limited, moderator, editor, and platform-admin accounts in the current transitional implementation;
+- a separate Fastify API service for vote, promise creation, and moderation-review write paths;
+- timeline-aware public pages and promise detail routes using `/{jurisdiction}/{timeline}/promises/{unique-id}`;
 - local in-memory voting flow with freeze-window enforcement and immutable vote events;
 - admin-only promise creation with reusable filter and form components;
 - vote snapshot capture, aggregate reconciliation, and historical sentiment charts;
@@ -56,10 +61,10 @@ The repository now includes a runnable initial slice with:
 - CSV import tooling for promise backfills;
 - Drizzle schema, migration generation, and seed scripts for PostgreSQL foundation work;
 - focused unit tests for config resolution, voting rules, and tenant host parsing;
-- Docker Compose for the web app, PostgreSQL, and optional Redis;
+- Docker Compose for the web app, API service, PostgreSQL, and optional Redis;
 - a starter Helm chart for Kubernetes deployment.
 
-The current runnable stack is still a transitional monolith at runtime: the `web` container serves both pages and API routes today. The docs now treat that as an interim state on the way to a dedicated API service.
+The current runnable stack is in a transition phase: a dedicated `api` service exists, but the `web` runtime still uses local typed API handlers by default until read paths stop depending on process-local state. That keeps behavior correct while the API boundary is being moved for real.
 
 ## Local Development
 
@@ -67,10 +72,12 @@ The current runnable stack is still a transitional monolith at runtime: the `web
 2. Copy `.env.example` to `.env.local` if you want to override ports or secrets.
 3. Start the app stack with `docker compose up`.
 4. Open `http://localhost:43000` to see the app.
-5. The Compose stack publishes only the web app on `localhost:43000`; PostgreSQL and Redis stay on the internal Docker network to avoid host-port collisions. Override `APP_PORT` if `43000` is occupied on your machine.
-6. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
-7. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
-8. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
+5. The Compose stack publishes the web app on `localhost:43000` and the API service on `localhost:44000`; PostgreSQL and Redis stay on the internal Docker network to avoid host-port collisions. Override `APP_PORT` or `API_PORT` if those ports are occupied on your machine.
+6. Check the API service with `http://localhost:44000/health`.
+7. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
+8. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
+9. Run the API service directly outside Compose with `npm run api:dev`.
+10. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
 
 Demo accounts for local sign-in:
 
@@ -80,7 +87,7 @@ Demo accounts for local sign-in:
 - `admin@track-promises.local` / `admin-password`
 - `limited@track-promises.local` / `limited-password`
 
-Path-based tenant routes work immediately, for example `http://localhost:43000/tamilnadu`.
+Path-based tenant routes work immediately, for example `http://localhost:43000/tamilnadu/2026`.
 Host-based tenant routing also works through middleware when using a host such as `http://tamilnadu.localhost:43000`.
 
 ## Repo-Local LLM Notes

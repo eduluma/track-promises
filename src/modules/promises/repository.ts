@@ -5,12 +5,14 @@ import { appendAuditLog } from "@/modules/audit/logs";
 
 type PromiseFilters = {
   userId?: string | null;
+  timelineSlug?: string | null;
   category?: string | null;
   status?: PromiseStatus | null;
 };
 
 type CreatePromiseInput = {
   tenantId: string;
+  timelineSlug: string;
   title: string;
   description: string;
   category: string;
@@ -24,6 +26,7 @@ type CreatePromiseInput = {
 export function listPromisesForTenant(tenantId: string, filters: PromiseFilters = {}) {
   return promiseRecords
     .filter((promise) => promise.tenantId === tenantId)
+    .filter((promise) => (filters.timelineSlug ? promise.timelineSlug === filters.timelineSlug : true))
     .filter((promise) => (filters.category ? promise.category === filters.category : true))
     .filter((promise) => (filters.status ? promise.status === filters.status : true))
     .map((promise) => ({
@@ -32,8 +35,15 @@ export function listPromisesForTenant(tenantId: string, filters: PromiseFilters 
     }));
 }
 
-export function getPromiseById(tenantId: string, promiseId: string) {
-  return promiseRecords.find((promise) => promise.tenantId === tenantId && promise.id === promiseId) ?? null;
+export function getPromiseById(tenantId: string, promiseId: string, timelineSlug?: string | null) {
+  return (
+    promiseRecords.find(
+      (promise) =>
+        promise.tenantId === tenantId &&
+        promise.id === promiseId &&
+        (timelineSlug ? promise.timelineSlug === timelineSlug : true)
+    ) ?? null
+  );
 }
 
 export function createPromise(input: CreatePromiseInput) {
@@ -42,6 +52,7 @@ export function createPromise(input: CreatePromiseInput) {
   const promise = {
     id,
     tenantId: input.tenantId,
+    timelineSlug: input.timelineSlug,
     title: input.title,
     description: input.description,
     category: input.category,
@@ -73,7 +84,8 @@ export function createPromise(input: CreatePromiseInput) {
     metadata: {
       status: input.status,
       category: input.category,
-      election: input.election
+      election: input.election,
+      timelineSlug: input.timelineSlug
     },
     createdAt: timestamp
   });

@@ -6,6 +6,7 @@ import { canManagePromises } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { resolveTenantConfig } from "@/config/resolve-config";
 import { listTenants } from "@/modules/tenants/data";
+import { listTimelinesForTenant } from "@/modules/timelines/data";
 
 export default async function NewPromisePage() {
     const user = await getCurrentUser();
@@ -23,6 +24,9 @@ export default async function NewPromisePage() {
     const categoriesByTenant = Object.fromEntries(
         tenants.map((tenant) => [tenant.slug, resolveTenantConfig(tenant.id).categories])
     );
+    const timelinesByTenant = Object.fromEntries(
+        tenants.map((tenant) => [tenant.slug, listTimelinesForTenant(tenant.id).map((timeline) => ({ slug: timeline.slug, title: timeline.title }))])
+    );
 
     return (
         <main className="mx-auto flex max-w-4xl flex-col px-6 py-10 sm:px-10">
@@ -35,6 +39,7 @@ export default async function NewPromisePage() {
                 <PromiseAdminForm
                     tenants={tenants}
                     defaultTenantSlug={defaultTenantSlug}
+                    timelinesByTenant={timelinesByTenant}
                     categoriesByTenant={categoriesByTenant}
                     statuses={platformDefaults.statuses}
                 />

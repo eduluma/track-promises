@@ -7,6 +7,7 @@ import type { VotingState } from "@/modules/voting/service";
 
 type VotePanelProps = {
   tenantSlug: string;
+  timelineSlug: string;
   promiseId: string;
   initialWindowState: VotingState;
   canVote: boolean;
@@ -20,7 +21,7 @@ type VotePanelProps = {
   };
 };
 
-export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindowState, canVote, isAuthenticated }: VotePanelProps) {
+export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary, initialWindowState, canVote, isAuthenticated }: VotePanelProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [windowState, setWindowState] = useState(initialWindowState);
@@ -106,7 +107,7 @@ export function VotePanel({ tenantSlug, promiseId, initialSummary, initialWindow
 
       {!isAuthenticated ? (
         <Link
-          href={`/login?redirectTo=/${tenantSlug}/promises/${promiseId}`}
+          href={`/login?redirectTo=/${tenantSlug}/${timelineSlug}/promises/${promiseId}`}
           className="mt-4 inline-flex rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/75 transition hover:border-moss/35 hover:text-ink"
         >
           Sign in to vote
