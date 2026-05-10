@@ -1,0 +1,56 @@
+{
+    "tenantSlug": "tamilnadu",
+    "timelineSlug": "2026",
+    "recentElectionOverview": {
+        "election": "Tamil Nadu Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "TVK emerged as the largest bloc in Tamil Nadu with 108 of 234 seats and 35.02% of the vote, ahead of the Secular Progressive Alliance's 73 seats and the AIADMK-led alliance's 53.",
+        "winnerTitle": "Largest bloc",
+        "winnerName": "Tamilaga Vettri Kazhagam and allies",
+        "winnerParty": "TVK+",
+        "totalVotesCast": 49324121,
+        "turnoutPercent": 85.1,
+        "registeredVoters": 57343291,
+        "resultBreakdown": [
+            {
+                "label": "TVK+",
+                "alliance": "TVK+",
+                "party": "Tamilaga Vettri Kazhagam-led bloc",
+                "votes": 17277032,
+                "voteSharePercent": 35.02,
+                "seats": 108,
+                "isWinner": true
+            },
+            {
+                "label": "Secular Progressive Alliance",
+                "alliance": "SPA",
+                "party": "DMK-led alliance",
+                "votes": 15482782,
+                "voteSharePercent": 31.4,
+                "seats": 73
+            },
+            {
+                "label": "AIADMK-led Alliance",
+                "alliance": "AIADMK+",
+                "party": "AIADMK-led alliance",
+                "votes": 13425260,
+                "voteSharePercent": 27.21,
+                "seats": 53
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI Tamil Nadu party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S22.htm"
+            },
+            {
+                "label": "ECI Tamil Nadu vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S22.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Tamil Nadu election summary and alliance table",
+                "url": "https://en.wikipedia.org/wiki/2026_Tamil_Nadu_Legislative_Assembly_election"
+            }
+        ]
+    }
+}

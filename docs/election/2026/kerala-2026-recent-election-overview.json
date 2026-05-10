@@ -1,0 +1,56 @@
+{
+    "tenantSlug": "kerala",
+    "timelineSlug": "2026",
+    "recentElectionOverview": {
+        "election": "Kerala Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The Congress-led United Democratic Front returned to power in Kerala with 102 of 140 seats and 46.54% of the vote, ending a decade of Left Democratic Front rule.",
+        "winnerTitle": "Winning alliance",
+        "winnerName": "United Democratic Front",
+        "winnerParty": "Congress-led alliance",
+        "totalVotesCast": 21595055,
+        "turnoutPercent": 79.7,
+        "registeredVoters": 27142952,
+        "resultBreakdown": [
+            {
+                "label": "United Democratic Front",
+                "alliance": "UDF",
+                "party": "Congress-led alliance",
+                "votes": 10051695,
+                "voteSharePercent": 46.54,
+                "seats": 102,
+                "isWinner": true
+            },
+            {
+                "label": "Left Democratic Front",
+                "alliance": "LDF",
+                "party": "CPI(M)-led alliance",
+                "votes": 8128438,
+                "voteSharePercent": 37.64,
+                "seats": 35
+            },
+            {
+                "label": "National Democratic Alliance",
+                "alliance": "NDA",
+                "party": "BJP-led alliance",
+                "votes": 3066385,
+                "voteSharePercent": 14.2,
+                "seats": 3
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI Kerala party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S11.htm"
+            },
+            {
+                "label": "ECI Kerala vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S11.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Kerala election summary and alliance table",
+                "url": "https://en.wikipedia.org/wiki/2026_Kerala_Legislative_Assembly_election"
+            }
+        ]
+    }
+}

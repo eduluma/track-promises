@@ -1,0 +1,71 @@
+{
+    "tenantSlug": "assam",
+    "timelineSlug": "2026",
+    "recentElectionOverview": {
+        "election": "Assam Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The BJP-led National Democratic Alliance retained Assam with 102 of 126 seats, with BJP alone winning 82 seats and 37.81% of the vote.",
+        "winnerTitle": "Winning alliance",
+        "winnerName": "National Democratic Alliance",
+        "winnerParty": "BJP-led alliance",
+        "totalVotesCast": 21665618,
+        "turnoutPercent": 85.38,
+        "registeredVoters": 24958139,
+        "resultBreakdown": [
+            {
+                "label": "Bharatiya Janata Party",
+                "alliance": "National Democratic Alliance",
+                "party": "BJP",
+                "votes": 8192787,
+                "voteSharePercent": 37.81,
+                "seats": 82,
+                "isWinner": true
+            },
+            {
+                "label": "Indian National Congress",
+                "alliance": "Asom Sonmilito Morcha",
+                "party": "INC",
+                "votes": 6464216,
+                "voteSharePercent": 29.84,
+                "seats": 19
+            },
+            {
+                "label": "Asom Gana Parishad",
+                "alliance": "National Democratic Alliance",
+                "party": "AGP",
+                "votes": 1402832,
+                "voteSharePercent": 6.47,
+                "seats": 10
+            },
+            {
+                "label": "Bodoland People's Front",
+                "alliance": "National Democratic Alliance",
+                "party": "BPF",
+                "votes": 807546,
+                "voteSharePercent": 3.73,
+                "seats": 10
+            },
+            {
+                "label": "All India United Democratic Front",
+                "party": "AIUDF",
+                "votes": 1182913,
+                "voteSharePercent": 5.46,
+                "seats": 2
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI Assam party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S03.htm"
+            },
+            {
+                "label": "ECI Assam vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S03.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Assam election summary",
+                "url": "https://en.wikipedia.org/wiki/2026_Assam_Legislative_Assembly_election"
+            }
+        ]
+    }
+}

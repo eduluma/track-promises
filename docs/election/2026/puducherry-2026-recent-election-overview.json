@@ -1,0 +1,72 @@
+{
+    "tenantSlug": "puducherry",
+    "timelineSlug": "2026",
+    "recentElectionOverview": {
+        "election": "Puducherry Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The National Democratic Alliance retained Puducherry with 18 of 30 elected seats; AINRC won 12, BJP won 4, and the Secular Progressive Alliance was held to 6 seats.",
+        "winnerTitle": "Winning alliance",
+        "winnerName": "National Democratic Alliance",
+        "winnerParty": "AINRC-led alliance",
+        "totalVotesCast": 866139,
+        "turnoutPercent": 89.87,
+        "registeredVoters": 950311,
+        "resultBreakdown": [
+            {
+                "label": "All India N.R. Congress",
+                "alliance": "National Democratic Alliance",
+                "party": "AINRC",
+                "votes": 200292,
+                "voteSharePercent": 23.12,
+                "seats": 12,
+                "isWinner": true
+            },
+            {
+                "label": "Dravida Munnetra Kazhagam",
+                "alliance": "Secular Progressive Alliance",
+                "party": "DMK",
+                "votes": 119036,
+                "voteSharePercent": 13.74,
+                "seats": 5
+            },
+            {
+                "label": "Bharatiya Janata Party",
+                "alliance": "National Democratic Alliance",
+                "party": "BJP",
+                "votes": 105583,
+                "voteSharePercent": 12.19,
+                "seats": 4
+            },
+            {
+                "label": "Tamilaga Vettri Kazhagam",
+                "alliance": "TVK-led Alliance",
+                "party": "TVK",
+                "votes": 144817,
+                "voteSharePercent": 16.72,
+                "seats": 2
+            },
+            {
+                "label": "Indian National Congress",
+                "alliance": "Secular Progressive Alliance",
+                "party": "INC",
+                "votes": 151934,
+                "voteSharePercent": 17.54,
+                "seats": 1
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI Puducherry party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-U07.htm"
+            },
+            {
+                "label": "ECI Puducherry vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-U07.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Puducherry election summary",
+                "url": "https://en.wikipedia.org/wiki/2026_Puducherry_Legislative_Assembly_election"
+            }
+        ]
+    }
+}
