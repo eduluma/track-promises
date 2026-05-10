@@ -25,6 +25,7 @@
 - [x] Add linting, formatting, test runner, and CI-friendly scripts.
 - [x] Add Docker Compose for PostgreSQL and optional Redis.
 - [x] Add `.env.example` for local development settings.
+- [x] Add `Taskfile.yaml` for local build, validation, and Docker Compose workflows.
 - [x] Add database migration setup.
 - [x] Create initial schema for tenants, tenant config, users, promises, sources, voting windows, votes, vote events, snapshots, status history, moderation reviews, and audit logs.
 - [x] Add seed data for a local tenant such as `tamilnadu` and a small promise set.

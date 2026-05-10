@@ -78,6 +78,7 @@ The current runnable stack is in a transition phase: a dedicated `api` service e
 8. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
 9. Run the API service directly outside Compose with `npm run api:dev`.
 10. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
+11. Use `task compose:deploy` to run the app build and bring the Compose stack up in one command, `task compose:down` to stop it, and `task --list-all` to see the available local automation tasks.
 
 Demo accounts for local sign-in:
 

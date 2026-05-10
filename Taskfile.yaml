@@ -1,0 +1,59 @@
+version: '3'
+
+vars:
+  COMPOSE_CMD: docker compose
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list-all
+    silent: true
+
+  install:
+    desc: Install Node dependencies
+    cmds:
+      - npm install
+
+  build:
+    desc: Build the Next.js app
+    cmds:
+      - npm run build
+
+  lint:
+    desc: Run ESLint checks
+    cmds:
+      - npm run lint
+
+  test:
+    desc: Run the Vitest suite
+    cmds:
+      - npm test
+
+  compose:config:
+    desc: Validate the Docker Compose configuration
+    cmds:
+      - '{{.COMPOSE_CMD}} config >/tmp/track-promises-compose.out'
+
+  compose:up:
+    desc: Start the local Docker Compose stack
+    cmds:
+      - '{{.COMPOSE_CMD}} up -d'
+
+  compose:down:
+    desc: Stop the local Docker Compose stack
+    cmds:
+      - '{{.COMPOSE_CMD}} down'
+
+  compose:logs:
+    desc: Tail Docker Compose logs
+    cmds:
+      - '{{.COMPOSE_CMD}} logs -f --tail=100'
+
+  compose:deploy:
+    desc: Build the app and deploy the local Docker Compose stack
+    deps:
+      - build
+      - compose:config
+    cmds:
+      - '{{.COMPOSE_CMD}} up -d'
