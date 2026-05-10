@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: track-promises-web
+  namespace: track-promises-prod
+  labels:
+    app: track-promises-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: track-promises-web
+  template:
+    metadata:
+      labels:
+        app: track-promises-web
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: web
+        image: ghcr.io/eduluma/track-promises-web:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: track-promises-secrets
+              key: DATABASE_URL
+        - name: NEXTAUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: track-promises-secrets
+              key: NEXTAUTH_SECRET
+        - name: NEXTAUTH_URL
+          value: https://trackpromises.eduluma.org
+        - name: TRACK_PROMISES_DEFAULT_TENANT
+          value: tamilnadu
+        - name: TRACK_PROMISES_PLATFORM_DOMAIN
+          value: trackpromises.eduluma.org
+        - name: TRACK_PROMISES_API_TRANSPORT
+          value: http
+        - name: TRACK_PROMISES_API_BASE_URL
+          value: http://track-promises-api:4000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: track-promises-web
+  namespace: track-promises-prod
+  labels:
+    app: track-promises-web
+spec:
+  type: ClusterIP
+  selector:
+    app: track-promises-web
+  ports:
+  - port: 3000
+    targetPort: http
+    protocol: TCP
+    name: http

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "track-promises.fullname" . }}-api
+  labels:
+    {{- include "track-promises.labels" . | nindent 4 }}
+    {{- include "track-promises.api.selectorLabels" . | nindent 4 }}
+spec:
+  {{- if not .Values.api.autoscaling.enabled }}
+  replicas: {{ .Values.api.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "track-promises.api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "track-promises.api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: api
+        image: "{{ .Values.api.image.repository }}:{{ include "track-promises.imageTag" (dict "tag" .Values.api.image.tag "global" .Values.global) }}"
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.api.service.port }}
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: PORT
+          value: {{ .Values.api.service.port | quote }}
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.api.existingSecret }}
+              key: DATABASE_URL
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          {{- toYaml .Values.api.resources | nindent 12 }}

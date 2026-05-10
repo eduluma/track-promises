@@ -1,0 +1,120 @@
+# Default values for track-promises Helm chart.
+# Override per environment with values-prod.yaml etc.
+
+global:
+  image:
+    pullPolicy: IfNotPresent
+    tag: latest
+  imagePullSecrets:
+    - name: regcred
+
+# -- Next.js web frontend
+web:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/eduluma/track-promises-web
+    tag: ""  # defaults to global.image.tag
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  ingress:
+    enabled: true
+    className: nginx
+    host: trackpromises.eduluma.org
+    tls:
+      enabled: true
+      secretName: track-promises-web-tls
+
+  env:
+    NEXTAUTH_URL: https://trackpromises.eduluma.org
+    TRACK_PROMISES_DEFAULT_TENANT: tamilnadu
+    TRACK_PROMISES_PLATFORM_DOMAIN: trackpromises.eduluma.org
+    TRACK_PROMISES_API_TRANSPORT: http
+    TRACK_PROMISES_API_BASE_URL: http://track-promises-api:4000
+
+  # Name of a pre-existing Secret containing DATABASE_URL and NEXTAUTH_SECRET
+  existingSecret: track-promises-secrets
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  autoscaling:
+    enabled: false
+
+# -- Hono API service
+api:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/eduluma/track-promises-api
+    tag: ""  # defaults to global.image.tag
+
+  service:
+    type: ClusterIP
+    port: 4000
+
+  ingress:
+    enabled: true
+    className: nginx
+    host: trackpromises-api.eduluma.org
+    tls:
+      enabled: true
+      secretName: track-promises-api-tls
+
+  # Name of a pre-existing Secret containing DATABASE_URL
+  existingSecret: track-promises-secrets
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+  autoscaling:
+    enabled: false
+
+# -- PostgreSQL StatefulSet (disable if using an external managed DB)
+postgres:
+  enabled: true
+
+  image:
+    repository: postgres
+    tag: "17-alpine"
+
+  service:
+    port: 5432
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: ""  # Uses cluster default (hostpath on Docker Desktop)
+
+  # Name of a pre-existing Secret containing POSTGRES_PASSWORD
+  existingSecret: track-promises-secrets
+  passwordKey: POSTGRES_PASSWORD
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# -- DB migration Job (runs as a post-install/post-upgrade Helm hook)
+migrate:
+  image:
+    repository: ghcr.io/eduluma/track-promises-web
+    tag: ""  # defaults to global.image.tag
+
+  existingSecret: track-promises-secrets

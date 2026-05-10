@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "track-promises.fullname" . }}-web
+  labels:
+    {{- include "track-promises.labels" . | nindent 4 }}
+    {{- include "track-promises.web.selectorLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.web.service.type }}
+  selector:
+    {{- include "track-promises.web.selectorLabels" . | nindent 4 }}
+  ports:
+  - port: {{ .Values.web.service.port }}
+    targetPort: http
+    protocol: TCP
+    name: http

@@ -5,6 +5,9 @@ coverage
 .DS_Store
 .env.local
 .env
+
+# K8s secrets — never commit filled-in secret files
+deploy/k8s/01-secrets.yaml
 .llm/*
 !.llm/.gitkeep
 !.llm/README.md

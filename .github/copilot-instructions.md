@@ -21,7 +21,25 @@ Use the planning documents in `docs/` as the source of truth for product scope a
 - Reusable domain modules under `src/modules/`.
 - Reusable components under `src/components/`.
 - Local development dependencies in `docker-compose.yml`.
-- Helm chart skeleton under `charts/track-promises/`.
+- Kubernetes + Helm deployment configs under `deploy/`.
+
+## Infrastructure / Deployment Environment
+
+| Machine  | Role             | Notes                                                                         |
+| -------- | ---------------- | ----------------------------------------------------------------------------- |
+| m4studio | Development host | Runs local docker compose stack; issues `kubectl`/`helm` commands against m1s |
+| m1studio | K8s cluster      | Docker Desktop Kubernetes; receives external traffic                          |
+
+**Traffic path:** Cloudflare DNS → Cloudflare Tunnel → m1studio → docker-desktop k8s nginx-ingress
+
+- Production namespace: `track-promises-prod`
+- Container images: `ghcr.io/eduluma/track-promises-web` and `ghcr.io/eduluma/track-promises-api`
+- TLS: cert-manager with `letsencrypt-prod` ClusterIssuer
+- Image pull: `regcred` secret in `track-promises-prod` (points at `ghcr.io`)
+- Production URLs: `trackpromises.eduluma.org` (web), `trackpromises-api.eduluma.org` (API)
+- DNS: all subdomains are 1-level under eduluma.org — covered by Cloudflare `*.eduluma.org` Universal SSL
+- Production URLs: `trackpromises.eduluma.org` (web), `trackpromises-api.eduluma.org` (API)
+- DNS note: all subdomains are 1-level under eduluma.org — covered by Cloudflare `*.eduluma.org` Universal SSL
 
 ## Implementation Guidance
 

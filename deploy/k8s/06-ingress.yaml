@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: track-promises-ingress
+  namespace: track-promises-prod
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - track-promises.eduluma.org
+    - "*.track-promises.eduluma.org"
+    secretName: track-promises-web-tls
+  - hosts:
+    - api.track-promises.eduluma.org
+    secretName: track-promises-api-tls
+  rules:
+  # Main app — catches root domain and all tenant subdomains (*.track-promises.eduluma.org)
+  - host: track-promises.eduluma.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: track-promises-web
+            port:
+              number: 3000
+  - host: "*.track-promises.eduluma.org"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: track-promises-web
+            port:
+              number: 3000
+  # API
+  - host: api.track-promises.eduluma.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: track-promises-api
+            port:
+              number: 4000
