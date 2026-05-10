@@ -12,7 +12,10 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts",
+    "worker:snapshots": "tsx src/workers/vote-snapshot-worker.ts",
+    "job:reconcile-votes": "tsx src/workers/reconcile-vote-aggregates.ts",
+    "import:promises": "tsx src/scripts/import-promises.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

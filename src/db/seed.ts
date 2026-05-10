@@ -105,6 +105,15 @@ async function seed() {
         );
     }
 
+    if (data.voteSnapshots.length > 0) {
+        await db.insert(voteSnapshots).values(
+            data.voteSnapshots.map((snapshot) => ({
+                ...snapshot,
+                snapshotAt: toDate(snapshot.snapshotAt)
+            }))
+        );
+    }
+
     if (data.statusHistory.length > 0) {
         await db.insert(promiseStatusHistory).values(
             data.statusHistory.map((entry) => ({
@@ -118,11 +127,21 @@ async function seed() {
         await db.insert(moderationReviews).values(
             data.moderationReviews.map((review) => ({
                 ...review,
-                subjectId: review.id,
-                status: review.status === "open" ? ("open" as const) : ("resolved" as const),
-                assignedModeratorId: null,
-                decision: null,
-                metadata: {}
+                status: review.status,
+                assignedModeratorId: review.assignedModeratorId,
+                decision: review.decision,
+                metadata: review.metadata,
+                createdAt: toDate(review.createdAt),
+                updatedAt: toDate(review.updatedAt)
+            }))
+        );
+    }
+
+    if (data.auditLogs.length > 0) {
+        await db.insert(auditLogs).values(
+            data.auditLogs.map((log) => ({
+                ...log,
+                createdAt: toDate(log.createdAt)
             }))
         );
     }

@@ -47,15 +47,15 @@
 
 ## Phase 2: Auditability And History
 
-- [ ] Add vote snapshot worker.
-- [ ] Add reconciliation job for aggregate counters.
-- [ ] Add promise status history UI.
-- [ ] Add source verification metadata.
-- [ ] Add admin audit log views.
-- [ ] Add historical vote trend charts.
-- [ ] Add CSV import tooling for promises.
-- [ ] Add trust-score rules based on account age, verification, moderation decisions, and abuse signals.
-- [ ] Add moderator review workflow for registrations and suspicious voting patterns.
+- [x] Add vote snapshot worker.
+- [x] Add reconciliation job for aggregate counters.
+- [x] Add promise status history UI.
+- [x] Add source verification metadata.
+- [x] Add admin audit log views.
+- [x] Add historical vote trend charts.
+- [x] Add CSV import tooling for promises.
+- [x] Add trust-score rules based on account age, verification, moderation decisions, and abuse signals.
+- [x] Add moderator review workflow for registrations and suspicious voting patterns.
 
 ## Phase 3: Scale And Discovery
 

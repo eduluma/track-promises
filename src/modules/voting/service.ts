@@ -1,6 +1,7 @@
 import { resolveTenantConfig } from "@/config/resolve-config";
 import { canUserVote, type DemoUser } from "@/lib/permissions";
 import { getPromiseById } from "@/modules/promises/repository";
+import { appendAuditLog } from "@/modules/audit/logs";
 import {
   appendVoteEvent,
   getVoteForUser,
@@ -148,6 +149,18 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
 
   upsertVote(voteRecord);
   appendVoteEvent(eventRecord);
+  appendAuditLog({
+    tenantId,
+    actorId: user.id,
+    action: existingVote ? "vote.changed" : "vote.created",
+    entityType: "promise",
+    entityId: promiseId,
+    metadata: {
+      previousValue: eventRecord.previousValue,
+      newValue: eventRecord.newValue
+    },
+    createdAt: timestamp
+  });
 
   return {
     summary: getPromiseVoteSummary({ tenantId, promiseId, userId: user.id }),

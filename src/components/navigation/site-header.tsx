@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { SessionActions } from "@/components/auth/session-actions";
-import { canManagePromises } from "@/lib/permissions";
+import { canManagePromises, canReviewModeration } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 
 export async function SiteHeader() {
@@ -19,8 +19,18 @@ export async function SiteHeader() {
                             Home
                         </Link>
                         {user && canManagePromises(user) ? (
-                            <Link href="/admin/promises/new" className="transition hover:text-ink">
-                                New promise
+                            <>
+                                <Link href="/admin/promises/new" className="transition hover:text-ink">
+                                    New promise
+                                </Link>
+                                <Link href="/admin/audit" className="transition hover:text-ink">
+                                    Audit
+                                </Link>
+                            </>
+                        ) : null}
+                        {user && canReviewModeration(user) ? (
+                            <Link href="/admin/moderation" className="transition hover:text-ink">
+                                Moderation
                             </Link>
                         ) : null}
                     </nav>

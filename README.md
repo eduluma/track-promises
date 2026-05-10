@@ -42,6 +42,9 @@ The repository now includes a runnable initial slice with:
 - Auth.js-backed demo sign-in with verified, limited, moderator, editor, and platform-admin accounts;
 - local in-memory voting flow with freeze-window enforcement and immutable vote events;
 - admin-only promise creation with reusable filter and form components;
+- vote snapshot capture, aggregate reconciliation, and historical sentiment charts;
+- admin audit views plus moderator review workflow and trust-score signals;
+- CSV import tooling for promise backfills;
 - Drizzle schema, migration generation, and seed scripts for PostgreSQL foundation work;
 - focused unit tests for config resolution, voting rules, and tenant host parsing;
 - Docker Compose for PostgreSQL and optional Redis;
@@ -54,7 +57,9 @@ The repository now includes a runnable initial slice with:
 3. Copy `.env.example` to `.env.local` and update secrets if needed.
 4. Generate database migrations with `npm run db:generate`.
 5. Run the app with `npm run dev`.
-6. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
+6. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
+7. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
+8. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
 
 Demo accounts for local sign-in:
 

@@ -12,9 +12,14 @@ export function SourceList({ sources }: SourceListProps) {
         {sources.map((source) => (
           <article key={source.id} className="rounded-2xl border border-ink/10 bg-white/70 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-medium text-ink">{source.publisher}</p>
+              <div>
+                <p className="font-medium text-ink">{source.publisher}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.16em] text-ink/50">
+                  Captured {new Date(source.capturedAt).toLocaleDateString()}
+                </p>
+              </div>
               <span className="rounded-full border border-ink/10 px-3 py-1 text-xs uppercase tracking-[0.16em] text-moss">
-                {source.verificationStatus}
+                {source.verificationStatus === "verified" ? "verified source" : "verification pending"}
               </span>
             </div>
             <p className="mt-3 text-sm leading-6 text-ink/72">{source.excerpt}</p>

@@ -1,6 +1,7 @@
 import { promiseRecords } from "@/modules/promises/data";
 import { getPromiseVoteSummary } from "@/modules/voting/service";
 import type { PromiseStatus } from "@/config/schemas";
+import { appendAuditLog } from "@/modules/audit/logs";
 
 type PromiseFilters = {
   userId?: string | null;
@@ -62,5 +63,20 @@ export function createPromise(input: CreatePromiseInput) {
   };
 
   promiseRecords.unshift(promise);
+
+  appendAuditLog({
+    tenantId: input.tenantId,
+    actorId: input.actorId,
+    action: "promise.created",
+    entityType: "promise",
+    entityId: id,
+    metadata: {
+      status: input.status,
+      category: input.category,
+      election: input.election
+    },
+    createdAt: timestamp
+  });
+
   return promise;
 }
