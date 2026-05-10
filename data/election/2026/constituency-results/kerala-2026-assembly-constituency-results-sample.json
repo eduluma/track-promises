@@ -1,0 +1,196 @@
+[
+  {
+    "state_key": "kerala",
+    "state_slug": "kerala",
+    "constituency_number": 1,
+    "constituency_name": "MANJESHWAR",
+    "state": "Kerala",
+    "evm_round": {
+      "current": 17,
+      "total": 17
+    },
+    "last_updated": "04:18 PM On 05/05/2026",
+    "source_url": "https://results.eci.gov.in/ResultAcGenMay2026/candidateswise-S111.htm",
+    "candidate_count": 12,
+    "candidates": [
+      {
+        "rank": 1,
+        "name": "A K M ASHRAF",
+        "party": "Indian Union Muslim League",
+        "status": "won",
+        "votes": 96948,
+        "margin": 29252,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/AKMAS-2026-20260325102628.jpg"
+      },
+      {
+        "rank": 2,
+        "name": "K SURENDRAN",
+        "party": "Bharatiya Janata Party",
+        "status": "lost",
+        "votes": 67696,
+        "margin": -29252,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/KSURE-2026-20260324053843.jpg"
+      },
+      {
+        "rank": 3,
+        "name": "K R JAYANANDA",
+        "party": "Communist Party of India (Marxist)",
+        "status": "lost",
+        "votes": 21212,
+        "margin": -75736,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/JAYAN-2026-20260324054718.jpg"
+      },
+      {
+        "rank": 4,
+        "name": "GEAN LAVINA MONTEIRO",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 523,
+        "margin": -96425,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/GEANL-2026-20260324052456.jpg"
+      },
+      {
+        "rank": 5,
+        "name": "KANNUR ABDULLA MASTER",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 285,
+        "margin": -96663,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/ABDUL-2026-20260324053104.jpg"
+      },
+      {
+        "rank": 6,
+        "name": "SANJEEVA",
+        "party": "Bahujan Samaj Party",
+        "status": "lost",
+        "votes": 212,
+        "margin": -96736,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/SANJE-2026-20260324055326.jpg"
+      },
+      {
+        "rank": 7,
+        "name": "D SURENDRAN NAIR",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 203,
+        "margin": -96745,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/DSURE-2026-20260325103644.jpg"
+      },
+      {
+        "rank": 8,
+        "name": "ABDUL LATHEEF I",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 79,
+        "margin": -96869,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s11/ABDUL-2026-20260323072045.jpg"
+      },
+      {
+        "rank": 9,
+        "name": "MOHAMMAD ASHRAF, PAPPIYAR HOUSE",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 78,
+        "margin": -96870,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/MOHAM-2026-20260324052952.jpg"
+      },
+      {
+        "rank": 10,
+        "name": "MOHAMMED ASHRAF K A, C. M. HOUSE",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 64,
+        "margin": -96884,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/MOHAM-2026-20260324054222.jpg"
+      },
+      {
+        "rank": 11,
+        "name": "JOHN D' SOUZA I",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 46,
+        "margin": -96902,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/JOHND-2026-20260324054042.jpg"
+      },
+      {
+        "rank": 12,
+        "name": "NOTA",
+        "party": "None of the Above",
+        "status": null,
+        "votes": 455,
+        "margin": -96493,
+        "image_url": "img/nota.jpg"
+      }
+    ]
+  },
+  {
+    "state_key": "kerala",
+    "state_slug": "kerala",
+    "constituency_number": 2,
+    "constituency_name": "KASARAGOD",
+    "state": "Kerala",
+    "evm_round": {
+      "current": 16,
+      "total": 16
+    },
+    "last_updated": "04:18 PM On 05/05/2026",
+    "source_url": "https://results.eci.gov.in/ResultAcGenMay2026/candidateswise-S112.htm",
+    "candidate_count": 6,
+    "candidates": [
+      {
+        "rank": 1,
+        "name": "KALLATRA MAHIN",
+        "party": "Indian Union Muslim League",
+        "status": "won",
+        "votes": 76396,
+        "margin": 22698,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s11/MAHIN-2026-20260323032302.jpg"
+      },
+      {
+        "rank": 2,
+        "name": "ASHWINI M L",
+        "party": "Bharatiya Janata Party",
+        "status": "lost",
+        "votes": 53698,
+        "margin": -22698,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S11/ASHWI-2026-20260323045231.jpg"
+      },
+      {
+        "rank": 3,
+        "name": "SHANAVAS PADHOOR",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 36678,
+        "margin": -39718,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s11/SHANA-2026-20260323041134.jpg"
+      },
+      {
+        "rank": 4,
+        "name": "SHANAVAS A A",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 893,
+        "margin": -75503,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s11/SHANA-2026-20260323041955.jpg"
+      },
+      {
+        "rank": 5,
+        "name": "MOHAMMED ALI FATHAH B M",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 824,
+        "margin": -75572,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s11/MOHAM-2026-20260323043319.jpg"
+      },
+      {
+        "rank": 6,
+        "name": "NOTA",
+        "party": "None of the Above",
+        "status": null,
+        "votes": 714,
+        "margin": -75682,
+        "image_url": "img/nota.jpg"
+      }
+    ]
+  }
+]

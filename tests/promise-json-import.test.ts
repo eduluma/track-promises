@@ -14,8 +14,9 @@ describe("promise json import", () => {
         expect(dataset.timeline.slug).toBe("2026");
         expect(dataset.recentElectionOverview).toEqual(
             expect.objectContaining({
-                officeHolder: "M. K. Stalin",
-                officeHolderParty: "DMK"
+                winnerName: "Tamilaga Vettri Kazhagam and allies",
+                winnerParty: "TVK+",
+                year: 2026
             })
         );
         expect(dataset.rows).toHaveLength(38);

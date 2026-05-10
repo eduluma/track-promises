@@ -74,8 +74,10 @@
 - [x] Add source-backed research notes for 2026 Kerala, West Bengal, Assam, and Puducherry election material.
 - [x] Add import-ready JSON datasets for Kerala 2026 front promises and Tamil Nadu 2026 TVK promises.
 - [x] Add recent-election overview metadata to the active state promise datasets.
+- [x] Add official 2026 recent-election overview files for Assam, Kerala, Puducherry, Tamil Nadu, and West Bengal under `docs/election/2026`.
 - [x] Surface recent-election snapshots above state timeline promise lists.
 - [x] Move active election datasets into `data/election/2026` and quarantine stale sample files under `to_delete/`.
+- [x] Move 2026 constituency-level Tamil Nadu and Kerala result dumps into `data/election/2026/constituency-results` with canonical state-first filenames.
 - [ ] Add first-class alliance modeling for multi-alliance elections within the same tenant timeline.
 - [ ] Add PostgreSQL full-text search.
 - [ ] Add Redis-backed rate limiting.

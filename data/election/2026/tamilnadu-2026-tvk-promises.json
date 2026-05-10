@@ -11,49 +11,54 @@
         "election": "Tamil Nadu Assembly Election 2026"
     },
     "recentElectionOverview": {
-        "election": "Tamil Nadu Legislative Assembly election 2021",
-        "year": 2021,
-        "summary": "The DMK-led Secular Progressive Alliance ended a decade of AIADMK rule and won 159 of 234 seats, returning M. K. Stalin to power as chief minister.",
-        "officeTitle": "Chief Minister",
-        "officeHolder": "M. K. Stalin",
-        "officeHolderParty": "DMK",
-        "totalVotesCast": 46344590,
-        "turnoutPercent": 73.63,
-        "registeredVoters": 62943693,
+        "election": "Tamil Nadu Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "TVK emerged as the largest bloc in Tamil Nadu with 108 of 234 seats and 35.02% of the vote, ahead of the Secular Progressive Alliance's 73 seats and the AIADMK-led alliance's 53.",
+        "winnerTitle": "Largest bloc",
+        "winnerName": "Tamilaga Vettri Kazhagam and allies",
+        "winnerParty": "TVK+",
+        "totalVotesCast": 49324121,
+        "turnoutPercent": 85.1,
+        "registeredVoters": 57343291,
         "resultBreakdown": [
             {
-                "label": "Secular Progressive Alliance",
-                "alliance": "Secular Progressive Alliance",
-                "party": "DMK-led front",
-                "votes": 20982088,
-                "voteSharePercent": 45.38,
-                "seats": 159,
+                "label": "TVK+",
+                "alliance": "TVK+",
+                "party": "Tamilaga Vettri Kazhagam-led bloc",
+                "votes": 17277032,
+                "voteSharePercent": 35.02,
+                "seats": 108,
                 "isWinner": true
             },
             {
-                "label": "National Democratic Alliance",
-                "alliance": "National Democratic Alliance",
-                "party": "AIADMK-led front",
-                "votes": 18363499,
-                "voteSharePercent": 39.71,
-                "seats": 75
+                "label": "Secular Progressive Alliance",
+                "alliance": "SPA",
+                "party": "DMK-led alliance",
+                "votes": 15482782,
+                "voteSharePercent": 31.4,
+                "seats": 73
             },
             {
-                "label": "Non-alliance parties",
-                "party": "NTK, MNM, AMMK and others",
-                "votes": 6919189,
-                "voteSharePercent": 14.9,
-                "seats": 0
+                "label": "AIADMK-led Alliance",
+                "alliance": "AIADMK+",
+                "party": "AIADMK-led alliance",
+                "votes": 13425260,
+                "voteSharePercent": 27.21,
+                "seats": 53
             }
         ],
         "sources": [
             {
-                "label": "Wikipedia summary and alliance result table",
-                "url": "https://en.wikipedia.org/wiki/2021_Tamil_Nadu_Legislative_Assembly_election"
+                "label": "ECI Tamil Nadu party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S22.htm"
             },
             {
-                "label": "Election Commission detailed results PDF",
-                "url": "https://archive.org/download/httpseci.gov.infilesfile13680-tamil-nadu-general-legislative-election-2021/10-%20Detailed%20Results.pdf"
+                "label": "ECI Tamil Nadu vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S22.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Tamil Nadu election summary and alliance table",
+                "url": "https://en.wikipedia.org/wiki/2026_Tamil_Nadu_Legislative_Assembly_election"
             }
         ]
     },

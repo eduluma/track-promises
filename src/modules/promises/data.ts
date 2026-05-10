@@ -38,9 +38,9 @@ export type RecentElectionOverview = {
   election: string;
   year: number;
   summary: string;
-  officeTitle: string;
-  officeHolder: string;
-  officeHolderParty: string;
+  winnerTitle: string;
+  winnerName: string;
+  winnerParty: string;
   totalVotesCast: number;
   turnoutPercent: number;
   registeredVoters: number;

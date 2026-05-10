@@ -55,9 +55,9 @@ export function TimelineHero({ tenant, timeline, config, promiseCount, reviewCou
                             <p className="mt-3 text-sm leading-6 text-ink/75">{recentElectionOverview.summary}</p>
                             <div className="mt-5 grid gap-3 sm:grid-cols-3">
                                 <div className="rounded-2xl border border-white/80 bg-white/80 p-4">
-                                    <p className="text-xs uppercase tracking-[0.18em] text-moss">{recentElectionOverview.officeTitle}</p>
-                                    <p className="mt-2 font-semibold text-ink">{recentElectionOverview.officeHolder}</p>
-                                    <p className="mt-1 text-sm text-ink/60">{recentElectionOverview.officeHolderParty}</p>
+                                    <p className="text-xs uppercase tracking-[0.18em] text-moss">{recentElectionOverview.winnerTitle}</p>
+                                    <p className="mt-2 font-semibold text-ink">{recentElectionOverview.winnerName}</p>
+                                    <p className="mt-1 text-sm text-ink/60">{recentElectionOverview.winnerParty}</p>
                                 </div>
                                 <div className="rounded-2xl border border-white/80 bg-white/80 p-4">
                                     <p className="text-xs uppercase tracking-[0.18em] text-moss">Votes cast</p>

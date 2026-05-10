@@ -1,0 +1,300 @@
+[
+  {
+    "constituency_number": 1,
+    "constituency_name": "GUMMIDIPOONDI",
+    "state": "Tamil Nadu",
+    "evm_round": {
+      "current": 26,
+      "total": 26
+    },
+    "last_updated": "04:18 PM On 05/05/2026",
+    "source_url": "https://results.eci.gov.in/ResultAcGenMay2026/candidateswise-S221.htm",
+    "candidate_count": 16,
+    "candidates": [
+      {
+        "rank": 1,
+        "name": "S.VIJAYAKUMAR",
+        "party": "Tamilaga Vettri Kazhagam",
+        "status": "won",
+        "votes": 94320,
+        "margin": 27945,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/SVIJ-2026-20260402031645.jpg"
+      },
+      {
+        "rank": 2,
+        "name": "SUDHAKAR.V",
+        "party": "All India Anna Dravida Munnetra Kazhagam",
+        "status": "lost",
+        "votes": 66375,
+        "margin": -27945,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/SUDHA-2026-20260402062552.jpg"
+      },
+      {
+        "rank": 3,
+        "name": "T.J.GOVINDARAJAN",
+        "party": "Dravida Munnetra Kazhagam",
+        "status": "lost",
+        "votes": 62492,
+        "margin": -31828,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/TJG-2026-20260405014126.jpg"
+      },
+      {
+        "rank": 4,
+        "name": "R.SRIDAR. B.L.,",
+        "party": "Naam Tamilar Katchi",
+        "status": "lost",
+        "votes": 4756,
+        "margin": -89564,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/RSRI-2026-20260405052923.jpg"
+      },
+      {
+        "rank": 5,
+        "name": "M.JAGADEESAN",
+        "party": "Bahujan Samaj Party",
+        "status": "lost",
+        "votes": 697,
+        "margin": -93623,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/MJAG-2026-20260405015034.jpg"
+      },
+      {
+        "rank": 6,
+        "name": "SDK SANKAR",
+        "party": "Aanaithinthiya Jananayaka Pathukappu Kazhagam",
+        "status": "lost",
+        "votes": 599,
+        "margin": -93721,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/SDKSA-2026-20260405010314.jpg"
+      },
+      {
+        "rank": 7,
+        "name": "G.RANJITH B.SC.L.L.B",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 503,
+        "margin": -93817,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/GRAN-2026-20260406081305.jpg"
+      },
+      {
+        "rank": 8,
+        "name": "K. CHANDRA SEKAR",
+        "party": "Veerath Thiyagi Viswanathadoss Thozhilalarkal Katchi",
+        "status": "lost",
+        "votes": 336,
+        "margin": -93984,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/KCHA-2026-20260405053245.jpg"
+      },
+      {
+        "rank": 9,
+        "name": "D.SUDHAKAR",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 321,
+        "margin": -93999,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/DSUD-2026-20260409033155.jpg"
+      },
+      {
+        "rank": 10,
+        "name": "M.KUMARAN",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 260,
+        "margin": -94060,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/2026/ac/E32/S22/1/1775302868PHOTO.jpg"
+      },
+      {
+        "rank": 11,
+        "name": "D.DINESH",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 222,
+        "margin": -94098,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/DDIN-2026-20260406045956.jpg"
+      },
+      {
+        "rank": 12,
+        "name": "V.SUDHAKAR",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 217,
+        "margin": -94103,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/VSUD-2026-20260404061942.jpg"
+      },
+      {
+        "rank": 13,
+        "name": "T.GOVINDAN",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 206,
+        "margin": -94114,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/TGOV-2026-20260406064842.jpg"
+      },
+      {
+        "rank": 14,
+        "name": "GOPAL.K",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 177,
+        "margin": -94143,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/GOPAL-2026-20260406090940.jpg"
+      },
+      {
+        "rank": 15,
+        "name": "A.H. SIVA GANESH",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 104,
+        "margin": -94216,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/AHS-2026-20260406084441.jpg"
+      },
+      {
+        "rank": 16,
+        "name": "NOTA",
+        "party": "None of the Above",
+        "status": null,
+        "votes": 937,
+        "margin": -93383,
+        "image_url": "img/nota.jpg"
+      }
+    ]
+  },
+  {
+    "constituency_number": 2,
+    "constituency_name": "PONNERI",
+    "state": "Tamil Nadu",
+    "evm_round": {
+      "current": 26,
+      "total": 26
+    },
+    "last_updated": "04:18 PM On 05/05/2026",
+    "source_url": "https://results.eci.gov.in/ResultAcGenMay2026/candidateswise-S222.htm",
+    "candidate_count": 14,
+    "candidates": [
+      {
+        "rank": 1,
+        "name": "DR.RAVI.M.S",
+        "party": "Tamilaga Vettri Kazhagam",
+        "status": "won",
+        "votes": 110439,
+        "margin": 55768,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/DRRA-2026-20260404072813.jpg"
+      },
+      {
+        "rank": 2,
+        "name": "DURAI CHANDRASEKAR",
+        "party": "Indian National Congress",
+        "status": "lost",
+        "votes": 54671,
+        "margin": -55768,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/DURAI-2026-20260406064530.jpg"
+      },
+      {
+        "rank": 3,
+        "name": "BALARAMAN.P",
+        "party": "All India Anna Dravida Munnetra Kazhagam",
+        "status": "lost",
+        "votes": 51468,
+        "margin": -58971,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/PBAL-2026-20260404070110.jpg"
+      },
+      {
+        "rank": 4,
+        "name": "RAJATHI.M",
+        "party": "Naam Tamilar Katchi",
+        "status": "lost",
+        "votes": 6676,
+        "margin": -103763,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/RAJAT-2026-20260409080206.jpg"
+      },
+      {
+        "rank": 5,
+        "name": "SANTHOSHKUMAR.J",
+        "party": "Bahujan Samaj Party",
+        "status": "lost",
+        "votes": 615,
+        "margin": -109824,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/JSAN-2026-20260402065444.jpg"
+      },
+      {
+        "rank": 6,
+        "name": "MALATHI.S",
+        "party": "Tamizhaga Murpokku Makkal Katchi",
+        "status": "lost",
+        "votes": 371,
+        "margin": -110068,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/SMAL-2026-20260409012640.jpg"
+      },
+      {
+        "rank": 7,
+        "name": "ASHOK PRIYADARSHAN",
+        "party": "Desiya Makkal Sakthi Katchi",
+        "status": "lost",
+        "votes": 366,
+        "margin": -110073,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/SASH-2026-20260404074530.jpg"
+      },
+      {
+        "rank": 8,
+        "name": "RAJA.S",
+        "party": "Vanchit Bahujan Aaghadi",
+        "status": "lost",
+        "votes": 299,
+        "margin": -110140,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/SRAJ-2026-20260404082916.jpg"
+      },
+      {
+        "rank": 9,
+        "name": "RAJASEKAR.J",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 289,
+        "margin": -110150,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/JRAJ-2026-20260406061741.jpg"
+      },
+      {
+        "rank": 10,
+        "name": "NAGAIYAN.G",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 232,
+        "margin": -110207,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/GNAG-2026-20260404075635.jpg"
+      },
+      {
+        "rank": 11,
+        "name": "VENKATESAN.S",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 203,
+        "margin": -110236,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/SVEN-2026-20260406062559.jpg"
+      },
+      {
+        "rank": 12,
+        "name": "KOTTEESWARAN. K",
+        "party": "Tamizhaga Vaazhvurimai Katchi",
+        "status": "lost",
+        "votes": 166,
+        "margin": -110273,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/S22/KOTTE-2026-20260409080346.jpg"
+      },
+      {
+        "rank": 13,
+        "name": "BARATHIRAJA.K",
+        "party": "Independent",
+        "status": "lost",
+        "votes": 159,
+        "margin": -110280,
+        "image_url": "https://results.eci.gov.in/uploads2/candprofile/E32/2026/AC/s22/KBAR-2026-20260406063412.jpg"
+      },
+      {
+        "rank": 14,
+        "name": "NOTA",
+        "party": "None of the Above",
+        "status": null,
+        "votes": 865,
+        "margin": -109574,
+        "image_url": "img/nota.jpg"
+      }
+    ]
+  }
+]

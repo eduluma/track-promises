@@ -11,50 +11,54 @@
         "election": "Kerala Assembly Election 2026"
     },
     "recentElectionOverview": {
-        "election": "Kerala Legislative Assembly election 2021",
-        "year": 2021,
-        "summary": "The Left Democratic Front became the first coalition in Kerala since 1977 to win consecutive full terms, returning Pinarayi Vijayan with 99 of 140 seats.",
-        "officeTitle": "Chief Minister",
-        "officeHolder": "Pinarayi Vijayan",
-        "officeHolderParty": "CPI(M)",
-        "totalVotesCast": 20903233,
-        "turnoutPercent": 76,
-        "registeredVoters": 27503768,
+        "election": "Kerala Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The Congress-led United Democratic Front returned to power in Kerala with 102 of 140 seats and 46.54% of the vote, ending a decade of Left Democratic Front rule.",
+        "winnerTitle": "Winning alliance",
+        "winnerName": "United Democratic Front",
+        "winnerParty": "Congress-led alliance",
+        "totalVotesCast": 21595055,
+        "turnoutPercent": 79.7,
+        "registeredVoters": 27142952,
         "resultBreakdown": [
-            {
-                "label": "Left Democratic Front",
-                "alliance": "LDF",
-                "party": "CPI(M)-led front",
-                "votes": 10555616,
-                "voteSharePercent": 45.43,
-                "seats": 99,
-                "isWinner": true
-            },
             {
                 "label": "United Democratic Front",
                 "alliance": "UDF",
-                "party": "Congress-led front",
-                "votes": 8196813,
-                "voteSharePercent": 39.47,
-                "seats": 41
+                "party": "Congress-led alliance",
+                "votes": 10051695,
+                "voteSharePercent": 46.54,
+                "seats": 102,
+                "isWinner": true
+            },
+            {
+                "label": "Left Democratic Front",
+                "alliance": "LDF",
+                "party": "CPI(M)-led alliance",
+                "votes": 8128438,
+                "voteSharePercent": 37.64,
+                "seats": 35
             },
             {
                 "label": "National Democratic Alliance",
                 "alliance": "NDA",
-                "party": "BJP-led front",
-                "votes": 2582289,
-                "voteSharePercent": 12.41,
-                "seats": 0
+                "party": "BJP-led alliance",
+                "votes": 3066385,
+                "voteSharePercent": 14.2,
+                "seats": 3
             }
         ],
         "sources": [
             {
-                "label": "Wikipedia summary and alliance result table",
-                "url": "https://en.wikipedia.org/wiki/2021_Kerala_Legislative_Assembly_election"
+                "label": "ECI Kerala party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S11.htm"
             },
             {
-                "label": "Chief Electoral Officer Kerala turnout report",
-                "url": "https://www.ceo.kerala.gov.in/pdf/GE-2021/VoterTurnout2021.pdf"
+                "label": "ECI Kerala vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S11.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Kerala election summary and alliance table",
+                "url": "https://en.wikipedia.org/wiki/2026_Kerala_Legislative_Assembly_election"
             }
         ]
     },
