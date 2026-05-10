@@ -1,4 +1,4 @@
-import { promiseRecords } from "@/modules/promises/data";
+import { promiseRecords, type PromiseSource } from "@/modules/promises/data";
 import { getPromiseVoteSummary } from "@/modules/voting/service";
 import type { PromiseStatus } from "@/config/schemas";
 import { appendAuditLog } from "@/modules/audit/logs";
@@ -20,8 +20,12 @@ type CreatePromiseInput = {
   election: string;
   personParty: string;
   status: PromiseStatus;
+  sources?: CreatePromiseSourceInput[];
   actorId: string;
 };
+
+type CreatePromiseSourceInput = Pick<PromiseSource, "url" | "publisher" | "excerpt"> &
+  Partial<Pick<PromiseSource, "capturedAt" | "verificationStatus">>;
 
 export function listPromisesForTenant(tenantId: string, filters: PromiseFilters = {}) {
   return promiseRecords
@@ -49,6 +53,14 @@ export function getPromiseById(tenantId: string, promiseId: string, timelineSlug
 export function createPromise(input: CreatePromiseInput) {
   const timestamp = new Date().toISOString();
   const id = `promise-${input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now()}`;
+  const sources = (input.sources ?? []).map((source, index) => ({
+    id: `${id}-source-${index + 1}`,
+    url: source.url,
+    publisher: source.publisher,
+    excerpt: source.excerpt,
+    capturedAt: source.capturedAt ?? timestamp,
+    verificationStatus: source.verificationStatus ?? "pending"
+  }));
   const promise = {
     id,
     tenantId: input.tenantId,
@@ -62,7 +74,7 @@ export function createPromise(input: CreatePromiseInput) {
     status: input.status,
     createdAt: timestamp,
     updatedAt: timestamp,
-    sources: [],
+    sources,
     statusHistory: [
       {
         previousStatus: null,
@@ -85,7 +97,8 @@ export function createPromise(input: CreatePromiseInput) {
       status: input.status,
       category: input.category,
       election: input.election,
-      timelineSlug: input.timelineSlug
+      timelineSlug: input.timelineSlug,
+      sourceCount: sources.length
     },
     createdAt: timestamp
   });

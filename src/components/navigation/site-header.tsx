@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SessionActions } from "@/components/auth/session-actions";
+import SessionActions from "@/components/auth/session-actions";
 import { canManagePromises, canReviewModeration } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 

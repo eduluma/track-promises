@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import type { PromiseStatus } from "@/config/schemas";
 
 export type PromiseSource = {
@@ -33,11 +36,103 @@ export type PromiseRecord = {
   statusHistory: PromiseStatusHistoryEntry[];
 };
 
+type PromiseDatasetSource = Pick<PromiseSource, "publisher" | "url" | "excerpt"> &
+  Partial<Pick<PromiseSource, "capturedAt" | "verificationStatus">>;
+
+type PromiseDatasetDocument = {
+  tenant: {
+    slug: string;
+    name: string;
+    jurisdiction: string;
+    country: string;
+  };
+  timeline: {
+    slug: string;
+    year: number;
+    election: string;
+  };
+  alliances: Array<{
+    id: string;
+    slug: string;
+    name: string;
+    memberParties: string[];
+    promises: Array<{
+      id?: string;
+      title: string;
+      description: string;
+      category: string;
+      jurisdiction?: string;
+      state?: string;
+      election: string;
+      personParty: string;
+      status: PromiseStatus;
+      sources?: PromiseDatasetSource[];
+    }>;
+  }>;
+};
+
+function getTenantIdFromSlug(slug: string) {
+  return slug === "india" ? "tenant-india-2029" : `tenant-${slug}`;
+}
+
+function readPromiseDataset(fileName: string): PromiseDatasetDocument {
+  const filePath = path.join(process.cwd(), "docs", fileName);
+
+  return JSON.parse(readFileSync(filePath, "utf8")) as PromiseDatasetDocument;
+}
+
+function toImportedPromiseRecords(dataset: PromiseDatasetDocument): PromiseRecord[] {
+  const createdAt = `${dataset.timeline.year}-01-01T00:00:00.000Z`;
+
+  return dataset.alliances.flatMap((alliance) =>
+    alliance.promises.map((promise) => {
+      const promiseId = promise.id ?? `${dataset.tenant.slug}-${dataset.timeline.slug}-${alliance.slug}-${promise.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+
+      return {
+        id: promiseId,
+        tenantId: getTenantIdFromSlug(dataset.tenant.slug),
+        timelineSlug: dataset.timeline.slug,
+        title: promise.title,
+        description: promise.description,
+        category: promise.category,
+        jurisdiction: promise.jurisdiction ?? promise.state ?? dataset.tenant.jurisdiction,
+        election: promise.election,
+        personParty: promise.personParty,
+        status: promise.status,
+        createdAt,
+        updatedAt: createdAt,
+        sources: (promise.sources ?? []).map((source, index) => ({
+          id: `${promiseId}-source-${index + 1}`,
+          url: source.url,
+          publisher: source.publisher,
+          excerpt: source.excerpt,
+          capturedAt: source.capturedAt ?? createdAt,
+          verificationStatus: source.verificationStatus ?? "pending"
+        })),
+        statusHistory: [
+          {
+            previousStatus: null,
+            newStatus: promise.status,
+            reason: `Imported from ${dataset.tenant.name} ${dataset.timeline.slug} election dataset.`,
+            changedAt: createdAt
+          }
+        ]
+      } satisfies PromiseRecord;
+    })
+  );
+}
+
+const importedPromiseRecords = [
+  ...toImportedPromiseRecords(readPromiseDataset("kerala-2026-front-promises.json")),
+  ...toImportedPromiseRecords(readPromiseDataset("tamilnadu-2026-tvk-promises.json"))
+];
+
 export const promiseRecords: PromiseRecord[] = [
+  ...importedPromiseRecords,
   {
     id: "promise-power",
     tenantId: "tenant-tamilnadu",
-    timelineSlug: "2026",
+    timelineSlug: "demo",
     title: "Deliver uninterrupted power to industrial districts",
     description:
       "Upgrade substations and transmission links across major industrial corridors to cut outage time and improve manufacturing reliability.",
@@ -84,7 +179,7 @@ export const promiseRecords: PromiseRecord[] = [
   {
     id: "promise-school-meals",
     tenantId: "tenant-tamilnadu",
-    timelineSlug: "2026",
+    timelineSlug: "demo",
     title: "Expand school meal coverage to all government higher secondary students",
     description:
       "Increase school meal program eligibility with district-by-district rollout and published funding milestones.",

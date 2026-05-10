@@ -7,7 +7,7 @@ type SessionActionsProps = {
     isAuthenticated: boolean;
 };
 
-export function SessionActions({ isAuthenticated }: SessionActionsProps) {
+export default function SessionActions({ isAuthenticated }: SessionActionsProps) {
     if (!isAuthenticated) {
         return (
             <Link href="/login" className="rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/70 transition hover:border-moss/40 hover:text-ink">

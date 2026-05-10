@@ -14,7 +14,7 @@ describe("timeline routing model", () => {
     it("filters promises by timeline slug", () => {
         const promises = listPromisesForTenant("tenant-tamilnadu", { timelineSlug: "2026" });
 
-        expect(promises).toHaveLength(2);
+        expect(promises).toHaveLength(38);
         expect(promises.every((promise) => promise.timelineSlug === "2026")).toBe(true);
     });
 

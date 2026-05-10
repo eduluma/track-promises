@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 import { importPromisesFromCsv } from "@/modules/promises/csv";
+import { importPromisesFromJson, parsePromiseDataset } from "@/modules/promises/json";
 import { getTenantBySlug } from "@/modules/tenants/data";
 import { getDefaultTimelineForTenant, getTimelineBySlug } from "@/modules/timelines/data";
 
@@ -15,12 +16,30 @@ function getArg(name: string) {
 
 async function main() {
     const filePath = getArg("--file");
-    const tenantSlug = getArg("--tenant");
-    const timelineSlug = getArg("--timeline");
+    const tenantSlugArg = getArg("--tenant");
+    const timelineSlugArg = getArg("--timeline");
     const actorId = getArg("--actor") ?? "editor-user";
 
-    if (!filePath || !tenantSlug) {
-        throw new Error("Usage: npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu [--timeline 2026] [--actor editor-user]");
+    if (!filePath) {
+        throw new Error("Usage: npm run import:promises -- --file path/to/promises.csv|json [--tenant tamilnadu] [--timeline 2026] [--actor editor-user]");
+    }
+
+    const fileText = await readFile(filePath, "utf8");
+    const isJsonDataset = filePath.endsWith(".json");
+    const dataset = isJsonDataset ? parsePromiseDataset(fileText) : null;
+    const tenantSlug = tenantSlugArg ?? dataset?.tenant.slug ?? null;
+    const timelineSlug = timelineSlugArg ?? dataset?.timeline.slug ?? null;
+
+    if (!tenantSlug) {
+        throw new Error("A tenant slug is required. JSON dataset files can provide it automatically via their top-level tenant.slug.");
+    }
+
+    if (dataset && tenantSlugArg && tenantSlugArg !== dataset.tenant.slug) {
+        throw new Error(`Tenant mismatch: file is for ${dataset.tenant.slug} but --tenant was ${tenantSlugArg}.`);
+    }
+
+    if (dataset && timelineSlugArg && timelineSlugArg !== dataset.timeline.slug) {
+        throw new Error(`Timeline mismatch: file is for ${dataset.timeline.slug} but --timeline was ${timelineSlugArg}.`);
     }
 
     const tenant = getTenantBySlug(tenantSlug);
@@ -35,13 +54,19 @@ async function main() {
         throw new Error(`Unknown timeline for tenant ${tenantSlug}: ${timelineSlug ?? "<default>"}`);
     }
 
-    const csvText = await readFile(filePath, "utf8");
-    const imported = importPromisesFromCsv({
-        csvText,
-        tenantId: tenant.id,
-        timelineSlug: timeline.slug,
-        actorId
-    });
+    const imported = isJsonDataset
+        ? importPromisesFromJson({
+            jsonText: fileText,
+            tenantId: tenant.id,
+            timelineSlug: timeline.slug,
+            actorId
+        })
+        : importPromisesFromCsv({
+            csvText: fileText,
+            tenantId: tenant.id,
+            timelineSlug: timeline.slug,
+            actorId
+        });
 
     console.log(`Imported ${imported.length} promises into ${tenant.slug}/${timeline.slug}.`);
 }

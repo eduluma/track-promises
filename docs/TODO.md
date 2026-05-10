@@ -71,6 +71,8 @@
 - [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
 - [ ] Add advanced filters for election year, timeline, alliance, jurisdiction, category, status, person/party, and source.
 - [x] Add normalized database tables for timelines, alliances, and timeline-alliance memberships.
+- [x] Add source-backed research notes for 2026 Kerala, West Bengal, Assam, and Puducherry election material.
+- [x] Add import-ready JSON datasets for Kerala 2026 front promises and Tamil Nadu 2026 TVK promises.
 - [ ] Add first-class alliance modeling for multi-alliance elections within the same tenant timeline.
 - [ ] Add PostgreSQL full-text search.
 - [ ] Add Redis-backed rate limiting.

@@ -28,12 +28,33 @@ const tenants: Tenant[] = [
     primaryDomain: "india.track-promises.localhost",
     tagline: "Prototype a national election workspace without hard-coding jurisdiction logic.",
     brandColor: "#54694b"
+  },
+  {
+    id: "tenant-kerala",
+    name: "Kerala",
+    slug: "kerala",
+    jurisdictionType: "State",
+    primaryDomain: "kerala.track-promises.localhost",
+    tagline: "Track competing front commitments, evidence, and fulfillment sentiment across Kerala.",
+    brandColor: "#0c6b58"
   }
 ];
 
 const tenantConfigOverrides: Record<string, Partial<TenantConfig>> = {
   "tenant-tamilnadu": {
-    categories: ["Infrastructure", "Energy", "Education", "Welfare"],
+    categories: [
+      "Women's Welfare",
+      "Health",
+      "Education",
+      "Jobs",
+      "Agriculture",
+      "Welfare",
+      "Housing",
+      "Infrastructure",
+      "Governance",
+      "Environment",
+      "Energy"
+    ],
     voteMeaning: "Public sentiment on whether this promise is on track for delivery.",
     moderationThreshold: 2
   },
@@ -44,6 +65,11 @@ const tenantConfigOverrides: Record<string, Partial<TenantConfig>> = {
       defaultFreezeAt: "2026-10-01T00:00:00.000Z",
       defaultEndAt: "2026-12-31T00:00:00.000Z"
     }
+  },
+  "tenant-kerala": {
+    categories: ["Welfare", "Jobs", "Health", "Housing", "Transport", "Infrastructure"],
+    voteMeaning: "Public sentiment on whether each front's election promise is on track for delivery.",
+    moderationThreshold: 2
   }
 };
 

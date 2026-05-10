@@ -29,6 +29,16 @@ const timelineRecords: Timeline[] = [
         officeTitle: "Prime Minister",
         officeHolder: "Demo profile placeholder",
         default: true
+    },
+    {
+        id: "timeline-kerala-2026",
+        tenantId: "tenant-kerala",
+        slug: "2026",
+        title: "Kerala 2026",
+        summary: "Track the 2026 Kerala assembly cycle across multiple competing fronts under one state timeline.",
+        officeTitle: "Chief Minister",
+        officeHolder: "Demo profile placeholder",
+        default: true
     }
 ];
 
