@@ -8,6 +8,13 @@
       "when": 1778390662680,
       "tag": "0000_harsh_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778397253538,
+      "tag": "0001_outgoing_annihilus",
+      "breakpoints": true
     }
   ]
 }

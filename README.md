@@ -69,17 +69,17 @@ The current runnable stack is in a transition phase: a dedicated `api` service e
 ## Local Development
 
 1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env.local` if you want to override ports or secrets.
-3. Start the app stack with `docker compose up`.
+2. Copy `.env.example` to `.env`; the task commands source that file before running Docker Compose.
+3. Start the app stack with `task up` so local database migrations are applied before the app services come up.
 4. Open `http://localhost:43000` to see the app.
-5. The Compose stack publishes the web app on `localhost:43000` and the API service on `localhost:44000`; PostgreSQL and Redis stay on the internal Docker network to avoid host-port collisions. Override `APP_PORT` or `API_PORT` if those ports are occupied on your machine.
+5. The Compose stack publishes the web app on `localhost:43000`, the API service on `localhost:44000`, and PostgreSQL on `localhost:5440`; PostgreSQL and Redis still stay on the internal Docker network for app-to-app traffic. Override `APP_PORT`, `API_PORT`, or `DB_PORT` in `.env` if those ports are occupied on your machine.
 6. Check the API service with `http://localhost:44000/health`.
 7. Browse generated API docs at `http://localhost:44000/docs` and regenerate the checked-in spec with `npm run api:openapi`.
 8. Run `npm run worker:snapshots` and `npm run job:reconcile-votes` when you want to refresh historical vote artifacts locally.
 9. Use `npm run import:promises -- --file path/to/promises.csv --tenant tamilnadu` for CSV promise imports.
 10. Run the API service directly outside Compose with `npm run api:dev`.
 11. Run tests with `npm test`, lint with `npm run lint`, and build with `npm run build`.
-12. Use `task compose:deploy` to run the app build and bring the Compose stack up in one command, `task compose:down` to stop it, and `task --list-all` to see the available local automation tasks.
+12. Use `task compose:migrate` to apply migrations manually, `task compose:down` to stop the stack, and `task --list-all` to see the available local automation tasks.
 
 Demo accounts for local sign-in:
 

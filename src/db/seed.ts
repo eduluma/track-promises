@@ -1,6 +1,7 @@
 import { getFoundationSeedData } from "@/db/seed-data";
 import { createDbClient } from "@/db/client";
 import {
+    alliances,
     auditLogs,
     moderationReviews,
     promiseSources,
@@ -8,6 +9,8 @@ import {
     promises,
     tenantConfigs,
     tenants,
+    timelineAlliances,
+    timelines,
     users,
     voteEvents,
     voteSnapshots,
@@ -31,6 +34,9 @@ async function seed() {
     await db.delete(promiseStatusHistory);
     await db.delete(promiseSources);
     await db.delete(promises);
+    await db.delete(timelineAlliances);
+    await db.delete(alliances);
+    await db.delete(timelines);
     await db.delete(votingWindows);
     await db.delete(tenantConfigs);
     await db.delete(users);
@@ -58,6 +64,18 @@ async function seed() {
 
     if (data.tenantConfigs.length > 0) {
         await db.insert(tenantConfigs).values(data.tenantConfigs);
+    }
+
+    if (data.timelines.length > 0) {
+        await db.insert(timelines).values(data.timelines);
+    }
+
+    if (data.alliances.length > 0) {
+        await db.insert(alliances).values(data.alliances);
+    }
+
+    if (data.timelineAlliances.length > 0) {
+        await db.insert(timelineAlliances).values(data.timelineAlliances);
     }
 
     await db.insert(promises).values(

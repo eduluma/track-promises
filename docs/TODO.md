@@ -67,8 +67,11 @@
 - [x] Add a separate Fastify API service for the existing write-path endpoints.
 - [x] Generate `openapi.json` and API docs from the new API service.
 - [x] Move current Next.js route handlers behind typed API clients.
+- [x] Ensure `task up` applies database migrations before the local stack comes up.
 - [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
-- [ ] Add advanced filters for election, jurisdiction, category, status, person/party, and source.
+- [ ] Add advanced filters for election year, timeline, alliance, jurisdiction, category, status, person/party, and source.
+- [x] Add normalized database tables for timelines, alliances, and timeline-alliance memberships.
+- [ ] Add first-class alliance modeling for multi-alliance elections within the same tenant timeline.
 - [ ] Add PostgreSQL full-text search.
 - [ ] Add Redis-backed rate limiting.
 - [ ] Add Redis-backed hot vote counters if needed.

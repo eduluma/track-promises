@@ -86,6 +86,73 @@ export const tenantConfigs = pgTable(
   (table) => [uniqueIndex("tenant_configs_key_idx").on(table.tenantId, table.configKey)]
 );
 
+export const timelines = pgTable(
+  "timelines",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull(),
+    year: integer("year").notNull(),
+    title: text("title").notNull(),
+    electionLabel: text("election_label").notNull(),
+    summary: text("summary").notNull(),
+    officeTitle: text("office_title").notNull(),
+    officeHolder: text("office_holder").notNull(),
+    isDefault: boolean("is_default").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => [
+    uniqueIndex("timelines_tenant_slug_idx").on(table.tenantId, table.slug),
+    index("timelines_tenant_year_idx").on(table.tenantId, table.year)
+  ]
+);
+
+export const alliances = pgTable(
+  "alliances",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    shortName: text("short_name"),
+    allianceType: text("alliance_type"),
+    metadata: jsonb("metadata").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => [uniqueIndex("alliances_tenant_slug_idx").on(table.tenantId, table.slug)]
+);
+
+export const timelineAlliances = pgTable(
+  "timeline_alliances",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    timelineId: text("timeline_id")
+      .notNull()
+      .references(() => timelines.id, { onDelete: "cascade" }),
+    allianceId: text("alliance_id")
+      .notNull()
+      .references(() => alliances.id, { onDelete: "cascade" }),
+    ballotLabel: text("ballot_label"),
+    manifestoUrl: text("manifesto_url"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => [
+    uniqueIndex("timeline_alliances_timeline_alliance_idx").on(table.timelineId, table.allianceId),
+    index("timeline_alliances_tenant_timeline_idx").on(table.tenantId, table.timelineId)
+  ]
+);
+
 export const promises = pgTable(
   "promises",
   {
@@ -93,6 +160,8 @@ export const promises = pgTable(
     tenantId: text("tenant_id")
       .notNull()
       .references(() => tenants.id, { onDelete: "cascade" }),
+    timelineId: text("timeline_id").references(() => timelines.id, { onDelete: "set null" }),
+    timelineAllianceId: text("timeline_alliance_id").references(() => timelineAlliances.id, { onDelete: "set null" }),
     title: text("title").notNull(),
     description: text("description").notNull(),
     category: text("category").notNull(),
@@ -269,16 +338,60 @@ export const auditLogs = pgTable(
 
 export const tenantRelations = relations(tenants, ({ many }) => ({
   configs: many(tenantConfigs),
+  timelines: many(timelines),
+  alliances: many(alliances),
+  timelineAlliances: many(timelineAlliances),
   promises: many(promises),
   votingWindows: many(votingWindows),
   moderationReviews: many(moderationReviews),
   auditLogs: many(auditLogs)
 }));
 
+export const timelineRelations = relations(timelines, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [timelines.tenantId],
+    references: [tenants.id]
+  }),
+  timelineAlliances: many(timelineAlliances),
+  promises: many(promises)
+}));
+
+export const allianceRelations = relations(alliances, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [alliances.tenantId],
+    references: [tenants.id]
+  }),
+  timelineAlliances: many(timelineAlliances)
+}));
+
+export const timelineAllianceRelations = relations(timelineAlliances, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [timelineAlliances.tenantId],
+    references: [tenants.id]
+  }),
+  timeline: one(timelines, {
+    fields: [timelineAlliances.timelineId],
+    references: [timelines.id]
+  }),
+  alliance: one(alliances, {
+    fields: [timelineAlliances.allianceId],
+    references: [alliances.id]
+  }),
+  promises: many(promises)
+}));
+
 export const promiseRelations = relations(promises, ({ one, many }) => ({
   tenant: one(tenants, {
     fields: [promises.tenantId],
     references: [tenants.id]
+  }),
+  timeline: one(timelines, {
+    fields: [promises.timelineId],
+    references: [timelines.id]
+  }),
+  timelineAlliance: one(timelineAlliances, {
+    fields: [promises.timelineAllianceId],
+    references: [timelineAlliances.id]
   }),
   sources: many(promiseSources),
   votes: many(votes),

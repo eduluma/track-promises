@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   COMPOSE_CMD: docker compose
+  ENV_SETUP: if [ -f .env ]; then set -a && . ./.env && set +a; fi
 
 tasks:
   default:
@@ -33,27 +34,42 @@ tasks:
   compose:config:
     desc: Validate the Docker Compose configuration
     cmds:
-      - '{{.COMPOSE_CMD}} config >/tmp/track-promises-compose.out'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} config >/tmp/track-promises-compose.out'
+
+  compose:migrate:
+    desc: Apply database migrations against the local Docker Compose PostgreSQL service
+    deps:
+      - compose:config
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d postgres'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} --profile tools run --rm migrate'
+
+  up:
+    desc: Start the local Docker Compose stack and apply database migrations
+    deps:
+      - compose:migrate
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d'
 
   compose:up:
-    desc: Start the local Docker Compose stack
+    desc: Start the local Docker Compose stack and apply database migrations
     cmds:
-      - '{{.COMPOSE_CMD}} up -d'
+      - task: up
 
   compose:down:
     desc: Stop the local Docker Compose stack
     cmds:
-      - '{{.COMPOSE_CMD}} down'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} down'
 
   compose:logs:
     desc: Tail Docker Compose logs
     cmds:
-      - '{{.COMPOSE_CMD}} logs -f --tail=100'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} logs -f --tail=100'
 
   compose:deploy:
     desc: Build the app and deploy the local Docker Compose stack
     deps:
       - build
-      - compose:config
+      - compose:migrate
     cmds:
-      - '{{.COMPOSE_CMD}} up -d'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d'
