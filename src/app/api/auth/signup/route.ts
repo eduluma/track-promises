@@ -39,8 +39,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ ok: false, error: result.error }, { status: 409 });
     }
 
-    // Persist to the database (best-effort — in-memory store is the source of
-    // truth for auth until Phase 3 DB migration is complete).
+    // Persist to the database — this is the authoritative store that survives restarts.
     try {
         const db = createDbClient();
         await db
@@ -57,8 +56,8 @@ export async function POST(request: Request) {
             })
             .onConflictDoNothing();
     } catch (err) {
-        // Log but don't fail the signup — auth still works via in-memory store.
-        console.warn("[signup] DB persist failed:", err);
+        console.error("[signup] DB persist failed:", err);
+        return NextResponse.json({ ok: false, error: "Registration failed. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({
