@@ -76,6 +76,69 @@ tasks:
     cmds:
       - task: up
 
+  # ── Database utilities ────────────────────────────────────────────────────
+  db:shell:
+    desc: Open an interactive psql shell to the local PostgreSQL (reads DATABASE_URL from .env)
+    cmds:
+      - '{{.ENV_SETUP}}; psql "$DATABASE_URL"'
+
+  db:users:
+    desc: List all users in the DB (id, email, role, state, email_verified, created_at)
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, email, role, state, email_verified, created_at FROM users ORDER BY created_at;"
+    silent: false
+
+  db:promises:
+    desc: List all promises in the DB (id, tenant_id, status, title)
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, tenant_id, status, title FROM promises ORDER BY tenant_id, id;"
+    silent: false
+
+  db:counts:
+    desc: Show row counts for every main table
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c "
+          SELECT 'users'             AS table_name, count(*) FROM users
+          UNION ALL SELECT 'tenants',               count(*) FROM tenants
+          UNION ALL SELECT 'promises',              count(*) FROM promises
+          UNION ALL SELECT 'promise_sources',       count(*) FROM promise_sources
+          UNION ALL SELECT 'votes',                 count(*) FROM votes
+          UNION ALL SELECT 'vote_events',           count(*) FROM vote_events
+          UNION ALL SELECT 'vote_snapshots',        count(*) FROM vote_snapshots
+          UNION ALL SELECT 'timelines',             count(*) FROM timelines
+          UNION ALL SELECT 'alliances',             count(*) FROM alliances
+          UNION ALL SELECT 'moderation_reviews',    count(*) FROM moderation_reviews
+          UNION ALL SELECT 'audit_logs',            count(*) FROM audit_logs
+          ORDER BY 1;"
+    silent: false
+
+  db:votes:
+    desc: List all votes in the DB (id, user_id, promise_id, value, vote_category)
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, user_id, promise_id, value, vote_category FROM votes ORDER BY user_id, promise_id;"
+    silent: false
+
+  db:seed:
+    desc: Seed the database with foundation data (runs src/db/seed.ts)
+    cmds:
+      - npm run db:seed
+
+  db:migrate:
+    desc: Apply pending Drizzle migrations against the local PostgreSQL
+    cmds:
+      - npm run db:migrate
+
   # ── Kubernetes (m1s docker-desktop) ──────────────────────────────────────
   k8s:ns:
     desc: Create the track-promises-prod namespace

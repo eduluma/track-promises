@@ -79,6 +79,33 @@ const seedDemoUsers: DemoUserRecord[] = [
         trustScore: 10,
         abuseFlags: ["repeated_signup_attempts", "velocity_anomaly"],
         tenantIds: ["tenant-tamilnadu"]
+    },
+    // Seed-only observer accounts used in sample vote records
+    {
+        id: "observer-1",
+        email: "observer1@track-promises.local",
+        displayName: "Observer One",
+        password: "observer-1-password",
+        createdAt: "2026-02-01T00:00:00.000Z",
+        emailVerified: true,
+        state: "verified",
+        role: "user",
+        trustScore: 30,
+        abuseFlags: [],
+        tenantIds: ["tenant-tamilnadu"]
+    },
+    {
+        id: "observer-2",
+        email: "observer2@track-promises.local",
+        displayName: "Observer Two",
+        password: "observer-2-password",
+        createdAt: "2026-02-15T00:00:00.000Z",
+        emailVerified: true,
+        state: "verified",
+        role: "user",
+        trustScore: 25,
+        abuseFlags: [],
+        tenantIds: ["tenant-tamilnadu"]
     }
 ];
 

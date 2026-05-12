@@ -167,7 +167,9 @@ async function seed() {
     console.log(`Seeded ${data.tenants.length} tenants, ${data.promises.length} promises, and ${data.users.length} users.`);
 }
 
-seed().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-});
+seed()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
