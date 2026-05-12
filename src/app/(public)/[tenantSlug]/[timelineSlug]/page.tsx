@@ -44,7 +44,7 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
     const reviews = getOpenModerationReviewsForTenant(tenant.id);
     const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
     const timelineScore = getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug });
-    const canVote = Boolean(user && canUserVote(user));
+    const canVote = canUserVote(user);
     const sharedSearchParams = {
         category,
         status

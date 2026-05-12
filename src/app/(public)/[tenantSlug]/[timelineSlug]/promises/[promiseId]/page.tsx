@@ -134,7 +134,7 @@ export default async function TimelinePromiseDetailPage({ params }: TimelineProm
                         initialSummary={summary}
                         initialWindowState={votingWindow.state}
                         isAuthenticated={Boolean(user)}
-                        canVote={Boolean(user && canUserVote(user))}
+                        canVote={canUserVote(user)}
                     />
                 </div>
             </section>

@@ -54,11 +54,11 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-moss">Public assessment</p>
       <h2 className="mt-2 text-2xl font-semibold text-ink">Current delivery stage</h2>
       <p className="mt-3 text-sm leading-6 text-ink/70">
-        {isAuthenticated
-          ? canVote
+        {!canVote
+          ? "This account cannot vote (suspended or read-only)."
+          : isAuthenticated
             ? "Choose the stage that best reflects what has actually been delivered so far."
-            : "This signed-in account is not eligible to vote until verification or moderation is complete."
-          : "Sign in with a seeded demo account to submit a delivery-stage assessment."}
+            : "You\u2019re voting as a guest \u2014 your assessment counts but carries lower weight. Sign in or create an account to have it verified."}
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3 text-center">
@@ -87,8 +87,8 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
               onClick={() => submitVote(option.value)}
               disabled={buttonsDisabled}
               className={`rounded-full border px-4 py-3 text-sm font-semibold transition ${isCurrent
-                  ? "border-moss bg-moss text-white"
-                  : "border-ink/10 bg-white/80 text-ink hover:border-moss/35"
+                ? "border-moss bg-moss text-white"
+                : "border-ink/10 bg-white/80 text-ink hover:border-moss/35"
                 } disabled:cursor-not-allowed disabled:opacity-50`}
             >
               {option.label}
@@ -105,6 +105,12 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
         ))}
       </div>
 
+      <div className="mt-3 flex flex-wrap gap-2 text-xs text-ink/55">
+        <span className="rounded-full bg-moss/10 px-3 py-1 text-moss">✓ verified {summary.categoryCounts.verified}</span>
+        <span className="rounded-full bg-white/70 px-3 py-1">unverified {summary.categoryCounts.unverified}</span>
+        <span className="rounded-full bg-white/70 px-3 py-1">guest {summary.categoryCounts.guest}</span>
+      </div>
+
       <div className="mt-5 rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-ink/70">
         <p>Window state: {windowState}</p>
         <p className="mt-2">Your current assessment: {formatVoteValue(summary.currentVote)}</p>
@@ -112,12 +118,20 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
       </div>
 
       {!isAuthenticated ? (
-        <Link
-          href={`/login?redirectTo=/${tenantSlug}/${timelineSlug}/promises/${promiseId}`}
-          className="mt-4 inline-flex rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/75 transition hover:border-moss/35 hover:text-ink"
-        >
-          Sign in to assess
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href={`/signup?redirectTo=/${tenantSlug}/${timelineSlug}/promises/${promiseId}`}
+            className="inline-flex rounded-full bg-moss px-4 py-2 text-sm font-medium text-white transition hover:bg-moss/85"
+          >
+            Create account
+          </Link>
+          <Link
+            href={`/login?redirectTo=/${tenantSlug}/${timelineSlug}/promises/${promiseId}`}
+            className="inline-flex rounded-full border border-ink/10 px-4 py-2 text-sm font-medium text-ink/75 transition hover:border-moss/35 hover:text-ink"
+          >
+            Sign in
+          </Link>
+        </div>
       ) : null}
 
       {errorMessage ? <p className="mt-4 text-sm font-medium text-[#b42318]">{errorMessage}</p> : null}

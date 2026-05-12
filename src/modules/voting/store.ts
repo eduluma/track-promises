@@ -1,3 +1,4 @@
+import type { VoteCategory } from "@/lib/permissions";
 import type { VoteValue } from "@/modules/voting/assessment";
 
 export type VoteRecord = {
@@ -5,6 +6,7 @@ export type VoteRecord = {
   promiseId: string;
   userId: string;
   value: VoteValue;
+  voteCategory: VoteCategory;
   createdAt: string;
   updatedAt: string;
 };
@@ -15,6 +17,7 @@ export type VoteEventRecord = {
   userId: string;
   previousValue: VoteValue | null;
   newValue: VoteValue;
+  voteCategory: VoteCategory;
   eventType: "created" | "changed";
   createdAt: string;
 };
@@ -30,6 +33,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "tn-2026-tvk-free-electricity-200-units",
     userId: "demo-user",
     value: "started",
+    voteCategory: "verified",
     createdAt: "2026-04-13T00:00:00.000Z",
     updatedAt: "2026-04-13T00:00:00.000Z"
   },
@@ -38,6 +42,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "tn-2026-tvk-free-electricity-200-units",
     userId: "observer-1",
     value: "in_progress",
+    voteCategory: "verified",
     createdAt: "2026-04-20T00:00:00.000Z",
     updatedAt: "2026-04-20T00:00:00.000Z"
   },
@@ -46,6 +51,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "tn-2026-tvk-water-pipeline-connections",
     userId: "observer-2",
     value: "not_started",
+    voteCategory: "verified",
     createdAt: "2026-05-01T00:00:00.000Z",
     updatedAt: "2026-05-01T00:00:00.000Z"
   },
@@ -54,6 +60,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "promise-power",
     userId: "demo-user",
     value: "in_progress",
+    voteCategory: "verified",
     createdAt: "2026-04-13T00:00:00.000Z",
     updatedAt: "2026-04-13T00:00:00.000Z"
   },
@@ -62,6 +69,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "promise-power",
     userId: "observer-1",
     value: "started",
+    voteCategory: "verified",
     createdAt: "2026-04-13T00:00:00.000Z",
     updatedAt: "2026-04-13T00:00:00.000Z"
   },
@@ -70,6 +78,7 @@ const seedVotes: VoteRecord[] = [
     promiseId: "promise-school-meals",
     userId: "observer-2",
     value: "completed",
+    voteCategory: "verified",
     createdAt: "2026-05-01T00:00:00.000Z",
     updatedAt: "2026-05-01T00:00:00.000Z"
   }
@@ -90,6 +99,7 @@ function createInitialStore(): VoteStore {
       userId: vote.userId,
       previousValue: null,
       newValue: vote.value,
+      voteCategory: vote.voteCategory,
       eventType: "created",
       createdAt: vote.createdAt
     }))

@@ -1,5 +1,5 @@
 import { resolveTenantConfig } from "@/config/resolve-config";
-import { canUserVote, type DemoUser } from "@/lib/permissions";
+import { canUserVote, getVoteCategory, type DemoUser, type VoteCategory } from "@/lib/permissions";
 import { getPromiseById } from "@/modules/promises/repository";
 import { appendAuditLog } from "@/modules/audit/logs";
 import { calculateVoteAggregate, type VoteValue } from "@/modules/voting/assessment";
@@ -18,6 +18,7 @@ export type VotingState = "scheduled" | "open" | "frozen" | "closed";
 
 export type VoteSummary = {
   counts: Record<VoteValue, number>;
+  categoryCounts: Record<VoteCategory, number>;
   completionPercent: number;
   dominantVote: VoteValue | null;
   currentVote: VoteValue | null;
@@ -34,7 +35,8 @@ type VotingWindow = {
 type CastVoteInput = {
   tenantId: string;
   promiseId: string;
-  user: DemoUser;
+  /** null for unauthenticated guest voters */
+  user: DemoUser | null;
   value: VoteValue;
   now?: Date;
 };
@@ -103,8 +105,14 @@ export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSumma
   const currentVote = userId ? getVoteForUser(tenantId, promiseId, userId) : null;
   const aggregate = calculateVoteAggregate(votes);
 
+  const categoryCounts: Record<VoteCategory, number> = { verified: 0, unverified: 0, guest: 0 };
+  for (const vote of votes) {
+    categoryCounts[vote.voteCategory] += 1;
+  }
+
   return {
     counts: aggregate.counts,
+    categoryCounts,
     completionPercent: aggregate.completionPercent,
     dominantVote: aggregate.dominantVote,
     currentVote: currentVote?.value ?? null,
@@ -120,7 +128,7 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   }
 
   if (!canUserVote(user)) {
-    throw new VoteError("FORBIDDEN", "This account is not eligible to vote yet.", 403);
+    throw new VoteError("FORBIDDEN", "This account is not eligible to vote.", 403);
   }
 
   const votingWindow = getVotingWindowStatusForPromise({ tenantId, promiseId, now });
@@ -128,12 +136,14 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
     throw new VoteError("WINDOW_CLOSED", `Voting is ${votingWindow.state} for this promise.`, 409);
   }
 
-  const existingVote = getVoteForUser(tenantId, promiseId, user.id);
+  const userId = user?.id ?? "guest";
+  const voteCategory = getVoteCategory(user);
+  const existingVote = getVoteForUser(tenantId, promiseId, userId);
   const timestamp = now.toISOString();
 
   if (existingVote?.value === value) {
     return {
-      summary: getPromiseVoteSummary({ tenantId, promiseId, userId: user.id }),
+      summary: getPromiseVoteSummary({ tenantId, promiseId, userId }),
       event: null
     };
   }
@@ -141,8 +151,9 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   const voteRecord: VoteRecord = {
     tenantId,
     promiseId,
-    userId: user.id,
+    userId,
     value,
+    voteCategory,
     createdAt: existingVote?.createdAt ?? timestamp,
     updatedAt: timestamp
   };
@@ -150,9 +161,10 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   const eventRecord: VoteEventRecord = {
     tenantId,
     promiseId,
-    userId: user.id,
+    userId,
     previousValue: existingVote?.value ?? null,
     newValue: value,
+    voteCategory,
     eventType: existingVote ? "changed" : "created",
     createdAt: timestamp
   };
@@ -161,20 +173,21 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   appendVoteEvent(eventRecord);
   appendAuditLog({
     tenantId,
-    actorId: user.id,
+    actorId: userId,
     action: existingVote ? "vote.changed" : "vote.created",
     entityType: "promise",
     entityId: promiseId,
     metadata: {
       previousValue: eventRecord.previousValue,
-      newValue: eventRecord.newValue
+      newValue: eventRecord.newValue,
+      voteCategory
     },
     createdAt: timestamp
   });
   const projection = upsertTimelineScoreProjection({ tenantId, timelineSlug: promise.timelineSlug, now });
   appendAuditLog({
     tenantId,
-    actorId: user.id,
+    actorId: userId,
     action: "timeline_score.recalculated",
     entityType: "timeline",
     entityId: promise.timelineSlug,
@@ -191,7 +204,7 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   });
 
   return {
-    summary: getPromiseVoteSummary({ tenantId, promiseId, userId: user.id }),
+    summary: getPromiseVoteSummary({ tenantId, promiseId, userId }),
     event: eventRecord
   };
 }

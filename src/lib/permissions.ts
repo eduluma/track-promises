@@ -2,6 +2,8 @@ export type AccountState = "unverified" | "verified" | "readonly" | "suspended" 
 
 export type UserRole = "guest" | "user" | "promise_editor" | "moderator" | "tenant_admin" | "platform_admin";
 
+export type VoteCategory = "verified" | "unverified" | "guest";
+
 export type DemoUser = {
   id: string;
   email?: string | null;
@@ -11,8 +13,26 @@ export type DemoUser = {
   tenantIds?: string[];
 };
 
-export function canUserVote(user: DemoUser) {
-  return user.emailVerified && (user.state === "verified" || user.state === "moderator_approved");
+/**
+ * Returns the trust category of a vote cast by this user (or null for guest).
+ * - "verified"   : email confirmed + account state cleared
+ * - "unverified" : registered but not yet verified
+ * - "guest"      : no account / guest session
+ */
+export function getVoteCategory(user: DemoUser | null): VoteCategory {
+  if (!user || user.role === "guest") return "guest";
+  if (user.emailVerified && (user.state === "verified" || user.state === "moderator_approved")) return "verified";
+  return "unverified";
+}
+
+/**
+ * Whether the user is allowed to cast a vote at all.
+ * Suspended and readonly accounts are blocked; everyone else (including
+ * unverified registrations and guests) may vote — their category is tracked.
+ */
+export function canUserVote(user: DemoUser | null): boolean {
+  if (!user || user.role === "guest") return true;
+  return user.state !== "suspended" && user.state !== "readonly";
 }
 
 export function canManagePromises(user: DemoUser) {

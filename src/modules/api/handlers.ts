@@ -37,10 +37,6 @@ function unauthorized(message: string): ApiHandlerResult<never> {
 }
 
 export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiHandlerResult<VotePayload> {
-    if (!user) {
-        return unauthorized("Sign in is required to vote.");
-    }
-
     const parsed = voteRequestSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -53,7 +49,10 @@ export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiH
         return { status: 404, payload: { error: "Unknown tenant." } };
     }
 
-    if (!canAccessTenant(user, tenant.id)) {
+    // Registered non-guest users must belong to the tenant (or be platform_admin).
+    // Guest users (role === "guest" or no user) may vote in any tenant.
+    const isGuest = !user || user.role === "guest";
+    if (!isGuest && !canAccessTenant(user, tenant.id)) {
         return { status: 403, payload: { error: "This account cannot vote in that tenant." } };
     }
 
@@ -63,7 +62,7 @@ export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiH
             payload: castVote({
                 tenantId: tenant.id,
                 promiseId: parsed.data.promiseId,
-                user,
+                user: user ?? null,
                 value: parsed.data.value
             })
         };
