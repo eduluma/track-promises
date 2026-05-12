@@ -43,14 +43,39 @@ const healthResponseSchema = {
 
 const voteSummarySchema = {
     type: "object",
-    required: ["counts", "completionPercent", "dominantVote", "currentVote", "totalVotes", "eventCount"],
+    required: [
+        "counts",
+        "categoryCounts",
+        "completionPercent",
+        "verifiedCompletionPercent",
+        "verifiedVotes",
+        "guestCompletionPercent",
+        "guestVotes",
+        "dominantVote",
+        "currentVote",
+        "totalVotes",
+        "eventCount"
+    ],
     properties: {
         counts: {
             type: "object",
             required: [...voteValueOrder],
             properties: Object.fromEntries(voteValueOrder.map((value) => [value, { type: "integer" }]))
         },
+        categoryCounts: {
+            type: "object",
+            required: ["verified", "unverified", "guest"],
+            properties: {
+                verified: { type: "integer" },
+                unverified: { type: "integer" },
+                guest: { type: "integer" }
+            }
+        },
         completionPercent: { type: "integer" },
+        verifiedCompletionPercent: { type: "integer" },
+        verifiedVotes: { type: "integer" },
+        guestCompletionPercent: { type: "integer" },
+        guestVotes: { type: "integer" },
         dominantVote: {
             anyOf: [{ type: "string", enum: [...voteValueOrder] }, { type: "null" }]
         },

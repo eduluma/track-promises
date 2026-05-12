@@ -26,6 +26,10 @@ function loadEnvFile(filePath) {
             continue;
         }
 
+        if (process.env[key] !== undefined) {
+            continue;
+        }
+
         let value = trimmed.slice(separatorIndex + 1);
 
         if (

@@ -14,6 +14,42 @@ import {
   type VoteRecord
 } from "@/modules/voting/store";
 
+export function computeVoteSummary({
+  votes,
+  events,
+  currentVote
+}: {
+  votes: VoteRecord[];
+  events: VoteEventRecord[];
+  currentVote: VoteRecord | null;
+}): VoteSummary {
+  const aggregate = calculateVoteAggregate(votes);
+
+  const categoryCounts: Record<VoteCategory, number> = { verified: 0, unverified: 0, guest: 0 };
+  for (const vote of votes) {
+    categoryCounts[vote.voteCategory] += 1;
+  }
+
+  const verifiedVotes = votes.filter((v) => v.voteCategory === "verified");
+  const verifiedAggregate = calculateVoteAggregate(verifiedVotes);
+  const guestVotes = votes.filter((v) => v.voteCategory === "guest");
+  const guestAggregate = calculateVoteAggregate(guestVotes);
+
+  return {
+    counts: aggregate.counts,
+    categoryCounts,
+    completionPercent: aggregate.completionPercent,
+    verifiedCompletionPercent: verifiedAggregate.completionPercent,
+    verifiedVotes: verifiedAggregate.totalVotes,
+    guestCompletionPercent: guestAggregate.completionPercent,
+    guestVotes: guestAggregate.totalVotes,
+    dominantVote: aggregate.dominantVote,
+    currentVote: currentVote?.value ?? null,
+    totalVotes: aggregate.totalVotes,
+    eventCount: events.length
+  } satisfies VoteSummary;
+}
+
 export type VotingState = "scheduled" | "open" | "frozen" | "closed";
 
 export type VoteSummary = {
@@ -24,6 +60,9 @@ export type VoteSummary = {
   /** Weighted completion estimate from verified voters only (the authoritative score) */
   verifiedCompletionPercent: number;
   verifiedVotes: number;
+  /** Weighted completion estimate from guest voters only */
+  guestCompletionPercent: number;
+  guestVotes: number;
   dominantVote: VoteValue | null;
   currentVote: VoteValue | null;
   totalVotes: number;
@@ -110,27 +149,8 @@ export async function getPromiseVoteSummary({ tenantId, promiseId, userId }: Vot
     userId ? getVoteForUser(tenantId, promiseId, userId) : Promise.resolve(null),
     listVoteEventsForPromise(tenantId, promiseId)
   ]);
-  const aggregate = calculateVoteAggregate(votes);
 
-  const categoryCounts: Record<VoteCategory, number> = { verified: 0, unverified: 0, guest: 0 };
-  for (const vote of votes) {
-    categoryCounts[vote.voteCategory] += 1;
-  }
-
-  const verifiedVotes = votes.filter((v) => v.voteCategory === "verified");
-  const verifiedAggregate = calculateVoteAggregate(verifiedVotes);
-
-  return {
-    counts: aggregate.counts,
-    categoryCounts,
-    completionPercent: aggregate.completionPercent,
-    verifiedCompletionPercent: verifiedAggregate.completionPercent,
-    verifiedVotes: verifiedAggregate.totalVotes,
-    dominantVote: aggregate.dominantVote,
-    currentVote: currentVote?.value ?? null,
-    totalVotes: aggregate.totalVotes,
-    eventCount: events.length
-  } satisfies VoteSummary;
+  return computeVoteSummary({ votes, events, currentVote });
 }
 
 export async function castVote({ tenantId, promiseId, user, value, now = new Date() }: CastVoteInput) {

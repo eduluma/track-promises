@@ -16,6 +16,16 @@ type VotePanelProps = {
   initialSummary: VoteSummary;
 };
 
+async function readVotePayload(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  return null;
+}
+
 export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary, initialWindowState, canVote, isAuthenticated }: VotePanelProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,13 +43,18 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
         body: JSON.stringify({ tenantSlug, promiseId, value })
       });
 
-      const payload = await response.json();
+      const payload = await readVotePayload(response);
 
       if (!response.ok) {
-        setErrorMessage(payload.error ?? "Voting failed.");
-        if (payload.code === "WINDOW_CLOSED") {
+        setErrorMessage(payload?.error ?? "Voting failed. Please try again.");
+        if (payload?.code === "WINDOW_CLOSED") {
           setWindowState("frozen");
         }
+        return;
+      }
+
+      if (!payload) {
+        setErrorMessage("Voting failed. Please try again.");
         return;
       }
 

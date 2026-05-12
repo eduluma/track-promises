@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { createDbClient } from "@/db/client";
+import { runQuery } from "@/db/client";
 import { auditLogs } from "@/db/schema";
 
 export type AuditLogRecord = {
@@ -23,11 +23,12 @@ function isGuestActorId(actorId: string | null): boolean {
 }
 
 export async function listAuditLogsForTenant(tenantId: string): Promise<AuditLogRecord[]> {
-    const db = createDbClient();
-    const rows = await db
-        .select()
-        .from(auditLogs)
-        .where(eq(auditLogs.tenantId, tenantId));
+    const rows = await runQuery((db) =>
+        db
+            .select()
+            .from(auditLogs)
+            .where(eq(auditLogs.tenantId, tenantId))
+    );
 
     return rows
         .map((row) => ({
@@ -50,17 +51,18 @@ export async function appendAuditLog(record: Omit<AuditLogRecord, "id"> & { id?:
 
     const finalRecord: AuditLogRecord = { ...record, id, actorId };
 
-    const db = createDbClient();
-    await db.insert(auditLogs).values({
-        id,
-        tenantId: record.tenantId,
-        actorId,
-        action: record.action,
-        entityType: record.entityType,
-        entityId: record.entityId,
-        metadata: record.metadata,
-        createdAt: new Date(record.createdAt)
-    }).onConflictDoNothing();
+    await runQuery((db) =>
+        db.insert(auditLogs).values({
+            id,
+            tenantId: record.tenantId,
+            actorId,
+            action: record.action,
+            entityType: record.entityType,
+            entityId: record.entityId,
+            metadata: record.metadata,
+            createdAt: new Date(record.createdAt)
+        }).onConflictDoNothing()
+    );
 
     return finalRecord;
 }

@@ -17,6 +17,16 @@ type InlineVotePanelProps = {
     initialSummary: VoteSummary;
 };
 
+async function readVotePayload(response: Response) {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+        return response.json();
+    }
+
+    return null;
+}
+
 export function InlineVotePanel({
     tenantSlug,
     timelineSlug,
@@ -43,13 +53,18 @@ export function InlineVotePanel({
                 body: JSON.stringify({ tenantSlug, promiseId, value })
             });
 
-            const payload = await response.json();
+            const payload = await readVotePayload(response);
 
             if (!response.ok) {
-                setErrorMessage(payload.error ?? "Voting failed.");
-                if (payload.code === "WINDOW_CLOSED") {
+                setErrorMessage(payload?.error ?? "Voting failed. Please try again.");
+                if (payload?.code === "WINDOW_CLOSED") {
                     setWindowState("frozen");
                 }
+                return;
+            }
+
+            if (!payload) {
+                setErrorMessage("Voting failed. Please try again.");
                 return;
             }
 
@@ -103,9 +118,9 @@ export function InlineVotePanel({
                     <div className="flex-1 rounded-2xl border border-ink/10 bg-white/60 px-3 py-2 text-center">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/50">Guest</p>
                         <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink/70">
-                            {summary.totalVotes > 0 ? `${summary.completionPercent}%` : "—"}
+                            {summary.guestVotes > 0 ? `${summary.guestCompletionPercent}%` : "—"}
                         </p>
-                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.categoryCounts.guest + summary.categoryCounts.unverified} voters</p>
+                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.guestVotes} voters</p>
                     </div>
                 </div>
             </div>

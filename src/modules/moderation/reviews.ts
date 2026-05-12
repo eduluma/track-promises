@@ -1,6 +1,6 @@
 import { and, eq, ne } from "drizzle-orm";
 
-import { createDbClient } from "@/db/client";
+import { runQuery } from "@/db/client";
 import { moderationReviews as moderationReviewsTable, users } from "@/db/schema";
 import type { AccountState } from "@/lib/permissions";
 import { appendAuditLog } from "@/modules/audit/logs";
@@ -46,15 +46,16 @@ function rowToReview(row: typeof moderationReviewsTable.$inferSelect): Moderatio
 export const moderationReviews: ModerationReview[] = [];
 
 export async function listModerationReviewsForTenant(tenantId: string, includeResolved = true): Promise<ModerationReview[]> {
-  const db = createDbClient();
-  const rows = await db
-    .select()
-    .from(moderationReviewsTable)
-    .where(
-      includeResolved
-        ? eq(moderationReviewsTable.tenantId, tenantId)
-        : and(eq(moderationReviewsTable.tenantId, tenantId), ne(moderationReviewsTable.status, "resolved"))
-    );
+  const rows = await runQuery((db) =>
+    db
+      .select()
+      .from(moderationReviewsTable)
+      .where(
+        includeResolved
+          ? eq(moderationReviewsTable.tenantId, tenantId)
+          : and(eq(moderationReviewsTable.tenantId, tenantId), ne(moderationReviewsTable.status, "resolved"))
+      )
+  );
 
   return rows
     .map(rowToReview)
@@ -62,12 +63,13 @@ export async function listModerationReviewsForTenant(tenantId: string, includeRe
 }
 
 export async function getModerationReviewById(reviewId: string): Promise<ModerationReview | null> {
-  const db = createDbClient();
-  const [row] = await db
-    .select()
-    .from(moderationReviewsTable)
-    .where(eq(moderationReviewsTable.id, reviewId))
-    .limit(1);
+  const [row] = await runQuery((db) =>
+    db
+      .select()
+      .from(moderationReviewsTable)
+      .where(eq(moderationReviewsTable.id, reviewId))
+      .limit(1)
+  );
   return row ? rowToReview(row) : null;
 }
 
@@ -91,24 +93,25 @@ export async function resolveModerationReview({
     return null;
   }
 
-  const db = createDbClient();
-  await db
-    .update(moderationReviewsTable)
-    .set({
-      assignedModeratorId: moderatorId,
-      status: "resolved",
-      decision,
-      updatedAt: new Date(now)
-    })
-    .where(eq(moderationReviewsTable.id, reviewId));
+  await runQuery((db) =>
+    db
+      .update(moderationReviewsTable)
+      .set({
+        assignedModeratorId: moderatorId,
+        status: "resolved",
+        decision,
+        updatedAt: new Date(now)
+      })
+      .where(eq(moderationReviewsTable.id, reviewId))
+  );
 
   // If the review is about an account, update the user's state in DB
   if (review.subjectType === "account") {
     const userId = review.metadata.userId ?? review.subjectId;
     if (decision === "approve_account") {
-      await db.update(users).set({ state: "verified" }).where(eq(users.id, userId));
+      await runQuery((db) => db.update(users).set({ state: "verified" }).where(eq(users.id, userId)));
     } else if (decision === "limit_account") {
-      await db.update(users).set({ state: "readonly" }).where(eq(users.id, userId));
+      await runQuery((db) => db.update(users).set({ state: "readonly" }).where(eq(users.id, userId)));
     }
   }
 

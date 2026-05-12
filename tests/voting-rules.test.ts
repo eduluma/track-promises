@@ -43,6 +43,44 @@ describe("voting rules", () => {
     expect(result.summary.eventCount).toBe(before.eventCount + 1);
   });
 
+  it("does not change the guest score when a registered user votes", async () => {
+    const promiseId = "tn-2026-tvk-women-income-support";
+
+    const guestVote = await castVote({
+      tenantId: "tenant-tamilnadu",
+      promiseId,
+      user: {
+        id: "guest-regression-user",
+        email: null,
+        emailVerified: false,
+        state: "unverified",
+        role: "guest"
+      },
+      value: "started",
+      now: new Date("2026-05-16T00:00:00.000Z")
+    });
+
+    expect(guestVote.summary.guestVotes).toBe(1);
+    expect(guestVote.summary.guestCompletionPercent).toBe(20);
+
+    const registeredVote = await castVote({
+      tenantId: "tenant-tamilnadu",
+      promiseId,
+      user: {
+        id: "demo-user",
+        email: "demo@track-promises.local",
+        emailVerified: true,
+        state: "verified"
+      },
+      value: "completed",
+      now: new Date("2026-05-16T00:05:00.000Z")
+    });
+
+    expect(registeredVote.summary.guestVotes).toBe(1);
+    expect(registeredVote.summary.guestCompletionPercent).toBe(20);
+    expect(registeredVote.summary.verifiedCompletionPercent).toBe(100);
+  });
+
   it("rejects votes after freeze", async () => {
     await expect(() =>
       castVote({
