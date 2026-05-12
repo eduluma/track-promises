@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { SignInForm } from "@/components/auth/sign-in-form";
@@ -41,6 +42,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     <h2 className="text-2xl font-semibold text-ink">Credentials sign-in</h2>
                     <p className="mt-3 text-sm leading-6 text-ink/70">Use the seeded accounts to test verified, limited, editor, moderator, and platform-admin flows.</p>
                     <SignInForm redirectTo={safeRedirectTo} />
+                    <p className="mt-4 text-center text-sm text-ink/60">
+                        New here?{" "}
+                        <Link href={`/signup${safeRedirectTo !== "/" ? `?redirectTo=${encodeURIComponent(safeRedirectTo)}` : ""}`} className="font-medium text-moss underline-offset-2 hover:underline">
+                            Create an account
+                        </Link>
+                    </p>
                 </section>
             </section>
         </main>

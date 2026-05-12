@@ -97,6 +97,11 @@
 
 ## Phase 4: Trust, Moderation, And Public Accountability
 
+- [x] Implement self-service user signup (email + password) with email verification flow.
+- [ ] Replace in-memory demo users with real DB-backed authentication.
+- [ ] Auto-assign `state: "pending"` on signup; transition to `verified` after email confirmation.
+- [ ] Route suspicious or unverified signups to the moderation queue.
+- [x] Add signup link in site header / login page.
 - [ ] Add disputed-status workflow.
 - [ ] Add editorial review queues.
 - [ ] Add public methodology page.
