@@ -116,8 +116,8 @@ export function InlineVotePanel({
                                 onClick={() => submitVote(option.value)}
                                 disabled={buttonsDisabled}
                                 className={`rounded-full border px-3 py-2 text-xs font-medium transition ${isCurrent
-                                        ? "border-moss bg-moss text-white"
-                                        : "border-ink/10 bg-white/80 text-ink hover:border-moss/35"
+                                    ? "border-moss bg-moss text-white"
+                                    : "border-ink/10 bg-white/80 text-ink hover:border-moss/35"
                                     } disabled:cursor-not-allowed disabled:opacity-50`}
                             >
                                 {option.shortLabel}
@@ -127,11 +127,16 @@ export function InlineVotePanel({
                 </div>
                 <div className="rounded-2xl border border-ink/10 bg-white/80 px-3 py-2 text-xs text-ink/70">
                     <div className="flex items-center justify-between gap-3">
-                        <span>{summary.completionPercent}% crowd estimate</span>
-                        <span>{summary.totalVotes} assessors</span>
+                        <div>
+                            <span className="font-semibold text-ink">
+                                {summary.verifiedVotes > 0 ? `${summary.verifiedCompletionPercent}%` : "—"}
+                            </span>
+                            <span className="ml-1.5 text-ink/45">verified score</span>
+                        </div>
+                        <span className="text-ink/45">{summary.totalVotes} total</span>
                     </div>
-                    <div className="mt-2 flex items-center gap-3">
-                        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-10 w-44 fill-none">
+                    <div className="mt-2 flex items-center gap-2">
+                        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-10 w-44 flex-shrink-0 fill-none">
                             <line x1="0" x2={chartWidth} y1={chartHeight} y2={chartHeight} className="stroke-ink/15" strokeWidth="1" />
                             <line x1="0" x2={chartWidth} y1="0" y2="0" className="stroke-ink/10" strokeWidth="1" />
                             <line x1="0" x2={chartWidth} y1={chartHeight / 2} y2={chartHeight / 2} className="stroke-ink/10" strokeWidth="1" />
@@ -139,7 +144,6 @@ export function InlineVotePanel({
                             {trendPoints.map((point, index) => {
                                 const x = index * stepX;
                                 const y = getChartPointY(point.completionPercent, chartHeight);
-
                                 return (
                                     <circle
                                         key={point.id}
@@ -151,9 +155,13 @@ export function InlineVotePanel({
                                 );
                             })}
                         </svg>
-                        <div>
+                        <div className="space-y-1">
                             <p>Leading: {formatVoteValue(summary.dominantVote)}</p>
-                            <p className="mt-1">Events: {summary.eventCount}</p>
+                            <div className="flex gap-1.5">
+                                <span className="rounded-full bg-moss/10 px-2 py-0.5 text-moss">{summary.categoryCounts.verified}✓</span>
+                                <span className="rounded-full bg-white/70 px-2 py-0.5">{summary.categoryCounts.unverified}~</span>
+                                <span className="rounded-full bg-white/70 px-2 py-0.5">{summary.categoryCounts.guest}g</span>
+                            </div>
                         </div>
                     </div>
                 </div>

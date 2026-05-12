@@ -19,7 +19,11 @@ export type VotingState = "scheduled" | "open" | "frozen" | "closed";
 export type VoteSummary = {
   counts: Record<VoteValue, number>;
   categoryCounts: Record<VoteCategory, number>;
+  /** Weighted completion estimate across ALL voters */
   completionPercent: number;
+  /** Weighted completion estimate from verified voters only (the authoritative score) */
+  verifiedCompletionPercent: number;
+  verifiedVotes: number;
   dominantVote: VoteValue | null;
   currentVote: VoteValue | null;
   totalVotes: number;
@@ -110,10 +114,15 @@ export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSumma
     categoryCounts[vote.voteCategory] += 1;
   }
 
+  const verifiedVotes = votes.filter((v) => v.voteCategory === "verified");
+  const verifiedAggregate = calculateVoteAggregate(verifiedVotes);
+
   return {
     counts: aggregate.counts,
     categoryCounts,
     completionPercent: aggregate.completionPercent,
+    verifiedCompletionPercent: verifiedAggregate.completionPercent,
+    verifiedVotes: verifiedAggregate.totalVotes,
     dominantVote: aggregate.dominantVote,
     currentVote: currentVote?.value ?? null,
     totalVotes: aggregate.totalVotes,
