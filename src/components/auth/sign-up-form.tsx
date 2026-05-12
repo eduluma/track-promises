@@ -88,12 +88,13 @@ export function SignUpForm({ redirectTo }: SignUpFormProps) {
                         </p>
                     </>
                 )}
-                <Link
-                    href={success.redirectTo as `/${string}`}
+                <button
+                    type="button"
+                    onClick={() => { window.location.href = success.redirectTo; }}
                     className="mt-2 inline-flex rounded-full bg-moss px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-moss/85"
                 >
                     Continue
-                </Link>
+                </button>
             </div>
         );
     }
