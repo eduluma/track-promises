@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
+import { VoteSegmentCard } from "@/components/voting/vote-segment-card";
 import { formatVoteValue, voteOptions, type VoteValue } from "@/modules/voting/assessment";
 import type { VoteSummary, VotingState } from "@/modules/voting/service";
 
@@ -76,49 +77,29 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
             : "You\u2019re voting as a guest \u2014 your assessment counts but carries lower weight. Sign in or create an account to have it verified."}
       </p>
 
-      {/* Overall verified score — headline metric */}
-      <div className="mt-5 flex items-end gap-4 rounded-2xl bg-white/90 p-5">
-        <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-moss">Verified score</p>
-          <p className="mt-1 text-5xl font-bold tabular-nums text-ink">
-            {summary.verifiedVotes > 0 ? summary.verifiedCompletionPercent : "—"}
-            {summary.verifiedVotes > 0 ? <span className="ml-1 text-2xl font-normal text-ink/50">%</span> : null}
-          </p>
-          <p className="mt-1.5 text-xs text-ink/50">
-            {summary.verifiedVotes > 0
-              ? `Based on ${summary.verifiedVotes} verified voter${summary.verifiedVotes === 1 ? "" : "s"}`
-              : "No verified votes yet"}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs uppercase tracking-[0.18em] text-ink/45">Leading stage</p>
-          <p className="mt-1 text-base font-semibold text-ink">{formatVoteValue(summary.dominantVote)}</p>
-        </div>
-      </div>
-
-      {/* Vote breakdown by category */}
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-        <div className="rounded-xl bg-moss/10 p-3">
-          <p className="font-semibold uppercase tracking-[0.14em] text-moss">Verified</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{summary.categoryCounts.verified}</p>
-          <p className="mt-0.5 text-ink/50">voters</p>
-        </div>
-        <div className="rounded-xl bg-white/70 p-3">
-          <p className="font-semibold uppercase tracking-[0.14em] text-ink/55">Unverified</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{summary.categoryCounts.unverified}</p>
-          <p className="mt-0.5 text-ink/50">voters</p>
-        </div>
-        <div className="rounded-xl bg-white/70 p-3">
-          <p className="font-semibold uppercase tracking-[0.14em] text-ink/55">Guest</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{summary.categoryCounts.guest}</p>
-          <p className="mt-0.5 text-ink/50">voters</p>
-        </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <VoteSegmentCard
+          title="Registered user"
+          completionPercent={summary.registeredCompletionPercent}
+          totalVotes={summary.registeredVotes}
+          counts={summary.registeredCounts}
+          tone="moss"
+        />
+        <VoteSegmentCard
+          title="Guest user"
+          completionPercent={summary.guestCompletionPercent}
+          totalVotes={summary.guestVotes}
+          counts={summary.guestCounts}
+        />
       </div>
 
       {/* All-voter crowd estimate */}
       <div className="mt-3 flex items-center justify-between rounded-xl border border-ink/8 bg-white/50 px-4 py-3 text-sm">
         <span className="text-ink/60">Crowd estimate (all voters)</span>
-        <span className="font-semibold text-ink">{summary.completionPercent}%</span>
+        <div className="text-right">
+          <span className="font-semibold text-ink">{summary.completionPercent}%</span>
+          <p className="text-[11px] text-ink/45">Leading {formatVoteValue(summary.dominantVote)}</p>
+        </div>
       </div>
 
       {/* Stage breakdown */}

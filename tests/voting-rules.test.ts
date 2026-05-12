@@ -62,6 +62,7 @@ describe("voting rules", () => {
 
     expect(guestVote.summary.guestVotes).toBe(1);
     expect(guestVote.summary.guestCompletionPercent).toBe(20);
+    expect(guestVote.summary.registeredVotes).toBe(0);
 
     const registeredVote = await castVote({
       tenantId: "tenant-tamilnadu",
@@ -78,6 +79,10 @@ describe("voting rules", () => {
 
     expect(registeredVote.summary.guestVotes).toBe(1);
     expect(registeredVote.summary.guestCompletionPercent).toBe(20);
+    expect(registeredVote.summary.guestCounts.started).toBe(1);
+    expect(registeredVote.summary.registeredVotes).toBe(1);
+    expect(registeredVote.summary.registeredCounts.completed).toBe(1);
+    expect(registeredVote.summary.registeredCompletionPercent).toBe(100);
     expect(registeredVote.summary.verifiedCompletionPercent).toBe(100);
   });
 

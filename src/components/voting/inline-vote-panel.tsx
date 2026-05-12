@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
+import { VoteSegmentCard } from "@/components/voting/vote-segment-card";
 import { voteOptions, type VoteValue } from "@/modules/voting/assessment";
 import type { VoteSummary, VotingState } from "@/modules/voting/service";
 
@@ -107,21 +108,22 @@ export function InlineVotePanel({
                         );
                     })}
                 </div>
-                <div className="flex gap-2">
-                    <div className="flex-1 rounded-2xl border border-moss/25 bg-white/90 px-3 py-2 text-center">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-moss">Score</p>
-                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink">
-                            {summary.verifiedVotes > 0 ? `${summary.verifiedCompletionPercent}%` : "—"}
-                        </p>
-                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.categoryCounts.verified} registered</p>
-                    </div>
-                    <div className="flex-1 rounded-2xl border border-ink/10 bg-white/60 px-3 py-2 text-center">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/50">Guest</p>
-                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink/70">
-                            {summary.guestVotes > 0 ? `${summary.guestCompletionPercent}%` : "—"}
-                        </p>
-                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.guestVotes} voters</p>
-                    </div>
+                <div className="grid gap-2 sm:grid-cols-2 lg:w-[24rem]">
+                    <VoteSegmentCard
+                        title="Registered user"
+                        completionPercent={summary.registeredCompletionPercent}
+                        totalVotes={summary.registeredVotes}
+                        counts={summary.registeredCounts}
+                        tone="moss"
+                        compact
+                    />
+                    <VoteSegmentCard
+                        title="Guest user"
+                        completionPercent={summary.guestCompletionPercent}
+                        totalVotes={summary.guestVotes}
+                        counts={summary.guestCounts}
+                        compact
+                    />
                 </div>
             </div>
 

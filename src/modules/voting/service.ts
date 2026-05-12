@@ -30,6 +30,8 @@ export function computeVoteSummary({
     categoryCounts[vote.voteCategory] += 1;
   }
 
+  const registeredVotes = votes.filter((v) => v.voteCategory !== "guest");
+  const registeredAggregate = calculateVoteAggregate(registeredVotes);
   const verifiedVotes = votes.filter((v) => v.voteCategory === "verified");
   const verifiedAggregate = calculateVoteAggregate(verifiedVotes);
   const guestVotes = votes.filter((v) => v.voteCategory === "guest");
@@ -39,10 +41,14 @@ export function computeVoteSummary({
     counts: aggregate.counts,
     categoryCounts,
     completionPercent: aggregate.completionPercent,
+    registeredCompletionPercent: registeredAggregate.completionPercent,
+    registeredVotes: registeredAggregate.totalVotes,
+    registeredCounts: registeredAggregate.counts,
     verifiedCompletionPercent: verifiedAggregate.completionPercent,
     verifiedVotes: verifiedAggregate.totalVotes,
     guestCompletionPercent: guestAggregate.completionPercent,
     guestVotes: guestAggregate.totalVotes,
+    guestCounts: guestAggregate.counts,
     dominantVote: aggregate.dominantVote,
     currentVote: currentVote?.value ?? null,
     totalVotes: aggregate.totalVotes,
@@ -57,12 +63,17 @@ export type VoteSummary = {
   categoryCounts: Record<VoteCategory, number>;
   /** Weighted completion estimate across ALL voters */
   completionPercent: number;
+  /** Weighted completion estimate from all registered users (verified + unverified) */
+  registeredCompletionPercent: number;
+  registeredVotes: number;
+  registeredCounts: Record<VoteValue, number>;
   /** Weighted completion estimate from verified voters only (the authoritative score) */
   verifiedCompletionPercent: number;
   verifiedVotes: number;
   /** Weighted completion estimate from guest voters only */
   guestCompletionPercent: number;
   guestVotes: number;
+  guestCounts: Record<VoteValue, number>;
   dominantVote: VoteValue | null;
   currentVote: VoteValue | null;
   totalVotes: number;

@@ -47,10 +47,14 @@ const voteSummarySchema = {
         "counts",
         "categoryCounts",
         "completionPercent",
+        "registeredCompletionPercent",
+        "registeredVotes",
+        "registeredCounts",
         "verifiedCompletionPercent",
         "verifiedVotes",
         "guestCompletionPercent",
         "guestVotes",
+        "guestCounts",
         "dominantVote",
         "currentVote",
         "totalVotes",
@@ -72,10 +76,22 @@ const voteSummarySchema = {
             }
         },
         completionPercent: { type: "integer" },
+        registeredCompletionPercent: { type: "integer" },
+        registeredVotes: { type: "integer" },
+        registeredCounts: {
+            type: "object",
+            required: [...voteValueOrder],
+            properties: Object.fromEntries(voteValueOrder.map((value) => [value, { type: "integer" }]))
+        },
         verifiedCompletionPercent: { type: "integer" },
         verifiedVotes: { type: "integer" },
         guestCompletionPercent: { type: "integer" },
         guestVotes: { type: "integer" },
+        guestCounts: {
+            type: "object",
+            required: [...voteValueOrder],
+            properties: Object.fromEntries(voteValueOrder.map((value) => [value, { type: "integer" }]))
+        },
         dominantVote: {
             anyOf: [{ type: "string", enum: [...voteValueOrder] }, { type: "null" }]
         },

@@ -58,6 +58,8 @@ describe("Fastify API service", () => {
 
         const payload = response.json();
         expect(typeof payload.summary.completionPercent).toBe("number");
+        expect(typeof payload.summary.registeredCompletionPercent).toBe("number");
+        expect(typeof payload.summary.guestCompletionPercent).toBe("number");
     });
 
     it("creates a promise through the API service", async () => {
