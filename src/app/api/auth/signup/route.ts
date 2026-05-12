@@ -10,7 +10,8 @@ const signupSchema = z.object({
         .min(1, "Identifier is required")
         .max(200)
         .transform((v) => v.trim()),
-    displayName: z.string().max(80).optional()
+    displayName: z.string().max(80).optional(),
+    password: z.string().min(8, "Password must be at least 8 characters.").max(128).optional()
 });
 
 export async function POST(request: Request) {

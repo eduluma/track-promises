@@ -150,6 +150,7 @@ export function registerDemoUser(params: {
     identifierType: IdentifierType;
     identifier: string;
     displayName?: string;
+    password?: string;
 }): { user: DemoUserRecord; password: string } | { error: string } {
     const email = normalizeIdentifierToEmail(params.identifierType, params.identifier);
 
@@ -157,7 +158,7 @@ export function registerDemoUser(params: {
         return { error: "An account with this identifier already exists." };
     }
 
-    const password = crypto.randomUUID();
+    const password = params.password?.trim() || crypto.randomUUID();
     const id = `user-${crypto.randomUUID().slice(0, 8)}`;
 
     const newUser: DemoUserRecord = {
