@@ -1,6 +1,6 @@
-export type AccountState = "pending" | "verified" | "limited" | "suspended" | "moderator_approved";
+export type AccountState = "unverified" | "verified" | "readonly" | "suspended" | "moderator_approved";
 
-export type UserRole = "user" | "editor" | "moderator" | "tenant_admin" | "platform_admin";
+export type UserRole = "guest" | "user" | "promise_editor" | "moderator" | "tenant_admin" | "platform_admin";
 
 export type DemoUser = {
   id: string;
@@ -16,7 +16,7 @@ export function canUserVote(user: DemoUser) {
 }
 
 export function canManagePromises(user: DemoUser) {
-  return user.role === "editor" || user.role === "tenant_admin" || user.role === "platform_admin";
+  return user.role === "promise_editor" || user.role === "tenant_admin" || user.role === "platform_admin";
 }
 
 export function canReviewModeration(user: DemoUser) {

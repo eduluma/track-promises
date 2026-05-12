@@ -55,7 +55,7 @@ export function getTrustProfileForUser(userId: string, tenantId: string) {
         },
         {
             label: "Account state",
-            delta: user.state === "moderator_approved" ? 20 : user.state === "verified" ? 10 : user.state === "limited" ? -25 : -10,
+            delta: user.state === "moderator_approved" ? 20 : user.state === "verified" ? 10 : user.state === "readonly" ? -25 : -10,
             description: `Current state is ${user.state.replaceAll("_", " ")}.`
         },
         {

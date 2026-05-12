@@ -12,14 +12,14 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const accountStateEnum = pgEnum("account_state", [
-  "pending",
+  "unverified",
   "verified",
-  "limited",
+  "readonly",
   "suspended",
   "moderator_approved"
 ]);
 
-export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "tenant_admin", "platform_admin"]);
+export const userRoleEnum = pgEnum("user_role", ["guest", "user", "promise_editor", "moderator", "tenant_admin", "platform_admin"]);
 
 export const promiseStatusEnum = pgEnum("promise_status", [
   "planned",
@@ -60,7 +60,7 @@ export const users = pgTable(
     displayName: text("display_name").notNull(),
     passwordHash: text("password_hash").notNull(),
     emailVerified: boolean("email_verified").notNull().default(false),
-    state: accountStateEnum("state").notNull().default("pending"),
+    state: accountStateEnum("state").notNull().default("unverified"),
     role: userRoleEnum("role").notNull().default("user"),
     trustScore: integer("trust_score").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

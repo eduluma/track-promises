@@ -23,24 +23,24 @@ describe("permission rules", () => {
         ).toBe(true);
     });
 
-    it("blocks limited accounts from voting even after email verification", () => {
+    it("blocks readonly accounts from voting even after email verification", () => {
         expect(
             canUserVote({
                 id: "limited-user",
                 email: "limited@example.com",
                 emailVerified: true,
-                state: "limited"
+                state: "readonly"
             })
         ).toBe(false);
     });
 
-    it("only allows editor and admin roles to create promises", () => {
+    it("only allows promise_editor and admin roles to create promises", () => {
         expect(
             canManagePromises({
                 id: "editor-user",
                 emailVerified: true,
                 state: "moderator_approved",
-                role: "editor"
+                role: "promise_editor"
             })
         ).toBe(true);
 
@@ -61,7 +61,7 @@ describe("permission rules", () => {
                     id: "tenant-editor",
                     emailVerified: true,
                     state: "moderator_approved",
-                    role: "editor",
+                    role: "promise_editor",
                     tenantIds: ["tenant-tamilnadu"]
                 },
                 "tenant-tamilnadu"
@@ -74,7 +74,7 @@ describe("permission rules", () => {
                     id: "tenant-editor",
                     emailVerified: true,
                     state: "moderator_approved",
-                    role: "editor",
+                    role: "promise_editor",
                     tenantIds: ["tenant-tamilnadu"]
                 },
                 "tenant-india-2029"

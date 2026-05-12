@@ -3,8 +3,8 @@ import { z } from "zod";
 import { promiseStatusSchema } from "@/config/schemas";
 import { voteValueOrder } from "@/modules/voting/assessment";
 
-const accountStateValues = ["pending", "verified", "limited", "suspended", "moderator_approved"] as const;
-const userRoleValues = ["user", "editor", "moderator", "tenant_admin", "platform_admin"] as const;
+const accountStateValues = ["unverified", "verified", "readonly", "suspended", "moderator_approved"] as const;
+const userRoleValues = ["guest", "user", "promise_editor", "moderator", "tenant_admin", "platform_admin"] as const;
 
 export const apiUserContextSchema = z.object({
     id: z.string().min(1),

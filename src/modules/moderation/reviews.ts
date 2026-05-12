@@ -83,7 +83,7 @@ function getReviewStore() {
 function applyDecisionToUser(review: ModerationReview, decision: Exclude<ModerationDecision, null>) {
   const userId = review.metadata.userId ?? review.subjectId;
   const user = updateDemoUserById(userId, {
-    state: decision === "approve_account" ? "verified" : decision === "limit_account" ? "limited" : undefined,
+    state: decision === "approve_account" ? "verified" : decision === "limit_account" ? "readonly" : undefined,
     trustScore: decision === "approve_account" ? 45 : decision === "limit_account" ? 5 : undefined,
     abuseFlags: decision === "approve_account" ? [] : review.metadata.abuseSignals ?? []
   });

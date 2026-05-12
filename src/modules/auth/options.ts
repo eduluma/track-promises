@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = typeof token.id === "string" ? token.id : "";
                 session.user.role = token.role ?? "user";
-                session.user.state = token.state ?? "pending";
+                session.user.state = token.state ?? "unverified";
                 session.user.emailVerified = token.emailVerified === true;
                 session.user.tenantIds = Array.isArray(token.tenantIds)
                     ? token.tenantIds.filter((value): value is string => typeof value === "string")
