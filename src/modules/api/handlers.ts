@@ -49,12 +49,9 @@ export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiH
         return { status: 404, payload: { error: "Unknown tenant." } };
     }
 
-    // Registered non-guest users must belong to the tenant (or be platform_admin).
-    // Guest users (role === "guest" or no user) may vote in any tenant.
-    const isGuest = !user || user.role === "guest";
-    if (!isGuest && !canAccessTenant(user, tenant.id)) {
-        return { status: 403, payload: { error: "This account cannot vote in that tenant." } };
-    }
+    // Voting is open to all users (including unverified and guests).
+    // canAccessTenant is only relevant for management operations (promise editing, moderation).
+    // canUserVote (state-based) is enforced inside castVote.
 
     try {
         return {
