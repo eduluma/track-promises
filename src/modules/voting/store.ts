@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 
-import { createDbClient } from "@/db/client";
+import { runQuery } from "@/db/client";
 import { voteEvents, votes } from "@/db/schema";
 import type { VoteCategory } from "@/lib/permissions";
 import type { VoteValue } from "@/modules/voting/assessment";
@@ -60,28 +60,29 @@ export async function upsertVote(record: VoteRecord): Promise<void> {
     return;
   }
 
-  const db = createDbClient();
   const id = `${record.tenantId}:${record.promiseId}:${record.userId}`;
-  await db
-    .insert(votes)
-    .values({
-      id,
-      tenantId: record.tenantId,
-      promiseId: record.promiseId,
-      userId: record.userId,
-      value: record.value as (typeof votes.$inferInsert)["value"],
-      voteCategory: record.voteCategory,
-      createdAt: new Date(record.createdAt),
-      updatedAt: new Date(record.updatedAt)
-    })
-    .onConflictDoUpdate({
-      target: [votes.promiseId, votes.userId],
-      set: {
+  await runQuery((db) =>
+    db
+      .insert(votes)
+      .values({
+        id,
+        tenantId: record.tenantId,
+        promiseId: record.promiseId,
+        userId: record.userId,
         value: record.value as (typeof votes.$inferInsert)["value"],
         voteCategory: record.voteCategory,
+        createdAt: new Date(record.createdAt),
         updatedAt: new Date(record.updatedAt)
-      }
-    });
+      })
+      .onConflictDoUpdate({
+        target: [votes.promiseId, votes.userId],
+        set: {
+          value: record.value as (typeof votes.$inferInsert)["value"],
+          voteCategory: record.voteCategory,
+          updatedAt: new Date(record.updatedAt)
+        }
+      })
+  );
 }
 
 export async function appendVoteEvent(record: VoteEventRecord): Promise<void> {
@@ -90,19 +91,23 @@ export async function appendVoteEvent(record: VoteEventRecord): Promise<void> {
     return;
   }
 
-  const db = createDbClient();
   const id = `event:${record.tenantId}:${record.promiseId}:${record.userId}:${record.createdAt}`;
-  await db.insert(voteEvents).values({
-    id,
-    tenantId: record.tenantId,
-    promiseId: record.promiseId,
-    userId: record.userId,
-    previousValue: record.previousValue as (typeof voteEvents.$inferInsert)["previousValue"],
-    newValue: record.newValue as (typeof voteEvents.$inferInsert)["newValue"],
-    eventType: record.eventType,
-    voteCategory: record.voteCategory,
-    createdAt: new Date(record.createdAt)
-  }).onConflictDoNothing();
+  await runQuery((db) =>
+    db
+      .insert(voteEvents)
+      .values({
+        id,
+        tenantId: record.tenantId,
+        promiseId: record.promiseId,
+        userId: record.userId,
+        previousValue: record.previousValue as (typeof voteEvents.$inferInsert)["previousValue"],
+        newValue: record.newValue as (typeof voteEvents.$inferInsert)["newValue"],
+        eventType: record.eventType,
+        voteCategory: record.voteCategory,
+        createdAt: new Date(record.createdAt)
+      })
+      .onConflictDoNothing()
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -122,12 +127,9 @@ function rowToVoteRecord(row: typeof votes.$inferSelect): VoteRecord {
 }
 
 export async function listVotesForPromise(tenantId: string, promiseId: string): Promise<VoteRecord[]> {
-  const db = createDbClient();
-  const rows = await db
-    .select()
-    .from(votes)
-    .where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId)));
-
+  const rows = await runQuery((db) =>
+    db.select().from(votes).where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId)))
+  );
   const registered = rows.map(rowToVoteRecord);
   const guestVotes = Array.from(getGuestVoteStore().votes.values()).filter(
     (v) => v.tenantId === tenantId && v.promiseId === promiseId
@@ -144,22 +146,21 @@ export async function getVoteForUser(
     return getGuestVoteStore().votes.get(guestKey(tenantId, promiseId, userId)) ?? null;
   }
 
-  const db = createDbClient();
-  const [row] = await db
-    .select()
-    .from(votes)
-    .where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId), eq(votes.userId, userId)))
-    .limit(1);
-
+  const rows = await runQuery((db) =>
+    db
+      .select()
+      .from(votes)
+      .where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId), eq(votes.userId, userId)))
+      .limit(1)
+  );
+  const [row] = rows;
   return row ? rowToVoteRecord(row) : null;
 }
 
 export async function listVoteEventsForPromise(tenantId: string, promiseId: string): Promise<VoteEventRecord[]> {
-  const db = createDbClient();
-  const rows = await db
-    .select()
-    .from(voteEvents)
-    .where(and(eq(voteEvents.tenantId, tenantId), eq(voteEvents.promiseId, promiseId)));
+  const rows = await runQuery((db) =>
+    db.select().from(voteEvents).where(and(eq(voteEvents.tenantId, tenantId), eq(voteEvents.promiseId, promiseId)))
+  );
 
   const registered: VoteEventRecord[] = rows.map((row) => ({
     tenantId: row.tenantId,
@@ -178,13 +179,43 @@ export async function listVoteEventsForPromise(tenantId: string, promiseId: stri
   return [...registered, ...guestEvents];
 }
 
+export async function listAllVotesForTenant(tenantId: string): Promise<VoteRecord[]> {
+  const rows = await runQuery((db) =>
+    db.select().from(votes).where(eq(votes.tenantId, tenantId))
+  );
+  const registered = rows.map(rowToVoteRecord);
+  const guestVotes = Array.from(getGuestVoteStore().votes.values()).filter(
+    (v) => v.tenantId === tenantId
+  );
+  return [...registered, ...guestVotes];
+}
+
+export async function listAllVoteEventsForTenant(tenantId: string): Promise<VoteEventRecord[]> {
+  const rows = await runQuery((db) =>
+    db.select().from(voteEvents).where(eq(voteEvents.tenantId, tenantId))
+  );
+
+  const registered: VoteEventRecord[] = rows.map((row) => ({
+    tenantId: row.tenantId,
+    promiseId: row.promiseId,
+    userId: row.userId,
+    previousValue: (row.previousValue ?? null) as VoteValue | null,
+    newValue: row.newValue as VoteValue,
+    voteCategory: (row.voteCategory ?? "verified") as VoteCategory,
+    eventType: row.eventType as "created" | "changed",
+    createdAt: row.createdAt.toISOString()
+  }));
+
+  const guestEvents = getGuestVoteStore().events.filter((e) => e.tenantId === tenantId);
+  return [...registered, ...guestEvents];
+}
+
 export async function listVotesForUser(userId: string): Promise<VoteRecord[]> {
   if (isGuest(userId)) {
     return Array.from(getGuestVoteStore().votes.values()).filter((v) => v.userId === userId);
   }
 
-  const db = createDbClient();
-  const rows = await db.select().from(votes).where(eq(votes.userId, userId));
+  const rows = await runQuery((db) => db.select().from(votes).where(eq(votes.userId, userId)));
   return rows.map(rowToVoteRecord);
 }
 

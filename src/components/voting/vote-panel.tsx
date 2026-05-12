@@ -77,7 +77,7 @@ export function VotePanel({ tenantSlug, timelineSlug, promiseId, initialSummary,
             : "You\u2019re voting as a guest \u2014 your assessment counts but carries lower weight. Sign in or create an account to have it verified."}
       </p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3">
         <VoteSegmentCard
           title="Registered user"
           completionPercent={summary.registeredCompletionPercent}

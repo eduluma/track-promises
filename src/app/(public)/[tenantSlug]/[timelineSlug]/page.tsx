@@ -18,6 +18,30 @@ type TimelinePageProps = {
     searchParams: Promise<{ category?: string; status?: string }>;
 };
 
+function createFallbackTimelineScore(tenantId: string, timelineSlug: string) {
+    const calculatedAt = new Date().toISOString();
+
+    return {
+        id: `timeline-score:${tenantId}:${timelineSlug}`,
+        tenantId,
+        timelineSlug,
+        score: 0,
+        assessedPromiseProgressPercent: 0,
+        assessedPromiseCount: 0,
+        promiseCount: 0,
+        assessmentCoveragePercent: 0,
+        totalVotes: 0,
+        termElapsedPercent: 0,
+        paceDelta: 0,
+        termStartAt: null,
+        termEndAt: null,
+        termLengthMonths: 0,
+        elapsedMonths: 0,
+        calculatedAt,
+        formulaVersion: 1
+    };
+}
+
 export default async function TimelinePage({ params, searchParams }: TimelinePageProps) {
     const { tenantSlug, timelineSlug } = await params;
     const { category, status } = await searchParams;
@@ -41,9 +65,11 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
         category: category ?? null,
         status: status && config.statuses.includes(status as (typeof config.statuses)[number]) ? (status as (typeof config.statuses)[number]) : null
     });
-    const reviews = await getOpenModerationReviewsForTenant(tenant.id);
+    const reviews = await getOpenModerationReviewsForTenant(tenant.id).catch(() => []);
     const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
-    const timelineScore = await getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug });
+    const timelineScore = await getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug }).catch(() =>
+        createFallbackTimelineScore(tenant.id, timeline.slug)
+    );
     const canVote = canUserVote(user);
     const sharedSearchParams = {
         category,

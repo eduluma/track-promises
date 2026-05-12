@@ -1,7 +1,16 @@
 import { getRecentElectionOverview, promiseRecords, type PromiseDeliveryPlan, type PromiseSource } from "@/modules/promises/data";
-import { getPromiseVoteSummary } from "@/modules/voting/service";
+import { computeVoteSummary } from "@/modules/voting/service";
+import { listAllVoteEventsForTenant, listAllVotesForTenant } from "@/modules/voting/store";
 import type { PromiseStatus } from "@/config/schemas";
 import { appendAuditLog } from "@/modules/audit/logs";
+
+async function loadTenantVoteData(tenantId: string) {
+  try {
+    return await Promise.all([listAllVotesForTenant(tenantId), listAllVoteEventsForTenant(tenantId)]);
+  } catch {
+    return [[], []] as const;
+  }
+}
 
 type PromiseFilters = {
   userId?: string | null;
@@ -35,14 +44,20 @@ export async function listPromisesForTenant(tenantId: string, filters: PromiseFi
     .filter((promise) => (filters.category ? promise.category === filters.category : true))
     .filter((promise) => (filters.status ? promise.status === filters.status : true));
 
-  const withSummaries = await Promise.all(
-    filtered.map(async (promise) => ({
-      ...promise,
-      voteSummary: await getPromiseVoteSummary({ tenantId, promiseId: promise.id, userId: filters.userId ?? null })
-    }))
-  );
+  // Bulk-fetch all votes and events for the tenant in 2 queries to avoid N+1
+  const [allVotes, allEvents] = await loadTenantVoteData(tenantId);
 
-  return withSummaries;
+  return filtered.map((promise) => {
+    const promiseVotes = allVotes.filter((v) => v.promiseId === promise.id);
+    const promiseEvents = allEvents.filter((e) => e.promiseId === promise.id);
+    const currentVote = filters.userId
+      ? (promiseVotes.find((v) => v.userId === filters.userId) ?? null)
+      : null;
+    return {
+      ...promise,
+      voteSummary: computeVoteSummary({ votes: promiseVotes, events: promiseEvents, currentVote })
+    };
+  });
 }
 
 export function getPromiseById(tenantId: string, promiseId: string, timelineSlug?: string | null) {
