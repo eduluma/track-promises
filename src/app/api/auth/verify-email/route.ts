@@ -10,22 +10,21 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token") ?? "";
 
+    // Use NEXTAUTH_URL as the redirect base — request.url reflects the internal
+    // bind address (0.0.0.0) which differs from the public-facing hostname.
+    const baseUrl = (process.env.NEXTAUTH_URL ?? "http://localhost:3300").replace(/\/$/, "");
+    const redirect = (path: string) => NextResponse.redirect(`${baseUrl}${path}`);
+
     const record = consumeVerificationToken(token);
 
     if (!record) {
-        return NextResponse.redirect(
-            new URL("/account?verified=invalid", request.url)
-        );
+        return redirect("/account?verified=invalid");
     }
 
-    // Update in-memory store
-    const ok = setEmailVerified(record.userId);
+    // Update in-memory store for demo users
+    setEmailVerified(record.userId);
 
-    if (!ok) {
-        return NextResponse.redirect(new URL("/account?verified=error", request.url));
-    }
-
-    // Update DB (best-effort)
+    // Update DB (best-effort — ECONNREFUSED in Next.js dev process is a known issue)
     try {
         const db = createDbClient();
         await db
@@ -33,8 +32,8 @@ export async function GET(request: Request) {
             .set({ emailVerified: true, state: "verified" })
             .where(eq(users.id, record.userId));
     } catch (err) {
-        console.warn("[verify-email] DB update failed:", err);
+        console.warn("[verify-email] DB update failed (best-effort):", (err as Error).message);
     }
 
-    return NextResponse.redirect(new URL("/account?verified=1", request.url));
+    return redirect("/account?verified=1");
 }

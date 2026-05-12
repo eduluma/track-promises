@@ -1,3 +1,5 @@
+import { hashSync } from "bcryptjs";
+
 import { getFoundationSeedData } from "@/db/seed-data";
 import { createDbClient } from "@/db/client";
 import {
@@ -54,7 +56,7 @@ async function seed() {
             id: user.id,
             email: user.email,
             displayName: user.displayName,
-            passwordHash: user.password,
+            passwordHash: hashSync(user.password, 12),
             emailVerified: user.emailVerified,
             state: user.state,
             role: user.role,

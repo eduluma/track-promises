@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { hashSync } from "bcryptjs";
 
 import { createDbClient } from "@/db/client";
 import { users } from "@/db/schema";
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
                 id: result.user.id,
                 email: result.user.email,
                 displayName: result.user.displayName,
-                passwordHash: result.password,
+                passwordHash: hashSync(result.password, 12),
                 emailVerified: result.user.emailVerified,
                 state: result.user.state,
                 role: result.user.role,

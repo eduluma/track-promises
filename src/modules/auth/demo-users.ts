@@ -1,3 +1,5 @@
+import { compareSync, hashSync } from "bcryptjs";
+
 import type { AccountState, UserRole } from "@/lib/permissions";
 
 export type DemoUserRecord = {
@@ -132,12 +134,14 @@ export function findDemoUserByEmail(email: string) {
 
 export function authenticateDemoUser(email: string, password: string) {
     const user = findDemoUserByEmail(email);
+    if (!user) return null;
 
-    if (!user || user.password !== password) {
-        return null;
-    }
+    // Support bcrypt hashes for real accounts; plaintext for seed/demo accounts.
+    const valid = user.password.startsWith("$2")
+        ? compareSync(password, user.password)
+        : user.password === password;
 
-    return user;
+    return valid ? user : null;
 }
 
 export function getDemoUserById(id: string) {
@@ -185,7 +189,8 @@ export function registerDemoUser(params: {
         return { error: "An account with this identifier already exists." };
     }
 
-    const password = params.password?.trim() || crypto.randomUUID();
+    const rawPassword = params.password?.trim() || crypto.randomUUID();
+    const password = hashSync(rawPassword, 12);
     const id = `user-${crypto.randomUUID().slice(0, 8)}`;
 
     const newUser: DemoUserRecord = {
@@ -203,7 +208,8 @@ export function registerDemoUser(params: {
     };
 
     getDemoUserStore().push(newUser);
-    return { user: newUser, password };
+    // Return the raw password so the signup route can show it to the user once.
+    return { user: newUser, password: rawPassword };
 }
 
 export function setEmailVerified(id: string): boolean {

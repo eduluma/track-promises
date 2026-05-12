@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
-import { formatVoteValue, voteOptions, type VoteValue } from "@/modules/voting/assessment";
-import type { VoteSnapshotRecord } from "@/modules/voting/snapshots";
+import { voteOptions, type VoteValue } from "@/modules/voting/assessment";
 import type { VoteSummary, VotingState } from "@/modules/voting/service";
 
 type InlineVotePanelProps = {
@@ -16,12 +15,7 @@ type InlineVotePanelProps = {
     canVote: boolean;
     initialWindowState: VotingState;
     initialSummary: VoteSummary;
-    snapshots: VoteSnapshotRecord[];
 };
-
-function getChartPointY(completionPercent: number, chartHeight: number) {
-    return chartHeight - (completionPercent / 100) * chartHeight;
-}
 
 export function InlineVotePanel({
     tenantSlug,
@@ -32,38 +26,11 @@ export function InlineVotePanel({
     canVote,
     initialWindowState,
     initialSummary,
-    snapshots
 }: InlineVotePanelProps) {
     const [summary, setSummary] = useState(initialSummary);
     const [windowState, setWindowState] = useState(initialWindowState);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
-
-    const trendPoints = [
-        ...snapshots.map((snapshot) => ({
-            id: snapshot.id,
-            label: new Date(snapshot.snapshotAt).toLocaleDateString(),
-            completionPercent: snapshot.completionPercent,
-            isLive: false
-        })),
-        {
-            id: `${promiseId}:live`,
-            label: "Live",
-            completionPercent: summary.completionPercent,
-            isLive: true
-        }
-    ];
-
-    const chartWidth = 164;
-    const chartHeight = 36;
-    const stepX = trendPoints.length === 1 ? 0 : chartWidth / (trendPoints.length - 1);
-    const polylinePoints = trendPoints
-        .map((point, index) => {
-            const x = index * stepX;
-            const y = getChartPointY(point.completionPercent, chartHeight);
-            return `${x},${Number(y.toFixed(2))}`;
-        })
-        .join(" ");
 
     const submitVote = (value: VoteValue) => {
         startTransition(async () => {
@@ -125,44 +92,20 @@ export function InlineVotePanel({
                         );
                     })}
                 </div>
-                <div className="rounded-2xl border border-ink/10 bg-white/80 px-3 py-2 text-xs text-ink/70">
-                    <div className="flex items-center justify-between gap-3">
-                        <div>
-                            <span className="font-semibold text-ink">
-                                {summary.verifiedVotes > 0 ? `${summary.verifiedCompletionPercent}%` : "—"}
-                            </span>
-                            <span className="ml-1.5 text-ink/45">verified score</span>
-                        </div>
-                        <span className="text-ink/45">{summary.totalVotes} total</span>
+                <div className="flex gap-2">
+                    <div className="flex-1 rounded-2xl border border-moss/25 bg-white/90 px-3 py-2 text-center">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-moss">Score</p>
+                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink">
+                            {summary.verifiedVotes > 0 ? `${summary.verifiedCompletionPercent}%` : "—"}
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.categoryCounts.verified} registered</p>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
-                        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-10 w-44 flex-shrink-0 fill-none">
-                            <line x1="0" x2={chartWidth} y1={chartHeight} y2={chartHeight} className="stroke-ink/15" strokeWidth="1" />
-                            <line x1="0" x2={chartWidth} y1="0" y2="0" className="stroke-ink/10" strokeWidth="1" />
-                            <line x1="0" x2={chartWidth} y1={chartHeight / 2} y2={chartHeight / 2} className="stroke-ink/10" strokeWidth="1" />
-                            <polyline points={polylinePoints} className="stroke-clay" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
-                            {trendPoints.map((point, index) => {
-                                const x = index * stepX;
-                                const y = getChartPointY(point.completionPercent, chartHeight);
-                                return (
-                                    <circle
-                                        key={point.id}
-                                        cx={x}
-                                        cy={y}
-                                        r={point.isLive ? "4" : "3"}
-                                        className={point.isLive ? "fill-moss" : "fill-ink/45"}
-                                    />
-                                );
-                            })}
-                        </svg>
-                        <div className="space-y-1">
-                            <p>Leading: {formatVoteValue(summary.dominantVote)}</p>
-                            <div className="flex gap-1.5">
-                                <span className="rounded-full bg-moss/10 px-2 py-0.5 text-moss">{summary.categoryCounts.verified}✓</span>
-                                <span className="rounded-full bg-white/70 px-2 py-0.5">{summary.categoryCounts.unverified}~</span>
-                                <span className="rounded-full bg-white/70 px-2 py-0.5">{summary.categoryCounts.guest}g</span>
-                            </div>
-                        </div>
+                    <div className="flex-1 rounded-2xl border border-ink/10 bg-white/60 px-3 py-2 text-center">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/50">Guest</p>
+                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink/70">
+                            {summary.totalVotes > 0 ? `${summary.completionPercent}%` : "—"}
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-ink/45">{summary.categoryCounts.guest + summary.categoryCounts.unverified} voters</p>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createDbClient } from "@/db/client";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { hashSync } from "bcryptjs";
 import { authenticateDemoUser, getDemoUserById, updatePassword } from "@/modules/auth/demo-users";
 import { authOptions } from "@/modules/auth/options";
 
@@ -43,15 +44,17 @@ export async function POST(request: Request) {
         return NextResponse.json({ ok: false, error: "Current password is incorrect." }, { status: 403 });
     }
 
+    const newHash = hashSync(parsed.data.newPassword, 12);
+
     // Update in-memory store
-    updatePassword(user.id, parsed.data.newPassword);
+    updatePassword(user.id, newHash);
 
     // Update DB (best-effort)
     try {
         const db = createDbClient();
         await db
             .update(users)
-            .set({ passwordHash: parsed.data.newPassword })
+            .set({ passwordHash: newHash })
             .where(eq(users.id, user.id));
     } catch (err) {
         console.warn("[change-password] DB update failed:", err);

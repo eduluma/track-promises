@@ -1,6 +1,5 @@
 import { InlineVotePanel } from "@/components/voting/inline-vote-panel";
 import type { PromiseRecord } from "@/modules/promises/data";
-import { listVoteSnapshotsForPromise } from "@/modules/voting/snapshots";
 import { formatVoteValue } from "@/modules/voting/assessment";
 import { getVotingWindowStatusForPromise, type VoteSummary } from "@/modules/voting/service";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -21,7 +20,6 @@ type PromiseCardProps = {
 
 export function PromiseCard({ tenantSlug, timelineSlug, isAuthenticated, canVote, promise }: PromiseCardProps) {
   const votingWindow = getVotingWindowStatusForPromise({ tenantId: promise.tenantId, promiseId: promise.id });
-  const snapshots = listVoteSnapshotsForPromise(promise.tenantId, promise.id);
   const redirectPath = `/${tenantSlug}/${timelineSlug}#${promise.id}`;
 
   return (
@@ -62,7 +60,6 @@ export function PromiseCard({ tenantSlug, timelineSlug, isAuthenticated, canVote
           canVote={canVote}
           initialWindowState={votingWindow.state}
           initialSummary={promise.voteSummary}
-          snapshots={snapshots}
         />
       </div>
     </article>
