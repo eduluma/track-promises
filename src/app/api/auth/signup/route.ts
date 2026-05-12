@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { createDbClient } from "@/db/client";
+import { users } from "@/db/schema";
 import { registerDemoUser } from "@/modules/auth/demo-users";
 
 const signupSchema = z.object({
@@ -34,6 +36,28 @@ export async function POST(request: Request) {
 
     if ("error" in result) {
         return NextResponse.json({ ok: false, error: result.error }, { status: 409 });
+    }
+
+    // Persist to the database (best-effort — in-memory store is the source of
+    // truth for auth until Phase 3 DB migration is complete).
+    try {
+        const db = createDbClient();
+        await db
+            .insert(users)
+            .values({
+                id: result.user.id,
+                email: result.user.email,
+                displayName: result.user.displayName,
+                passwordHash: result.password,
+                emailVerified: result.user.emailVerified,
+                state: result.user.state,
+                role: result.user.role,
+                trustScore: result.user.trustScore
+            })
+            .onConflictDoNothing();
+    } catch (err) {
+        // Log but don't fail the signup — auth still works via in-memory store.
+        console.warn("[signup] DB persist failed:", err);
     }
 
     return NextResponse.json({
