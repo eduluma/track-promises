@@ -141,3 +141,7 @@ export function getVoteForUser(tenantId: string, promiseId: string, userId: stri
 export function listVoteEventsForPromise(tenantId: string, promiseId: string) {
   return getVoteStore().events.filter((event) => event.tenantId === tenantId && event.promiseId === promiseId);
 }
+
+export function listVotesForUser(userId: string) {
+  return Array.from(getVoteStore().votes.values()).filter((vote) => vote.userId === userId);
+}

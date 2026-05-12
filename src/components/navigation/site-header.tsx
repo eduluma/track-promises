@@ -36,7 +36,11 @@ export async function SiteHeader() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-3">
-                    {user ? <p className="hidden text-sm text-ink/65 sm:block">{user.name} · {user.role}</p> : null}
+                    {user ? (
+                        <Link href="/account" className="hidden text-sm text-ink/65 transition hover:text-ink sm:block">
+                            {user.name} · {user.role}
+                        </Link>
+                    ) : null}
                     <SessionActions isAuthenticated={Boolean(user)} />
                 </div>
             </div>

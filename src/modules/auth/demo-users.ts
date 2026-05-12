@@ -206,6 +206,21 @@ export function registerDemoUser(params: {
     return { user: newUser, password };
 }
 
+export function setEmailVerified(id: string): boolean {
+    const user = getDemoUserById(id);
+    if (!user) return false;
+    user.emailVerified = true;
+    if (user.state === "unverified") user.state = "verified";
+    return true;
+}
+
+export function updatePassword(id: string, newPassword: string): boolean {
+    const user = getDemoUserById(id);
+    if (!user) return false;
+    user.password = newPassword;
+    return true;
+}
+
 export function updateDemoUserById(
     id: string,
     patch: Partial<Pick<DemoUserRecord, "state" | "trustScore" | "abuseFlags">>
