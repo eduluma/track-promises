@@ -35,15 +35,15 @@ export default async function TimelinePage({ params, searchParams }: TimelinePag
 
     const user = await getCurrentUser();
     const config = resolveTenantConfig(tenant.id);
-    const promises = listPromisesForTenant(tenant.id, {
+    const promises = await listPromisesForTenant(tenant.id, {
         userId: user?.id ?? null,
         timelineSlug: timeline.slug,
         category: category ?? null,
         status: status && config.statuses.includes(status as (typeof config.statuses)[number]) ? (status as (typeof config.statuses)[number]) : null
     });
-    const reviews = getOpenModerationReviewsForTenant(tenant.id);
+    const reviews = await getOpenModerationReviewsForTenant(tenant.id);
     const recentElectionOverview = getRecentElectionOverviewForTimeline(tenant.id, timeline.slug);
-    const timelineScore = getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug });
+    const timelineScore = await getTimelineScoreProjection({ tenantId: tenant.id, timelineSlug: timeline.slug });
     const canVote = canUserVote(user);
     const sharedSearchParams = {
         category,

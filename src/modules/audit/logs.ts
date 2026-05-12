@@ -1,3 +1,8 @@
+import { eq } from "drizzle-orm";
+
+import { createDbClient } from "@/db/client";
+import { auditLogs } from "@/db/schema";
+
 export type AuditLogRecord = {
     id: string;
     tenantId: string | null;
@@ -9,63 +14,57 @@ export type AuditLogRecord = {
     createdAt: string;
 };
 
-type AuditLogStore = {
-    records: AuditLogRecord[];
-};
-
-const seedAuditLogs: AuditLogRecord[] = [
-    {
-        id: "audit:bootstrap:tenant-tamilnadu",
-        tenantId: "tenant-tamilnadu",
-        actorId: "platform-admin",
-        action: "tenant.bootstrap",
-        entityType: "tenant",
-        entityId: "tenant-tamilnadu",
-        metadata: {
-            source: "seed"
-        },
-        createdAt: "2026-01-05T00:00:00.000Z"
-    }
-];
-
-const globalForAudit = globalThis as typeof globalThis & {
-    __trackPromisesAuditStore?: AuditLogStore;
-};
-
-function createInitialStore(): AuditLogStore {
-    return {
-        records: [...seedAuditLogs]
-    };
-}
-
 function createAuditLogId(action: string, entityId: string, createdAt: string) {
     return `audit:${action}:${entityId}:${createdAt}`;
 }
 
-export function getAuditLogStore() {
-    if (!globalForAudit.__trackPromisesAuditStore) {
-        globalForAudit.__trackPromisesAuditStore = createInitialStore();
-    }
-
-    return globalForAudit.__trackPromisesAuditStore;
+function isGuestActorId(actorId: string | null): boolean {
+    return actorId !== null && (actorId === "guest" || actorId.startsWith("guest-"));
 }
 
-export function listAuditLogsForTenant(tenantId: string) {
-    return getAuditLogStore()
-        .records.filter((record) => record.tenantId === tenantId)
-        .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+export async function listAuditLogsForTenant(tenantId: string): Promise<AuditLogRecord[]> {
+    const db = createDbClient();
+    const rows = await db
+        .select()
+        .from(auditLogs)
+        .where(eq(auditLogs.tenantId, tenantId));
+
+    return rows
+        .map((row) => ({
+            id: row.id,
+            tenantId: row.tenantId,
+            actorId: row.actorId,
+            action: row.action,
+            entityType: row.entityType,
+            entityId: row.entityId,
+            metadata: (row.metadata ?? {}) as Record<string, unknown>,
+            createdAt: row.createdAt.toISOString()
+        }))
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export function appendAuditLog(record: Omit<AuditLogRecord, "id"> & { id?: string }) {
-    const store = getAuditLogStore();
-    const finalRecord: AuditLogRecord = {
-        ...record,
-        id: record.id ?? createAuditLogId(record.action, record.entityId, record.createdAt)
-    };
-    store.records.push(finalRecord);
+export async function appendAuditLog(record: Omit<AuditLogRecord, "id"> & { id?: string }): Promise<AuditLogRecord> {
+    const id = record.id ?? createAuditLogId(record.action, record.entityId, record.createdAt);
+    // Guest actor IDs cannot be stored due to FK constraint on users.id
+    const actorId = isGuestActorId(record.actorId) ? null : record.actorId;
+
+    const finalRecord: AuditLogRecord = { ...record, id, actorId };
+
+    const db = createDbClient();
+    await db.insert(auditLogs).values({
+        id,
+        tenantId: record.tenantId,
+        actorId,
+        action: record.action,
+        entityType: record.entityType,
+        entityId: record.entityId,
+        metadata: record.metadata,
+        createdAt: new Date(record.createdAt)
+    }).onConflictDoNothing();
+
     return finalRecord;
 }
 
-export function seedAuditLogRecords() {
-    return seedAuditLogs;
+export function seedAuditLogRecords(): AuditLogRecord[] {
+    return [];
 }

@@ -32,8 +32,8 @@ describe("promise json import", () => {
         );
     });
 
-    it("imports json rows and preserves source evidence", () => {
-        const imported = importPromisesFromJson({
+    it("imports json rows and preserves source evidence", async () => {
+        const imported = await importPromisesFromJson({
             jsonText: JSON.stringify({
                 tenant: {
                     slug: "tamilnadu",

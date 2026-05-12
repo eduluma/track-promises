@@ -17,14 +17,14 @@ describe("voting rules", () => {
     ).toBe("open");
   });
 
-  it("appends a vote event when a user changes a vote", () => {
-    const before = getPromiseVoteSummary({
+  it("appends a vote event when a user changes a vote", async () => {
+    const before = await getPromiseVoteSummary({
       tenantId: "tenant-tamilnadu",
       promiseId: "promise-power",
       userId: "demo-user"
     });
 
-    const result = castVote({
+    const result = await castVote({
       tenantId: "tenant-tamilnadu",
       promiseId: "promise-power",
       user: {
@@ -43,8 +43,8 @@ describe("voting rules", () => {
     expect(result.summary.eventCount).toBe(before.eventCount + 1);
   });
 
-  it("rejects votes after freeze", () => {
-    expect(() =>
+  it("rejects votes after freeze", async () => {
+    await expect(() =>
       castVote({
         tenantId: "tenant-tamilnadu",
         promiseId: "promise-power",
@@ -57,22 +57,22 @@ describe("voting rules", () => {
         value: "in_progress",
         now: new Date("2027-01-02T00:00:00.000Z")
       })
-    ).toThrowError(VoteError);
+    ).rejects.toThrowError(VoteError);
   });
 
-  it("refreshes the timeline score projection when a vote changes", () => {
-    const before = getTimelineScoreProjection({
+  it("refreshes the timeline score projection when a vote changes", async () => {
+    const before = await getTimelineScoreProjection({
       tenantId: "tenant-tamilnadu",
       timelineSlug: "2026",
       now: new Date("2026-05-15T00:00:00.000Z")
     });
 
-    castVote({
+    await castVote({
       tenantId: "tenant-tamilnadu",
       promiseId: "tn-2026-tvk-free-electricity-200-units",
       user: {
-        id: "observer-3",
-        email: "observer-3@track-promises.local",
+        id: "observer-2",
+        email: "observer-2@track-promises.local",
         emailVerified: true,
         state: "verified"
       },
@@ -80,7 +80,7 @@ describe("voting rules", () => {
       now: new Date("2026-05-15T00:00:00.000Z")
     });
 
-    const after = getTimelineScoreProjection({
+    const after = await getTimelineScoreProjection({
       tenantId: "tenant-tamilnadu",
       timelineSlug: "2026",
       now: new Date("2026-05-15T00:00:00.000Z")

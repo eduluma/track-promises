@@ -23,8 +23,8 @@ type ApiHandlerResult<TPayload> = {
     payload: TPayload | ApiErrorPayload;
 };
 
-type VotePayload = ReturnType<typeof castVote>;
-type CreatePromisePayload = { promise: ReturnType<typeof createPromise>; tenantSlug: string; timelineSlug: string };
+type VotePayload = Awaited<ReturnType<typeof castVote>>;
+type CreatePromisePayload = { promise: Awaited<ReturnType<typeof createPromise>>; tenantSlug: string; timelineSlug: string };
 type ResolveModerationPayload = { review: ModerationReview };
 
 function unauthorized(message: string): ApiHandlerResult<never> {
@@ -36,7 +36,7 @@ function unauthorized(message: string): ApiHandlerResult<never> {
     };
 }
 
-export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiHandlerResult<VotePayload> {
+export async function handleCastVote(body: unknown, user: ApiUserContext | null): Promise<ApiHandlerResult<VotePayload>> {
     const parsed = voteRequestSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -49,14 +49,10 @@ export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiH
         return { status: 404, payload: { error: "Unknown tenant." } };
     }
 
-    // Voting is open to all users (including unverified and guests).
-    // canAccessTenant is only relevant for management operations (promise editing, moderation).
-    // canUserVote (state-based) is enforced inside castVote.
-
     try {
         return {
             status: 200,
-            payload: castVote({
+            payload: await castVote({
                 tenantId: tenant.id,
                 promiseId: parsed.data.promiseId,
                 user: user ?? null,
@@ -78,7 +74,7 @@ export function handleCastVote(body: unknown, user: ApiUserContext | null): ApiH
     }
 }
 
-export function handleCreatePromise(body: unknown, user: ApiUserContext | null): ApiHandlerResult<CreatePromisePayload> {
+export async function handleCreatePromise(body: unknown, user: ApiUserContext | null): Promise<ApiHandlerResult<CreatePromisePayload>> {
     if (!user) {
         return unauthorized("Sign in is required.");
     }
@@ -96,10 +92,10 @@ export function handleCreatePromise(body: unknown, user: ApiUserContext | null):
     return createPromiseForTenant(parsed.data, user);
 }
 
-function createPromiseForTenant(
+async function createPromiseForTenant(
     body: CreatePromiseRequest,
     user: ApiUserContext
-): ApiHandlerResult<CreatePromisePayload> {
+): Promise<ApiHandlerResult<CreatePromisePayload>> {
     const tenant = getTenantBySlug(body.tenantSlug);
 
     if (!tenant) {
@@ -116,7 +112,7 @@ function createPromiseForTenant(
         return { status: 404, payload: { error: "Unknown timeline." } };
     }
 
-    const promise = createPromise({
+    const promise = await createPromise({
         tenantId: tenant.id,
         timelineSlug: timeline.slug,
         title: body.title,
@@ -139,11 +135,11 @@ function createPromiseForTenant(
     };
 }
 
-export function handleResolveModerationReview(
+export async function handleResolveModerationReview(
     reviewId: string,
     body: unknown,
     user: ApiUserContext | null
-): ApiHandlerResult<ResolveModerationPayload> {
+): Promise<ApiHandlerResult<ResolveModerationPayload>> {
     if (!user) {
         return unauthorized("Sign in is required.");
     }
@@ -152,7 +148,7 @@ export function handleResolveModerationReview(
         return { status: 403, payload: { error: "This account cannot review moderation items." } };
     }
 
-    const review = getModerationReviewById(reviewId);
+    const review = await getModerationReviewById(reviewId);
 
     if (!review) {
         return { status: 404, payload: { error: "Unknown moderation review." } };
@@ -171,12 +167,12 @@ export function handleResolveModerationReview(
     return resolveModerationReviewForUser(reviewId, parsed.data, user);
 }
 
-function resolveModerationReviewForUser(
+async function resolveModerationReviewForUser(
     reviewId: string,
     body: ResolveModerationReviewRequest,
     user: ApiUserContext
-): ApiHandlerResult<ResolveModerationPayload> {
-    const review = resolveModerationReview({
+): Promise<ApiHandlerResult<ResolveModerationPayload>> {
+    const review = await resolveModerationReview({
         reviewId,
         moderatorId: user.id,
         decision: body.decision

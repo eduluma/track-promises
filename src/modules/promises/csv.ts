@@ -76,7 +76,7 @@ export function parsePromiseCsv(csvText: string) {
     });
 }
 
-export function importPromisesFromCsv({
+export async function importPromisesFromCsv({
     csvText,
     tenantId,
     timelineSlug,
@@ -87,13 +87,15 @@ export function importPromisesFromCsv({
     timelineSlug: string;
     actorId: string;
 }) {
-    return parsePromiseCsv(csvText).map((row) =>
-        createPromise({
-            tenantId,
-            timelineSlug,
-            actorId,
-            ...row
-        })
+    return Promise.all(
+        parsePromiseCsv(csvText).map((row) =>
+            createPromise({
+                tenantId,
+                timelineSlug,
+                actorId,
+                ...row
+            })
+        )
     );
 }
 

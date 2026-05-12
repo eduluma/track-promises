@@ -235,6 +235,7 @@ export const votes = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     value: voteValueEnum("value").notNull(),
+    voteCategory: text("vote_category").notNull().default("verified"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
   },
@@ -257,6 +258,7 @@ export const voteEvents = pgTable(
     previousValue: voteValueEnum("previous_value"),
     newValue: voteValueEnum("new_value").notNull(),
     eventType: text("event_type").notNull(),
+    voteCategory: text("vote_category").notNull().default("verified"),
     requestMetadataHash: text("request_metadata_hash"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
   },

@@ -30,7 +30,7 @@ function getTrustBand(score: number): TrustProfile["band"] {
     return "low";
 }
 
-export function getTrustProfileForUser(userId: string, tenantId: string) {
+export async function getTrustProfileForUser(userId: string, tenantId: string) {
     const user = getDemoUserById(userId);
 
     if (!user) {
@@ -38,7 +38,8 @@ export function getTrustProfileForUser(userId: string, tenantId: string) {
     }
 
     const accountAgeDays = Math.max(0, Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)));
-    const openReviewCount = listModerationReviewsForTenant(tenantId).filter(
+    const allReviews = await listModerationReviewsForTenant(tenantId);
+    const openReviewCount = allReviews.filter(
         (review) => review.status !== "resolved" && (review.metadata.userId === userId || review.subjectId === userId)
     ).length;
 

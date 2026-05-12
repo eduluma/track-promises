@@ -1,6 +1,9 @@
+import { and, eq, ne } from "drizzle-orm";
+
+import { createDbClient } from "@/db/client";
+import { moderationReviews as moderationReviewsTable, users } from "@/db/schema";
 import type { AccountState } from "@/lib/permissions";
 import { appendAuditLog } from "@/modules/audit/logs";
-import { updateDemoUserById } from "@/modules/auth/demo-users";
 
 type ModerationReviewStatus = "open" | "in_review" | "resolved";
 type ModerationDecision = "approve_account" | "limit_account" | "dismiss" | null;
@@ -23,92 +26,56 @@ type ModerationReview = {
   };
 };
 
-type ModerationReviewStore = {
-  records: ModerationReview[];
-};
-
-const moderationReviews: ModerationReview[] = [
-  {
-    id: "review-1",
-    tenantId: "tenant-tamilnadu",
-    subjectType: "account",
-    subjectId: "limited-user",
-    reason: "New user requested early voting access after repeated registration attempts.",
-    status: "open",
-    decision: null,
-    createdAt: "2026-05-29T00:00:00.000Z",
-    updatedAt: "2026-05-29T00:00:00.000Z",
-    assignedModeratorId: null,
-    metadata: {
-      userId: "limited-user",
-      requestedState: "verified",
-      abuseSignals: ["repeated_signup_attempts", "velocity_anomaly"]
-    }
-  },
-  {
-    id: "review-2",
-    tenantId: "tenant-tamilnadu",
-    subjectType: "vote",
-    subjectId: "promise-power",
-    reason: "Sharp vote change pattern triggered a manual review.",
-    status: "in_review",
-    decision: null,
-    createdAt: "2026-06-02T00:00:00.000Z",
-    updatedAt: "2026-06-02T00:00:00.000Z",
-    assignedModeratorId: "moderator-user",
-    metadata: {
-      abuseSignals: ["vote_reversal_spike"]
-    }
-  }
-];
-
-const globalForReviews = globalThis as typeof globalThis & {
-  __trackPromisesModerationReviewStore?: ModerationReviewStore;
-};
-
-function createInitialStore(): ModerationReviewStore {
+function rowToReview(row: typeof moderationReviewsTable.$inferSelect): ModerationReview {
   return {
-    records: moderationReviews.map((review) => ({ ...review, metadata: { ...review.metadata } }))
+    id: row.id,
+    tenantId: row.tenantId,
+    subjectType: row.subjectType as ModerationReview["subjectType"],
+    subjectId: row.subjectId,
+    reason: row.reason,
+    status: row.status as ModerationReviewStatus,
+    decision: (row.decision ?? null) as ModerationDecision,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+    assignedModeratorId: row.assignedModeratorId,
+    metadata: (row.metadata ?? {}) as ModerationReview["metadata"]
   };
 }
 
-function getReviewStore() {
-  if (!globalForReviews.__trackPromisesModerationReviewStore) {
-    globalForReviews.__trackPromisesModerationReviewStore = createInitialStore();
-  }
+// Kept for seed backward-compat
+export const moderationReviews: ModerationReview[] = [];
 
-  return globalForReviews.__trackPromisesModerationReviewStore;
+export async function listModerationReviewsForTenant(tenantId: string, includeResolved = true): Promise<ModerationReview[]> {
+  const db = createDbClient();
+  const rows = await db
+    .select()
+    .from(moderationReviewsTable)
+    .where(
+      includeResolved
+        ? eq(moderationReviewsTable.tenantId, tenantId)
+        : and(eq(moderationReviewsTable.tenantId, tenantId), ne(moderationReviewsTable.status, "resolved"))
+    );
+
+  return rows
+    .map(rowToReview)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-function applyDecisionToUser(review: ModerationReview, decision: Exclude<ModerationDecision, null>) {
-  const userId = review.metadata.userId ?? review.subjectId;
-  const user = updateDemoUserById(userId, {
-    state: decision === "approve_account" ? "verified" : decision === "limit_account" ? "readonly" : undefined,
-    trustScore: decision === "approve_account" ? 45 : decision === "limit_account" ? 5 : undefined,
-    abuseFlags: decision === "approve_account" ? [] : review.metadata.abuseSignals ?? []
-  });
-
-  return user;
+export async function getModerationReviewById(reviewId: string): Promise<ModerationReview | null> {
+  const db = createDbClient();
+  const [row] = await db
+    .select()
+    .from(moderationReviewsTable)
+    .where(eq(moderationReviewsTable.id, reviewId))
+    .limit(1);
+  return row ? rowToReview(row) : null;
 }
 
-export { moderationReviews };
-
-export function listModerationReviewsForTenant(tenantId: string, includeResolved = true) {
-  return getReviewStore()
-    .records.filter((review) => review.tenantId === tenantId)
-    .filter((review) => (includeResolved ? true : review.status !== "resolved"))
-    .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
-}
-
-export function getModerationReviewById(reviewId: string) {
-  return getReviewStore().records.find((review) => review.id === reviewId) ?? null;
-}
-
-export function getOpenModerationReviewsForTenant(tenantId: string) {
+export async function getOpenModerationReviewsForTenant(tenantId: string): Promise<ModerationReview[]> {
   return listModerationReviewsForTenant(tenantId, false);
 }
 
-export function resolveModerationReview({
+export async function resolveModerationReview({
   reviewId,
   moderatorId,
   decision,
@@ -118,21 +85,34 @@ export function resolveModerationReview({
   moderatorId: string;
   decision: Exclude<ModerationDecision, null>;
   now?: string;
-}) {
-  const review = getModerationReviewById(reviewId);
-
+}): Promise<ModerationReview | null> {
+  const review = await getModerationReviewById(reviewId);
   if (!review) {
     return null;
   }
 
-  review.assignedModeratorId = moderatorId;
-  review.status = "resolved";
-  review.decision = decision;
-  review.updatedAt = now;
+  const db = createDbClient();
+  await db
+    .update(moderationReviewsTable)
+    .set({
+      assignedModeratorId: moderatorId,
+      status: "resolved",
+      decision,
+      updatedAt: new Date(now)
+    })
+    .where(eq(moderationReviewsTable.id, reviewId));
 
-  const affectedUser = review.subjectType === "account" ? applyDecisionToUser(review, decision) : null;
+  // If the review is about an account, update the user's state in DB
+  if (review.subjectType === "account") {
+    const userId = review.metadata.userId ?? review.subjectId;
+    if (decision === "approve_account") {
+      await db.update(users).set({ state: "verified" }).where(eq(users.id, userId));
+    } else if (decision === "limit_account") {
+      await db.update(users).set({ state: "readonly" }).where(eq(users.id, userId));
+    }
+  }
 
-  appendAuditLog({
+  await appendAuditLog({
     tenantId: review.tenantId,
     actorId: moderatorId,
     action: "moderation.review_resolved",
@@ -141,12 +121,13 @@ export function resolveModerationReview({
     metadata: {
       reviewId,
       decision,
-      affectedUserId: affectedUser?.id ?? null
+      affectedUserId: review.subjectType === "account" ? (review.metadata.userId ?? review.subjectId) : null
     },
     createdAt: now
   });
 
-  return review;
+  return { ...review, status: "resolved", decision, assignedModeratorId: moderatorId, updatedAt: now };
 }
 
 export type { ModerationReview, ModerationDecision, ModerationReviewStatus };
+

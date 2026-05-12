@@ -46,7 +46,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Sear
     // Fetch full in-memory record (has emailVerified + state)
     const fullUser = getDemoUserById(user.id);
 
-    const votes = listVotesForUser(user.id);
+    const votes = await listVotesForUser(user.id);
     const promisesById = new Map(promiseRecords.map((p) => [p.id, p]));
 
     const stateStyle = STATE_STYLES[fullUser?.state ?? "unverified"] ?? STATE_STYLES.unverified;

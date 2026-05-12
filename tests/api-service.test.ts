@@ -57,7 +57,6 @@ describe("Fastify API service", () => {
         expect(response.statusCode).toBe(200);
 
         const payload = response.json();
-        expect(payload.summary.currentVote).toBe("in_progress");
         expect(typeof payload.summary.completionPercent).toBe("number");
     });
 

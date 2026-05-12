@@ -28,16 +28,21 @@ type CreatePromiseInput = {
 type CreatePromiseSourceInput = Pick<PromiseSource, "url" | "publisher" | "excerpt"> &
   Partial<Pick<PromiseSource, "capturedAt" | "verificationStatus">>;
 
-export function listPromisesForTenant(tenantId: string, filters: PromiseFilters = {}) {
-  return promiseRecords
+export async function listPromisesForTenant(tenantId: string, filters: PromiseFilters = {}) {
+  const filtered = promiseRecords
     .filter((promise) => promise.tenantId === tenantId)
     .filter((promise) => (filters.timelineSlug ? promise.timelineSlug === filters.timelineSlug : true))
     .filter((promise) => (filters.category ? promise.category === filters.category : true))
-    .filter((promise) => (filters.status ? promise.status === filters.status : true))
-    .map((promise) => ({
+    .filter((promise) => (filters.status ? promise.status === filters.status : true));
+
+  const withSummaries = await Promise.all(
+    filtered.map(async (promise) => ({
       ...promise,
-      voteSummary: getPromiseVoteSummary({ tenantId, promiseId: promise.id, userId: filters.userId ?? null })
-    }));
+      voteSummary: await getPromiseVoteSummary({ tenantId, promiseId: promise.id, userId: filters.userId ?? null })
+    }))
+  );
+
+  return withSummaries;
 }
 
 export function getPromiseById(tenantId: string, promiseId: string, timelineSlug?: string | null) {
@@ -55,7 +60,7 @@ export function getRecentElectionOverviewForTimeline(tenantId: string, timelineS
   return getRecentElectionOverview(tenantId, timelineSlug);
 }
 
-export function createPromise(input: CreatePromiseInput) {
+export async function createPromise(input: CreatePromiseInput) {
   const timestamp = new Date().toISOString();
   const id = `promise-${input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now()}`;
   const sources = (input.sources ?? []).map((source, index) => ({
@@ -93,7 +98,7 @@ export function createPromise(input: CreatePromiseInput) {
 
   promiseRecords.unshift(promise);
 
-  appendAuditLog({
+  await appendAuditLog({
     tenantId: input.tenantId,
     actorId: input.actorId,
     action: "promise.created",

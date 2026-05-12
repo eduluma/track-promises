@@ -6,7 +6,7 @@
     "description": "Write-path API service for voting, promise administration, and moderation workflows."
   },
   "components": {
-    "schemas": {}
+    "schemas": { }
   },
   "paths": {
     "/health": {
@@ -257,6 +257,10 @@
                             "createdAt": {
                               "type": "string",
                               "format": "date-time"
+                            },
+                            "voteCategory": {
+                              "type": "string",
+                              "enum": [ "verified", "unverified", "guest" ]
                             }
                           },
                           "additionalProperties": false

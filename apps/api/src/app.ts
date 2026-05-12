@@ -40,17 +40,17 @@ export function buildApiApp() {
             });
 
             api.post("/votes", { schema: voteRouteSchema }, async (request, reply) => {
-                return sendResult(reply, handleCastVote(request.body, getRequestUser(request)));
+                return sendResult(reply, await handleCastVote(request.body, getRequestUser(request)));
             });
 
             api.post("/admin/promises", { schema: createPromiseRouteSchema }, async (request, reply) => {
-                return sendResult(reply, handleCreatePromise(request.body, getRequestUser(request)));
+                return sendResult(reply, await handleCreatePromise(request.body, getRequestUser(request)));
             });
 
             api.post("/admin/moderation/reviews/:reviewId", { schema: resolveModerationRouteSchema }, async (request, reply) => {
                 const params = request.params as { reviewId: string };
 
-                return sendResult(reply, handleResolveModerationReview(params.reviewId, request.body, getRequestUser(request)));
+                return sendResult(reply, await handleResolveModerationReview(params.reviewId, request.body, getRequestUser(request)));
             });
         });
 

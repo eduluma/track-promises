@@ -41,10 +41,10 @@ export default async function TimelinePromiseDetailPage({ params }: TimelineProm
 
     const user = await getCurrentUser();
     const config = resolveTenantConfig(tenant.id);
-    const summary = getPromiseVoteSummary({ tenantId: tenant.id, promiseId: promise.id, userId: user?.id ?? null });
+    const summary = await getPromiseVoteSummary({ tenantId: tenant.id, promiseId: promise.id, userId: user?.id ?? null });
     const votingWindow = getVotingWindowStatusForPromise({ tenantId: tenant.id, promiseId: promise.id });
-    const snapshots = listVoteSnapshotsForPromise(tenant.id, promise.id);
-    const reconciliation = reconcileVoteAggregateForPromise(tenant.id, promise.id);
+    const snapshots = await listVoteSnapshotsForPromise(tenant.id, promise.id);
+    const reconciliation = await reconcileVoteAggregateForPromise(tenant.id, promise.id);
 
     return (
         <main className="mx-auto flex min-h-screen max-w-5xl flex-col px-6 py-8 sm:px-10">

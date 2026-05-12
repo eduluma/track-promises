@@ -12,8 +12,8 @@ describe("timeline routing model", () => {
         expect(timeline?.slug).toBe("2026");
     });
 
-    it("filters promises by timeline slug", () => {
-        const promises = listPromisesForTenant("tenant-tamilnadu", { timelineSlug: "2026" });
+    it("filters promises by timeline slug", async () => {
+        const promises = await listPromisesForTenant("tenant-tamilnadu", { timelineSlug: "2026" });
 
         expect(promises).toHaveLength(38);
         expect(promises.every((promise) => promise.timelineSlug === "2026")).toBe(true);
@@ -29,8 +29,8 @@ describe("timeline routing model", () => {
         expect(htmlContent?.html).toContain("India 2029");
     });
 
-    it("derives a timeline score projection with term metadata", () => {
-        const score = getTimelineScoreProjection({
+    it("derives a timeline score projection with term metadata", async () => {
+        const score = await getTimelineScoreProjection({
             tenantId: "tenant-tamilnadu",
             timelineSlug: "2026",
             now: new Date("2026-05-10T00:00:00.000Z")

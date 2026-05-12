@@ -1,3 +1,7 @@
+import { and, eq } from "drizzle-orm";
+
+import { createDbClient } from "@/db/client";
+import { voteSnapshots } from "@/db/schema";
 import { listPromisesForTenant } from "@/modules/promises/repository";
 import { listTenants } from "@/modules/tenants/data";
 import { appendAuditLog } from "@/modules/audit/logs";
@@ -34,43 +38,12 @@ type VoteSnapshotStore = {
     records: VoteSnapshotRecord[];
 };
 
-const seedSnapshots: VoteSnapshotRecord[] = [
-    {
-        id: "snapshot:tenant-tamilnadu:promise-power:2026-04-15",
-        tenantId: "tenant-tamilnadu",
-        promiseId: "promise-power",
-        totalVotes: 2,
-        completionPercent: 38,
-        snapshotAt: "2026-04-15T00:00:00.000Z",
-        generationSource: "seed"
-    },
-    {
-        id: "snapshot:tenant-tamilnadu:promise-school-meals:2026-05-01",
-        tenantId: "tenant-tamilnadu",
-        promiseId: "promise-school-meals",
-        totalVotes: 1,
-        completionPercent: 100,
-        snapshotAt: "2026-05-01T00:00:00.000Z",
-        generationSource: "seed"
-    }
-];
-
-const globalForSnapshots = globalThis as typeof globalThis & {
-    __trackPromisesVoteSnapshotStore?: VoteSnapshotStore;
-};
-
-function createInitialStore(): VoteSnapshotStore {
-    return {
-        records: [...seedSnapshots]
-    };
-}
-
 function createSnapshotId(tenantId: string, promiseId: string, snapshotAt: string) {
     return `snapshot:${tenantId}:${promiseId}:${snapshotAt}`;
 }
 
-function computeVoteAggregate(tenantId: string, promiseId: string) {
-    const votes = listVotesForPromise(tenantId, promiseId);
+async function computeVoteAggregate(tenantId: string, promiseId: string) {
+    const votes = await listVotesForPromise(tenantId, promiseId);
     const totalVotes = votes.length;
     const weightedTotal = votes.reduce((total, vote) => total + getVoteOption(vote.value).weight, 0);
 
@@ -80,21 +53,27 @@ function computeVoteAggregate(tenantId: string, promiseId: string) {
     };
 }
 
-export function getVoteSnapshotStore() {
-    if (!globalForSnapshots.__trackPromisesVoteSnapshotStore) {
-        globalForSnapshots.__trackPromisesVoteSnapshotStore = createInitialStore();
-    }
+export async function listVoteSnapshotsForPromise(tenantId: string, promiseId: string): Promise<VoteSnapshotRecord[]> {
+    const db = createDbClient();
+    const rows = await db
+        .select()
+        .from(voteSnapshots)
+        .where(and(eq(voteSnapshots.tenantId, tenantId), eq(voteSnapshots.promiseId, promiseId)));
 
-    return globalForSnapshots.__trackPromisesVoteSnapshotStore;
+    return rows
+        .map((row) => ({
+            id: row.id,
+            tenantId: row.tenantId,
+            promiseId: row.promiseId,
+            totalVotes: row.totalVotes,
+            completionPercent: row.completionPercent,
+            snapshotAt: row.snapshotAt.toISOString(),
+            generationSource: row.generationSource as VoteSnapshotRecord["generationSource"]
+        }))
+        .sort((a, b) => a.snapshotAt.localeCompare(b.snapshotAt));
 }
 
-export function listVoteSnapshotsForPromise(tenantId: string, promiseId: string) {
-    return getVoteSnapshotStore()
-        .records.filter((record) => record.tenantId === tenantId && record.promiseId === promiseId)
-        .sort((left, right) => left.snapshotAt.localeCompare(right.snapshotAt));
-}
-
-export function captureVoteSnapshotForPromise({
+export async function captureVoteSnapshotForPromise({
     tenantId,
     promiseId,
     snapshotAt = new Date().toISOString(),
@@ -104,10 +83,11 @@ export function captureVoteSnapshotForPromise({
     promiseId: string;
     snapshotAt?: string;
     generationSource?: VoteSnapshotRecord["generationSource"];
-}) {
-    const aggregate = computeVoteAggregate(tenantId, promiseId);
+}): Promise<VoteSnapshotRecord> {
+    const aggregate = await computeVoteAggregate(tenantId, promiseId);
+    const id = createSnapshotId(tenantId, promiseId, snapshotAt);
     const record: VoteSnapshotRecord = {
-        id: createSnapshotId(tenantId, promiseId, snapshotAt),
+        id,
         tenantId,
         promiseId,
         snapshotAt,
@@ -115,9 +95,27 @@ export function captureVoteSnapshotForPromise({
         ...aggregate
     };
 
-    getVoteSnapshotStore().records.push(record);
+    const db = createDbClient();
+    await db
+        .insert(voteSnapshots)
+        .values({
+            id,
+            tenantId,
+            promiseId,
+            totalVotes: aggregate.totalVotes,
+            completionPercent: aggregate.completionPercent,
+            snapshotAt: new Date(snapshotAt),
+            generationSource
+        })
+        .onConflictDoUpdate({
+            target: [voteSnapshots.id],
+            set: {
+                totalVotes: aggregate.totalVotes,
+                completionPercent: aggregate.completionPercent
+            }
+        });
 
-    appendAuditLog({
+    await appendAuditLog({
         tenantId,
         actorId: null,
         action: "votes.snapshot_captured",
@@ -134,26 +132,32 @@ export function captureVoteSnapshotForPromise({
     return record;
 }
 
-export function captureVoteSnapshotsForTenant(tenantId: string, snapshotAt = new Date().toISOString()) {
-    return listPromisesForTenant(tenantId).map((promise) =>
-        captureVoteSnapshotForPromise({
-            tenantId,
-            promiseId: promise.id,
-            snapshotAt,
-            generationSource: "worker"
-        })
-    );
+export async function captureVoteSnapshotsForTenant(tenantId: string, snapshotAt = new Date().toISOString()): Promise<VoteSnapshotRecord[]> {
+    const promises = await listPromisesForTenant(tenantId);
+    const results: VoteSnapshotRecord[] = [];
+    for (const promise of promises) {
+        results.push(await captureVoteSnapshotForPromise({ tenantId, promiseId: promise.id, snapshotAt, generationSource: "worker" }));
+    }
+    return results;
 }
 
-export function captureVoteSnapshotsForAllTenants(snapshotAt = new Date().toISOString()) {
-    return listTenants().flatMap((tenant) => captureVoteSnapshotsForTenant(tenant.id, snapshotAt));
+export async function captureVoteSnapshotsForAllTenants(snapshotAt = new Date().toISOString()): Promise<VoteSnapshotRecord[]> {
+    const results: VoteSnapshotRecord[] = [];
+    for (const tenant of listTenants()) {
+        const tenantResults = await captureVoteSnapshotsForTenant(tenant.id, snapshotAt);
+        results.push(...tenantResults);
+    }
+    return results;
 }
 
-export function reconcileVoteAggregateForPromise(tenantId: string, promiseId: string): VoteAggregateReconciliation {
-    const currentAggregate = computeVoteAggregate(tenantId, promiseId);
-    const snapshots = listVoteSnapshotsForPromise(tenantId, promiseId);
+export async function reconcileVoteAggregateForPromise(tenantId: string, promiseId: string): Promise<VoteAggregateReconciliation> {
+    const [currentAggregate, snapshots, events] = await Promise.all([
+        computeVoteAggregate(tenantId, promiseId),
+        listVoteSnapshotsForPromise(tenantId, promiseId),
+        listVoteEventsForPromise(tenantId, promiseId)
+    ]);
     const latestSnapshot = snapshots.at(-1) ?? null;
-    const voteEventCount = listVoteEventsForPromise(tenantId, promiseId).length;
+    const voteEventCount = events.length;
 
     if (!latestSnapshot) {
         return {
@@ -192,31 +196,40 @@ export function reconcileVoteAggregateForPromise(tenantId: string, promiseId: st
     };
 }
 
-export function reconcileVoteAggregatesForTenant(tenantId: string) {
-    return listPromisesForTenant(tenantId).map((promise) => reconcileVoteAggregateForPromise(tenantId, promise.id));
+export async function reconcileVoteAggregatesForTenant(tenantId: string): Promise<VoteAggregateReconciliation[]> {
+    const promises = await listPromisesForTenant(tenantId);
+    return Promise.all(promises.map((p) => reconcileVoteAggregateForPromise(tenantId, p.id)));
 }
 
-export function reconcileVoteAggregatesForAllTenants() {
-    const reconciliations = listTenants().flatMap((tenant) => reconcileVoteAggregatesForTenant(tenant.id));
+export async function reconcileVoteAggregatesForAllTenants(): Promise<VoteAggregateReconciliation[]> {
+    const results: VoteAggregateReconciliation[] = [];
+    for (const tenant of listTenants()) {
+        const r = await reconcileVoteAggregatesForTenant(tenant.id);
+        results.push(...r);
+    }
 
     const createdAt = new Date().toISOString();
-    appendAuditLog({
+    await appendAuditLog({
         tenantId: null,
         actorId: null,
         action: "votes.reconciliation_completed",
         entityType: "system",
         entityId: "vote-aggregates",
         metadata: {
-            reconciledPromises: reconciliations.length,
-            driftedPromises: reconciliations.filter((item) => item.status === "drift_detected").length,
-            missingSnapshots: reconciliations.filter((item) => item.status === "missing_snapshot").length
+            reconciledPromises: results.length,
+            driftedPromises: results.filter((item) => item.status === "drift_detected").length,
+            missingSnapshots: results.filter((item) => item.status === "missing_snapshot").length
         },
         createdAt
     });
 
-    return reconciliations;
+    return results;
 }
 
-export function seedVoteSnapshots() {
-    return seedSnapshots;
+// Kept for backwards-compat — seed no longer needs snapshots seeded in-memory
+export function seedVoteSnapshots(): VoteSnapshotRecord[] {
+    return [];
 }
+
+// Unused type kept to avoid import errors in workers that may reference it
+export type { VoteSnapshotStore };

@@ -55,13 +55,13 @@ async function main() {
     }
 
     const imported = isJsonDataset
-        ? importPromisesFromJson({
+        ? await importPromisesFromJson({
             jsonText: fileText,
             tenantId: tenant.id,
             timelineSlug: timeline.slug,
             actorId
         })
-        : importPromisesFromCsv({
+        : await importPromisesFromCsv({
             csvText: fileText,
             tenantId: tenant.id,
             timelineSlug: timeline.slug,

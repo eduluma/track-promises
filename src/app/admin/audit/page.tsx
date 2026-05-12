@@ -33,7 +33,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
                 <p className="mt-4 text-base leading-7 text-ink/72">
                     Track promise creation, moderation decisions, snapshot captures, and reconciliation runs by tenant.
                 </p>
-                {activeTenant ? <AuditLogPanel logs={listAuditLogsForTenant(activeTenant.id)} /> : null}
+                {activeTenant ? <AuditLogPanel logs={await listAuditLogsForTenant(activeTenant.id)} /> : null}
             </section>
         </main>
     );

@@ -12,8 +12,8 @@ Transit dashboard,Publish a city transit dashboard with monthly uptime data,Infr
         expect(rows[0]?.status).toBe("planned");
     });
 
-    it("imports csv rows into the promise repository", () => {
-        const imported = importPromisesFromCsv({
+    it("imports csv rows into the promise repository", async () => {
+        const imported = await importPromisesFromCsv({
             csvText: `title,description,category,jurisdiction,election,personParty,status
 Water audit,Publish annual district water audits with downloadable source data,Health,Tamil Nadu,State Election 2026,Alliance for Growth,in_progress`,
             tenantId: "tenant-tamilnadu",

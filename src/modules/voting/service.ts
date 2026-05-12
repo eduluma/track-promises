@@ -104,9 +104,12 @@ export function getVotingWindowStatusForPromise({ tenantId, promiseId, now = new
   };
 }
 
-export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSummaryInput) {
-  const votes = listVotesForPromise(tenantId, promiseId);
-  const currentVote = userId ? getVoteForUser(tenantId, promiseId, userId) : null;
+export async function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSummaryInput): Promise<VoteSummary> {
+  const [votes, currentVote, events] = await Promise.all([
+    listVotesForPromise(tenantId, promiseId),
+    userId ? getVoteForUser(tenantId, promiseId, userId) : Promise.resolve(null),
+    listVoteEventsForPromise(tenantId, promiseId)
+  ]);
   const aggregate = calculateVoteAggregate(votes);
 
   const categoryCounts: Record<VoteCategory, number> = { verified: 0, unverified: 0, guest: 0 };
@@ -126,11 +129,11 @@ export function getPromiseVoteSummary({ tenantId, promiseId, userId }: VoteSumma
     dominantVote: aggregate.dominantVote,
     currentVote: currentVote?.value ?? null,
     totalVotes: aggregate.totalVotes,
-    eventCount: listVoteEventsForPromise(tenantId, promiseId).length
+    eventCount: events.length
   } satisfies VoteSummary;
 }
 
-export function castVote({ tenantId, promiseId, user, value, now = new Date() }: CastVoteInput) {
+export async function castVote({ tenantId, promiseId, user, value, now = new Date() }: CastVoteInput) {
   const promise = getPromiseById(tenantId, promiseId);
   if (!promise) {
     throw new VoteError("NOT_FOUND", "Promise not found.", 404);
@@ -147,12 +150,12 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
 
   const userId = user?.id ?? "guest";
   const voteCategory = getVoteCategory(user);
-  const existingVote = getVoteForUser(tenantId, promiseId, userId);
+  const existingVote = await getVoteForUser(tenantId, promiseId, userId);
   const timestamp = now.toISOString();
 
   if (existingVote?.value === value) {
     return {
-      summary: getPromiseVoteSummary({ tenantId, promiseId, userId }),
+      summary: await getPromiseVoteSummary({ tenantId, promiseId, userId }),
       event: null
     };
   }
@@ -178,9 +181,9 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
     createdAt: timestamp
   };
 
-  upsertVote(voteRecord);
-  appendVoteEvent(eventRecord);
-  appendAuditLog({
+  await upsertVote(voteRecord);
+  await appendVoteEvent(eventRecord);
+  await appendAuditLog({
     tenantId,
     actorId: userId,
     action: existingVote ? "vote.changed" : "vote.created",
@@ -193,8 +196,8 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
     },
     createdAt: timestamp
   });
-  const projection = upsertTimelineScoreProjection({ tenantId, timelineSlug: promise.timelineSlug, now });
-  appendAuditLog({
+  const projection = await upsertTimelineScoreProjection({ tenantId, timelineSlug: promise.timelineSlug, now });
+  await appendAuditLog({
     tenantId,
     actorId: userId,
     action: "timeline_score.recalculated",
@@ -213,7 +216,7 @@ export function castVote({ tenantId, promiseId, user, value, now = new Date() }:
   });
 
   return {
-    summary: getPromiseVoteSummary({ tenantId, promiseId, userId }),
+    summary: await getPromiseVoteSummary({ tenantId, promiseId, userId }),
     event: eventRecord
   };
 }

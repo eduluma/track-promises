@@ -114,31 +114,3 @@ export const authOptions: NextAuthOptions = {
     },
     secret: process.env.NEXTAUTH_SECRET
 };
-    callbacks: {
-        jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.role = user.role;
-                token.state = user.state;
-                token.emailVerified = user.emailVerified === true;
-                token.tenantIds = user.tenantIds;
-            }
-
-            return token;
-        },
-        session({ session, token }) {
-            if (session.user) {
-                session.user.id = typeof token.id === "string" ? token.id : "";
-                session.user.role = token.role ?? "user";
-                session.user.state = token.state ?? "unverified";
-                session.user.emailVerified = token.emailVerified === true;
-                session.user.tenantIds = Array.isArray(token.tenantIds)
-                    ? token.tenantIds.filter((value): value is string => typeof value === "string")
-                    : [];
-            }
-
-            return session;
-        }
-    },
-    secret: process.env.NEXTAUTH_SECRET
-};

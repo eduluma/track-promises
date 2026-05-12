@@ -97,7 +97,7 @@ export function getTimelineScoreStore() {
     return globalForTimelineScores.__trackPromisesTimelineScoreStore;
 }
 
-export function calculateTimelineScoreProjection({
+export async function calculateTimelineScoreProjection({
     tenantId,
     timelineSlug,
     now = new Date()
@@ -105,7 +105,7 @@ export function calculateTimelineScoreProjection({
     tenantId: string;
     timelineSlug: string;
     now?: Date;
-}): TimelineScoreProjection {
+}): Promise<TimelineScoreProjection> {
     const timeline = getTimelineBySlug(tenantId, timelineSlug);
 
     if (!timeline) {
@@ -113,12 +113,13 @@ export function calculateTimelineScoreProjection({
     }
 
     const promises = promiseRecords.filter((promise) => promise.tenantId === tenantId && promise.timelineSlug === timelineSlug);
-    const assessedAggregates = promises
-        .map((promise) => ({
+    const aggregateEntries = await Promise.all(
+        promises.map(async (promise) => ({
             promiseId: promise.id,
-            aggregate: calculateVoteAggregate(listVotesForPromise(tenantId, promise.id))
+            aggregate: calculateVoteAggregate(await listVotesForPromise(tenantId, promise.id))
         }))
-        .filter((entry) => entry.aggregate.totalVotes > 0);
+    );
+    const assessedAggregates = aggregateEntries.filter((entry) => entry.aggregate.totalVotes > 0);
 
     const assessedPromiseCount = assessedAggregates.length;
     const promiseCount = promises.length;
@@ -160,7 +161,7 @@ export function calculateTimelineScoreProjection({
     };
 }
 
-export function getTimelineScoreProjection({
+export async function getTimelineScoreProjection({
     tenantId,
     timelineSlug,
     now = new Date()
@@ -168,7 +169,7 @@ export function getTimelineScoreProjection({
     tenantId: string;
     timelineSlug: string;
     now?: Date;
-}) {
+}): Promise<TimelineScoreProjection> {
     const key = getScoreKey(tenantId, timelineSlug);
     const existing = getTimelineScoreStore().records.get(key);
 
@@ -185,7 +186,7 @@ export function getTimelineScoreProjection({
     return existing;
 }
 
-export function upsertTimelineScoreProjection({
+export async function upsertTimelineScoreProjection({
     tenantId,
     timelineSlug,
     now = new Date()
@@ -193,8 +194,8 @@ export function upsertTimelineScoreProjection({
     tenantId: string;
     timelineSlug: string;
     now?: Date;
-}) {
-    const projection = calculateTimelineScoreProjection({ tenantId, timelineSlug, now });
+}): Promise<TimelineScoreProjection> {
+    const projection = await calculateTimelineScoreProjection({ tenantId, timelineSlug, now });
     getTimelineScoreStore().records.set(getScoreKey(tenantId, timelineSlug), projection);
 
     return projection;

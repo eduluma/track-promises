@@ -30,13 +30,14 @@ export default async function ModerationPage({ searchParams }: ModerationPagePro
         redirect("/");
     }
 
-    const reviews = listModerationReviewsForTenant(activeTenant.id);
-    const trustProfiles = Object.fromEntries(
-        reviews.map((review) => {
+    const reviews = await listModerationReviewsForTenant(activeTenant.id);
+    const trustProfileEntries = await Promise.all(
+        reviews.map(async (review) => {
             const userId = review.metadata.userId ?? review.subjectId;
-            return [userId, getTrustProfileForUser(userId, activeTenant.id)];
+            return [userId, await getTrustProfileForUser(userId, activeTenant.id)] as const;
         })
     );
+    const trustProfiles = Object.fromEntries(trustProfileEntries);
 
     return (
         <main className="mx-auto flex max-w-5xl flex-col px-6 py-10 sm:px-10">

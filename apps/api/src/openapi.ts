@@ -75,7 +75,8 @@ const voteEventSchema = {
         },
         newValue: { type: "string", enum: [...voteValueOrder] },
         eventType: { type: "string", enum: ["created", "changed"] },
-        createdAt: { type: "string", format: "date-time" }
+        createdAt: { type: "string", format: "date-time" },
+        voteCategory: { type: "string", enum: ["verified", "unverified", "guest"] }
     },
     additionalProperties: false
 } as const;

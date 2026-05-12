@@ -150,7 +150,7 @@ export function parsePromiseDataset(jsonText: string) {
     };
 }
 
-export function importPromisesFromJson({
+export async function importPromisesFromJson({
     jsonText,
     tenantId,
     timelineSlug,
@@ -161,13 +161,15 @@ export function importPromisesFromJson({
     timelineSlug: string;
     actorId: string;
 }) {
-    return parsePromiseDataset(jsonText).rows.map((row) =>
-        createPromise({
-            tenantId,
-            timelineSlug,
-            actorId,
-            ...row
-        })
+    return Promise.all(
+        parsePromiseDataset(jsonText).rows.map((row) =>
+            createPromise({
+                tenantId,
+                timelineSlug,
+                actorId,
+                ...row
+            })
+        )
     );
 }
 

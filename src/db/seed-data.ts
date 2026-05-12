@@ -1,12 +1,8 @@
 import { platformDefaults } from "@/config/defaults";
-import { seedAuditLogRecords } from "@/modules/audit/logs";
 import { demoUsers } from "@/modules/auth/demo-users";
-import { moderationReviews as moderationReviewSeed } from "@/modules/moderation/reviews";
 import { promiseRecords } from "@/modules/promises/data";
 import { getTenantConfigOverride, listTenants } from "@/modules/tenants/data";
 import { listTimelinesForTenant } from "@/modules/timelines/data";
-import { seedVoteSnapshots } from "@/modules/voting/snapshots";
-import { seedVotes } from "@/modules/voting/store";
 
 function toSlug(value: string) {
     return value
@@ -157,17 +153,8 @@ export function getFoundationSeedData() {
         }))
     );
 
-    const voteEvents = seedVotes.map((vote) => ({
-        id: `${vote.tenantId}:${vote.promiseId}:${vote.userId}:created`,
-        tenantId: vote.tenantId,
-        promiseId: vote.promiseId,
-        userId: vote.userId,
-        previousValue: null,
-        newValue: vote.value,
-        eventType: "created",
-        requestMetadataHash: null as string | null,
-        createdAt: vote.createdAt
-    }));
+    // Extra vote events derived from promise status history (not from seed votes)
+    const voteEvents: typeof seedVoteEventRecords = [];
 
     return {
         tenants,
@@ -197,11 +184,154 @@ export function getFoundationSeedData() {
         }),
         sources,
         votingWindows,
-        votes: seedVotes,
-        voteEvents,
-        voteSnapshots: seedVoteSnapshots(),
+        votes: seedVoteRecords,
+        voteEvents: [...seedVoteEventRecords, ...voteEvents],
+        voteSnapshots: seedVoteSnapshotRecords,
         statusHistory,
-        moderationReviews: moderationReviewSeed,
-        auditLogs: seedAuditLogRecords()
+        moderationReviews: seedModerationReviews,
+        auditLogs: seedAuditLogsData
     };
 }
+
+// ---------------------------------------------------------------------------
+// Static seed data — hardcoded here, written to DB on first seed
+// ---------------------------------------------------------------------------
+
+const seedVoteRecords = [
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "tn-2026-tvk-free-electricity-200-units",
+        userId: "demo-user",
+        value: "started",
+        voteCategory: "verified",
+        createdAt: "2026-04-13T00:00:00.000Z",
+        updatedAt: "2026-04-13T00:00:00.000Z"
+    },
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "tn-2026-tvk-free-electricity-200-units",
+        userId: "observer-1",
+        value: "in_progress",
+        voteCategory: "verified",
+        createdAt: "2026-04-20T00:00:00.000Z",
+        updatedAt: "2026-04-20T00:00:00.000Z"
+    },
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "tn-2026-tvk-water-pipeline-connections",
+        userId: "observer-2",
+        value: "not_started",
+        voteCategory: "verified",
+        createdAt: "2026-05-01T00:00:00.000Z",
+        updatedAt: "2026-05-01T00:00:00.000Z"
+    },
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "promise-power",
+        userId: "demo-user",
+        value: "in_progress",
+        voteCategory: "verified",
+        createdAt: "2026-04-13T00:00:00.000Z",
+        updatedAt: "2026-04-13T00:00:00.000Z"
+    },
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "promise-power",
+        userId: "observer-1",
+        value: "started",
+        voteCategory: "verified",
+        createdAt: "2026-04-13T00:00:00.000Z",
+        updatedAt: "2026-04-13T00:00:00.000Z"
+    },
+    {
+        tenantId: "tenant-tamilnadu",
+        promiseId: "promise-school-meals",
+        userId: "observer-2",
+        value: "completed",
+        voteCategory: "verified",
+        createdAt: "2026-05-01T00:00:00.000Z",
+        updatedAt: "2026-05-01T00:00:00.000Z"
+    }
+] as const;
+
+const seedVoteEventRecords = seedVoteRecords.map((vote) => ({
+    id: `${vote.tenantId}:${vote.promiseId}:${vote.userId}:created`,
+    tenantId: vote.tenantId,
+    promiseId: vote.promiseId,
+    userId: vote.userId,
+    previousValue: null as ("in_progress" | "not_started" | "started" | "mostly_done" | "completed") | null,
+    newValue: vote.value as "in_progress" | "not_started" | "started" | "mostly_done" | "completed",
+    voteCategory: vote.voteCategory,
+    eventType: "created",
+    requestMetadataHash: null as string | null,
+    createdAt: vote.createdAt
+}));
+
+const seedVoteSnapshotRecords = [
+    {
+        id: "snapshot:tenant-tamilnadu:promise-power:2026-04-15",
+        tenantId: "tenant-tamilnadu",
+        promiseId: "promise-power",
+        totalVotes: 2,
+        completionPercent: 38,
+        snapshotAt: "2026-04-15T00:00:00.000Z",
+        generationSource: "seed" as const
+    },
+    {
+        id: "snapshot:tenant-tamilnadu:promise-school-meals:2026-05-01",
+        tenantId: "tenant-tamilnadu",
+        promiseId: "promise-school-meals",
+        totalVotes: 1,
+        completionPercent: 100,
+        snapshotAt: "2026-05-01T00:00:00.000Z",
+        generationSource: "seed" as const
+    }
+];
+
+const seedModerationReviews = [
+    {
+        id: "review-1",
+        tenantId: "tenant-tamilnadu",
+        subjectType: "account" as const,
+        subjectId: "limited-user",
+        reason: "New user requested early voting access after repeated registration attempts.",
+        status: "open" as const,
+        decision: null as string | null,
+        createdAt: "2026-05-29T00:00:00.000Z",
+        updatedAt: "2026-05-29T00:00:00.000Z",
+        assignedModeratorId: null as string | null,
+        metadata: {
+            userId: "limited-user",
+            requestedState: "verified",
+            abuseSignals: ["repeated_signup_attempts", "velocity_anomaly"]
+        }
+    },
+    {
+        id: "review-2",
+        tenantId: "tenant-tamilnadu",
+        subjectType: "vote" as const,
+        subjectId: "promise-power",
+        reason: "Sharp vote change pattern triggered a manual review.",
+        status: "in_review" as const,
+        decision: null as string | null,
+        createdAt: "2026-06-02T00:00:00.000Z",
+        updatedAt: "2026-06-02T00:00:00.000Z",
+        assignedModeratorId: "moderator-user",
+        metadata: {
+            abuseSignals: ["vote_reversal_spike"]
+        }
+    }
+];
+
+const seedAuditLogsData = [
+    {
+        id: "audit:bootstrap:tenant-tamilnadu",
+        tenantId: "tenant-tamilnadu",
+        actorId: null as string | null,
+        action: "tenant.bootstrap",
+        entityType: "tenant",
+        entityId: "tenant-tamilnadu",
+        metadata: { source: "seed" },
+        createdAt: "2026-01-05T00:00:00.000Z"
+    }
+];

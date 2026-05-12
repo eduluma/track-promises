@@ -1,3 +1,7 @@
+import { and, eq } from "drizzle-orm";
+
+import { createDbClient } from "@/db/client";
+import { voteEvents, votes } from "@/db/schema";
 import type { VoteCategory } from "@/lib/permissions";
 import type { VoteValue } from "@/modules/voting/assessment";
 
@@ -22,126 +26,168 @@ export type VoteEventRecord = {
   createdAt: string;
 };
 
-type VoteStore = {
+type GuestVoteStore = {
   votes: Map<string, VoteRecord>;
   events: VoteEventRecord[];
 };
 
-const seedVotes: VoteRecord[] = [
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "tn-2026-tvk-free-electricity-200-units",
-    userId: "demo-user",
-    value: "started",
-    voteCategory: "verified",
-    createdAt: "2026-04-13T00:00:00.000Z",
-    updatedAt: "2026-04-13T00:00:00.000Z"
-  },
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "tn-2026-tvk-free-electricity-200-units",
-    userId: "observer-1",
-    value: "in_progress",
-    voteCategory: "verified",
-    createdAt: "2026-04-20T00:00:00.000Z",
-    updatedAt: "2026-04-20T00:00:00.000Z"
-  },
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "tn-2026-tvk-water-pipeline-connections",
-    userId: "observer-2",
-    value: "not_started",
-    voteCategory: "verified",
-    createdAt: "2026-05-01T00:00:00.000Z",
-    updatedAt: "2026-05-01T00:00:00.000Z"
-  },
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "promise-power",
-    userId: "demo-user",
-    value: "in_progress",
-    voteCategory: "verified",
-    createdAt: "2026-04-13T00:00:00.000Z",
-    updatedAt: "2026-04-13T00:00:00.000Z"
-  },
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "promise-power",
-    userId: "observer-1",
-    value: "started",
-    voteCategory: "verified",
-    createdAt: "2026-04-13T00:00:00.000Z",
-    updatedAt: "2026-04-13T00:00:00.000Z"
-  },
-  {
-    tenantId: "tenant-tamilnadu",
-    promiseId: "promise-school-meals",
-    userId: "observer-2",
-    value: "completed",
-    voteCategory: "verified",
-    createdAt: "2026-05-01T00:00:00.000Z",
-    updatedAt: "2026-05-01T00:00:00.000Z"
+const globalForGuestVotes = globalThis as typeof globalThis & {
+  __trackPromisesGuestVoteStore?: GuestVoteStore;
+};
+
+function getGuestVoteStore(): GuestVoteStore {
+  if (!globalForGuestVotes.__trackPromisesGuestVoteStore) {
+    globalForGuestVotes.__trackPromisesGuestVoteStore = { votes: new Map(), events: [] };
   }
-];
-
-export { seedVotes };
-
-function keyForVote(vote: Pick<VoteRecord, "tenantId" | "promiseId" | "userId">) {
-  return `${vote.tenantId}:${vote.promiseId}:${vote.userId}`;
+  return globalForGuestVotes.__trackPromisesGuestVoteStore;
 }
 
-function createInitialStore(): VoteStore {
+function guestKey(tenantId: string, promiseId: string, userId: string) {
+  return `${tenantId}:${promiseId}:${userId}`;
+}
+
+function isGuest(userId: string) {
+  return userId === "guest" || userId.startsWith("guest-");
+}
+
+// ---------------------------------------------------------------------------
+// Writes
+// ---------------------------------------------------------------------------
+
+export async function upsertVote(record: VoteRecord): Promise<void> {
+  if (isGuest(record.userId)) {
+    getGuestVoteStore().votes.set(guestKey(record.tenantId, record.promiseId, record.userId), record);
+    return;
+  }
+
+  const db = createDbClient();
+  const id = `${record.tenantId}:${record.promiseId}:${record.userId}`;
+  await db
+    .insert(votes)
+    .values({
+      id,
+      tenantId: record.tenantId,
+      promiseId: record.promiseId,
+      userId: record.userId,
+      value: record.value as (typeof votes.$inferInsert)["value"],
+      voteCategory: record.voteCategory,
+      createdAt: new Date(record.createdAt),
+      updatedAt: new Date(record.updatedAt)
+    })
+    .onConflictDoUpdate({
+      target: [votes.promiseId, votes.userId],
+      set: {
+        value: record.value as (typeof votes.$inferInsert)["value"],
+        voteCategory: record.voteCategory,
+        updatedAt: new Date(record.updatedAt)
+      }
+    });
+}
+
+export async function appendVoteEvent(record: VoteEventRecord): Promise<void> {
+  if (isGuest(record.userId)) {
+    getGuestVoteStore().events.push(record);
+    return;
+  }
+
+  const db = createDbClient();
+  const id = `event:${record.tenantId}:${record.promiseId}:${record.userId}:${record.createdAt}`;
+  await db.insert(voteEvents).values({
+    id,
+    tenantId: record.tenantId,
+    promiseId: record.promiseId,
+    userId: record.userId,
+    previousValue: record.previousValue as (typeof voteEvents.$inferInsert)["previousValue"],
+    newValue: record.newValue as (typeof voteEvents.$inferInsert)["newValue"],
+    eventType: record.eventType,
+    voteCategory: record.voteCategory,
+    createdAt: new Date(record.createdAt)
+  }).onConflictDoNothing();
+}
+
+// ---------------------------------------------------------------------------
+// Reads
+// ---------------------------------------------------------------------------
+
+function rowToVoteRecord(row: typeof votes.$inferSelect): VoteRecord {
   return {
-    votes: new Map(seedVotes.map((vote) => [keyForVote(vote), vote])),
-    events: seedVotes.map((vote) => ({
-      tenantId: vote.tenantId,
-      promiseId: vote.promiseId,
-      userId: vote.userId,
-      previousValue: null,
-      newValue: vote.value,
-      voteCategory: vote.voteCategory,
-      eventType: "created",
-      createdAt: vote.createdAt
-    }))
+    tenantId: row.tenantId,
+    promiseId: row.promiseId,
+    userId: row.userId,
+    value: row.value as VoteValue,
+    voteCategory: (row.voteCategory ?? "verified") as VoteCategory,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString()
   };
 }
 
-const globalForVotes = globalThis as typeof globalThis & {
-  __trackPromisesVoteStore?: VoteStore;
-};
+export async function listVotesForPromise(tenantId: string, promiseId: string): Promise<VoteRecord[]> {
+  const db = createDbClient();
+  const rows = await db
+    .select()
+    .from(votes)
+    .where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId)));
 
-export function getVoteStore() {
-  if (!globalForVotes.__trackPromisesVoteStore) {
-    globalForVotes.__trackPromisesVoteStore = createInitialStore();
+  const registered = rows.map(rowToVoteRecord);
+  const guestVotes = Array.from(getGuestVoteStore().votes.values()).filter(
+    (v) => v.tenantId === tenantId && v.promiseId === promiseId
+  );
+  return [...registered, ...guestVotes];
+}
+
+export async function getVoteForUser(
+  tenantId: string,
+  promiseId: string,
+  userId: string
+): Promise<VoteRecord | null> {
+  if (isGuest(userId)) {
+    return getGuestVoteStore().votes.get(guestKey(tenantId, promiseId, userId)) ?? null;
   }
 
-  return globalForVotes.__trackPromisesVoteStore;
+  const db = createDbClient();
+  const [row] = await db
+    .select()
+    .from(votes)
+    .where(and(eq(votes.tenantId, tenantId), eq(votes.promiseId, promiseId), eq(votes.userId, userId)))
+    .limit(1);
+
+  return row ? rowToVoteRecord(row) : null;
 }
 
-export function upsertVote(record: VoteRecord) {
-  const store = getVoteStore();
-  store.votes.set(keyForVote(record), record);
-}
+export async function listVoteEventsForPromise(tenantId: string, promiseId: string): Promise<VoteEventRecord[]> {
+  const db = createDbClient();
+  const rows = await db
+    .select()
+    .from(voteEvents)
+    .where(and(eq(voteEvents.tenantId, tenantId), eq(voteEvents.promiseId, promiseId)));
 
-export function appendVoteEvent(record: VoteEventRecord) {
-  const store = getVoteStore();
-  store.events.push(record);
-}
+  const registered: VoteEventRecord[] = rows.map((row) => ({
+    tenantId: row.tenantId,
+    promiseId: row.promiseId,
+    userId: row.userId,
+    previousValue: (row.previousValue ?? null) as VoteValue | null,
+    newValue: row.newValue as VoteValue,
+    voteCategory: (row.voteCategory ?? "verified") as VoteCategory,
+    eventType: row.eventType as "created" | "changed",
+    createdAt: row.createdAt.toISOString()
+  }));
 
-export function listVotesForPromise(tenantId: string, promiseId: string) {
-  return Array.from(getVoteStore().votes.values()).filter(
-    (vote) => vote.tenantId === tenantId && vote.promiseId === promiseId
+  const guestEvents = getGuestVoteStore().events.filter(
+    (e) => e.tenantId === tenantId && e.promiseId === promiseId
   );
+  return [...registered, ...guestEvents];
 }
 
-export function getVoteForUser(tenantId: string, promiseId: string, userId: string) {
-  return getVoteStore().votes.get(keyForVote({ tenantId, promiseId, userId })) ?? null;
+export async function listVotesForUser(userId: string): Promise<VoteRecord[]> {
+  if (isGuest(userId)) {
+    return Array.from(getGuestVoteStore().votes.values()).filter((v) => v.userId === userId);
+  }
+
+  const db = createDbClient();
+  const rows = await db.select().from(votes).where(eq(votes.userId, userId));
+  return rows.map(rowToVoteRecord);
 }
 
-export function listVoteEventsForPromise(tenantId: string, promiseId: string) {
-  return getVoteStore().events.filter((event) => event.tenantId === tenantId && event.promiseId === promiseId);
-}
+// Kept for backwards-compat with seed.ts (seed no longer uses this)
+export const seedVotes: VoteRecord[] = [];
 
-export function listVotesForUser(userId: string) {
-  return Array.from(getVoteStore().votes.values()).filter((vote) => vote.userId === userId);
-}
