@@ -130,9 +130,14 @@ tasks:
     silent: false
 
   db:seed:
-    desc: Seed the database with foundation data (runs src/db/seed.ts)
+    desc: Seed missing foundation data (safe — skips rows that already exist, preserves real user data)
     cmds:
       - npm run db:seed
+
+  db:seed:force:
+    desc: "DANGER: Wipe all tables and reload seed data from scratch (destroys real user accounts and votes)"
+    cmds:
+      - npm run db:seed -- --force
 
   db:migrate:
     desc: Apply pending Drizzle migrations against the local PostgreSQL

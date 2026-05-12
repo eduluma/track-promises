@@ -25,31 +25,35 @@ function toDate(value: string) {
 }
 
 async function seed() {
+    const force = process.argv.includes("--force");
     const db = createDbClient();
     const data = getFoundationSeedData();
 
-    await db.delete(auditLogs);
-    await db.delete(moderationReviews);
-    await db.delete(voteSnapshots);
-    await db.delete(voteEvents);
-    await db.delete(votes);
-    await db.delete(promiseStatusHistory);
-    await db.delete(promiseSources);
-    await db.delete(promises);
-    await db.delete(timelineAlliances);
-    await db.delete(alliances);
-    await db.delete(timelines);
-    await db.delete(votingWindows);
-    await db.delete(tenantConfigs);
-    await db.delete(users);
-    await db.delete(tenants);
+    if (force) {
+        console.log("--force: wiping all tables before seeding.");
+        await db.delete(auditLogs);
+        await db.delete(moderationReviews);
+        await db.delete(voteSnapshots);
+        await db.delete(voteEvents);
+        await db.delete(votes);
+        await db.delete(promiseStatusHistory);
+        await db.delete(promiseSources);
+        await db.delete(promises);
+        await db.delete(timelineAlliances);
+        await db.delete(alliances);
+        await db.delete(timelines);
+        await db.delete(votingWindows);
+        await db.delete(tenantConfigs);
+        await db.delete(users);
+        await db.delete(tenants);
+    }
 
     await db.insert(tenants).values(
         data.tenants.map((tenant) => ({
             ...tenant,
             defaultLocale: "en"
         }))
-    );
+    ).onConflictDoNothing();
 
     await db.insert(users).values(
         data.users.map((user) => ({
@@ -62,22 +66,22 @@ async function seed() {
             role: user.role,
             trustScore: user.trustScore
         }))
-    );
+    ).onConflictDoNothing();
 
     if (data.tenantConfigs.length > 0) {
-        await db.insert(tenantConfigs).values(data.tenantConfigs);
+        await db.insert(tenantConfigs).values(data.tenantConfigs).onConflictDoNothing();
     }
 
     if (data.timelines.length > 0) {
-        await db.insert(timelines).values(data.timelines);
+        await db.insert(timelines).values(data.timelines).onConflictDoNothing();
     }
 
     if (data.alliances.length > 0) {
-        await db.insert(alliances).values(data.alliances);
+        await db.insert(alliances).values(data.alliances).onConflictDoNothing();
     }
 
     if (data.timelineAlliances.length > 0) {
-        await db.insert(timelineAlliances).values(data.timelineAlliances);
+        await db.insert(timelineAlliances).values(data.timelineAlliances).onConflictDoNothing();
     }
 
     await db.insert(promises).values(
@@ -87,14 +91,14 @@ async function seed() {
             createdAt: toDate(promise.createdAt),
             updatedAt: toDate(promise.updatedAt)
         }))
-    );
+    ).onConflictDoNothing();
 
     await db.insert(promiseSources).values(
         data.sources.map((source) => ({
             ...source,
             capturedAt: toDate(source.capturedAt)
         }))
-    );
+    ).onConflictDoNothing();
 
     await db.insert(votingWindows).values(
         data.votingWindows.map((window) => ({
@@ -103,7 +107,7 @@ async function seed() {
             freezeAt: toDate(window.freezeAt),
             endAt: toDate(window.endAt)
         }))
-    );
+    ).onConflictDoNothing();
 
     if (data.votes.length > 0) {
         await db.insert(votes).values(
@@ -113,7 +117,7 @@ async function seed() {
                 createdAt: toDate(vote.createdAt),
                 updatedAt: toDate(vote.updatedAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
     if (data.voteEvents.length > 0) {
@@ -122,7 +126,7 @@ async function seed() {
                 ...event,
                 createdAt: toDate(event.createdAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
     if (data.voteSnapshots.length > 0) {
@@ -131,7 +135,7 @@ async function seed() {
                 ...snapshot,
                 snapshotAt: toDate(snapshot.snapshotAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
     if (data.statusHistory.length > 0) {
@@ -140,7 +144,7 @@ async function seed() {
                 ...entry,
                 createdAt: toDate(entry.createdAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
     if (data.moderationReviews.length > 0) {
@@ -154,7 +158,7 @@ async function seed() {
                 createdAt: toDate(review.createdAt),
                 updatedAt: toDate(review.updatedAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
     if (data.auditLogs.length > 0) {
@@ -163,10 +167,11 @@ async function seed() {
                 ...log,
                 createdAt: toDate(log.createdAt)
             }))
-        );
+        ).onConflictDoNothing();
     }
 
-    console.log(`Seeded ${data.tenants.length} tenants, ${data.promises.length} promises, and ${data.users.length} users.`);
+    const mode = force ? " (forced wipe + reload)" : " (safe upsert — existing data preserved)";
+    console.log(`Seeded ${data.tenants.length} tenants, ${data.promises.length} promises, and ${data.users.length} seed users.${mode}`);
 }
 
 seed()
