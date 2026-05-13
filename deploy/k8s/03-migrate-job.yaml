@@ -31,7 +31,7 @@ spec:
       containers:
       - name: migrate
         image: ghcr.io/eduluma/track-promises-web:latest
-        command: ["npm", "run", "db:migrate"]
+        command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
         env:
         - name: DATABASE_URL
           valueFrom:

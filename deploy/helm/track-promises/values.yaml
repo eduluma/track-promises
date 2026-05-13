@@ -35,7 +35,7 @@ web:
     TRACK_PROMISES_API_TRANSPORT: http
     TRACK_PROMISES_API_BASE_URL: http://track-promises-api:4000
 
-  # Name of a pre-existing Secret containing DATABASE_URL and NEXTAUTH_SECRET
+  # Name of a pre-existing Secret containing DATABASE_URL, NEXTAUTH_SECRET, and BREVO_API_KEY
   existingSecret: track-promises-secrets
 
   resources:

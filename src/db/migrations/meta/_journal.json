@@ -36,6 +36,13 @@
       "when": 1747094400000,
       "tag": "0004_vote_category",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778629800000,
+      "tag": "0005_prod_schema_catchup",
+      "breakpoints": true
     }
   ]
 }

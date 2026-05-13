@@ -42,6 +42,11 @@ spec:
             secretKeyRef:
               name: {{ .Values.web.existingSecret }}
               key: NEXTAUTH_SECRET
+        - name: BREVO_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.web.existingSecret }}
+              key: BREVO_API_KEY
         {{- range $key, $val := .Values.web.env }}
         - name: {{ $key }}
           value: {{ $val | quote }}

@@ -10,7 +10,7 @@ deploy/
 │   ├── 00-namespace.yaml         # track-promises-prod namespace
 │   ├── 01-secrets.template.yaml  # Secret template — copy, fill, never commit
 │   ├── 02-postgres.yaml          # PostgreSQL StatefulSet + headless Service
-│   ├── 03-migrate-job.yaml       # One-shot DB migration Job
+│   ├── 03-migrate-job.yaml       # One-shot DB migration + foundation seed Job
 │   ├── 04-web.yaml               # Next.js web Deployment + Service
 │   └── 05-api.yaml               # Hono API Deployment + Service
 └── helm/
@@ -27,7 +27,7 @@ deploy/
             ├── api-service.yaml
             ├── api-ingress.yaml
             ├── postgres.yaml     # StatefulSet + headless Service
-            └── migrate-job.yaml  # Helm hook Job
+            └── migrate-job.yaml  # Helm hook migration + foundation seed Job
 ```
 
 ## Environment
@@ -58,7 +58,7 @@ kubectl apply -f deploy/k8s/00-namespace.yaml
 
 # 2. Create secrets (from m4studio, kubectl context pointed at m1s)
 cp deploy/k8s/01-secrets.template.yaml /tmp/tp-secrets.yaml
-# Edit /tmp/tp-secrets.yaml with real values
+# Edit /tmp/tp-secrets.yaml with real values, including BREVO_API_KEY for email delivery
 kubectl apply -f /tmp/tp-secrets.yaml
 
 # 3. Create regcred for ghcr.io (if not already present)
@@ -72,6 +72,9 @@ kubectl create secret docker-registry regcred \
 helm upgrade --install track-promises deploy/helm/track-promises \
   -n track-promises-prod --create-namespace \
   -f deploy/helm/track-promises/values-prod.yaml
+
+# The Helm migrate hook applies schema migrations and then runs the safe
+# foundation seed so tenant/timeline/promise rows exist for voting and audit.
 ```
 
 ## Quick Start (Plain kubectl — for debugging)

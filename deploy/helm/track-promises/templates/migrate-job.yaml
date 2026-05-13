@@ -41,7 +41,7 @@ spec:
       - name: migrate
         image: "{{ .Values.migrate.image.repository }}:{{ include "track-promises.imageTag" (dict "tag" .Values.migrate.image.tag "global" .Values.global) }}"
         imagePullPolicy: {{ .Values.global.image.pullPolicy }}
-        command: ["npm", "run", "db:migrate"]
+        command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
         env:
         - name: DATABASE_URL
           valueFrom:

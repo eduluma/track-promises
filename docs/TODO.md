@@ -68,6 +68,7 @@
 - [x] Generate `openapi.json` and API docs from the new API service.
 - [x] Move current Next.js route handlers behind typed API clients.
 - [x] Ensure `task up` applies database migrations before the local stack comes up.
+- [x] Ensure Kubernetes production migration jobs also run the safe foundation seed so voting/audit persistence has required tenant data.
 - [ ] Switch the web runtime from local API transport to the remote API service after read paths stop depending on process-local in-memory stores.
 - [x] Eliminate all process-local in-memory stores: votes, vote events, vote snapshots, audit logs, and moderation reviews now write to and read from PostgreSQL.
 - [ ] Add advanced filters for election year, timeline, alliance, jurisdiction, category, status, person/party, and source.
@@ -96,6 +97,7 @@
 - [ ] Add wildcard subdomain support through ingress/CDN configuration.
 - [ ] Add Helm chart for web app, worker, service, ingress, config maps, and secrets references.
 - [ ] Add staging and production Helm values files.
+- [x] Wire the production web deployment secret to include the Brevo email API key for signup and verification mail delivery.
 
 ## Phase 4: Trust, Moderation, And Public Accountability
 

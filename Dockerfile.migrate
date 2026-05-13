@@ -5,7 +5,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY drizzle.config.ts ./
-COPY src/db ./src/db
+COPY . .
 
 CMD ["npm", "run", "db:migrate"]

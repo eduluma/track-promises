@@ -6,15 +6,23 @@ metadata:
   namespace: track-promises-prod
   labels:
     app: track-promises-web
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: track-promises
+    app.kubernetes.io/name: track-promises
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: track-promises-web
+      app.kubernetes.io/component: web
+      app.kubernetes.io/instance: track-promises
+      app.kubernetes.io/name: track-promises
   template:
     metadata:
       labels:
         app: track-promises-web
+        app.kubernetes.io/component: web
+        app.kubernetes.io/instance: track-promises
+        app.kubernetes.io/name: track-promises
     spec:
       imagePullSecrets:
       - name: regcred
@@ -39,6 +47,11 @@ spec:
             secretKeyRef:
               name: track-promises-secrets
               key: NEXTAUTH_SECRET
+        - name: BREVO_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: track-promises-secrets
+              key: BREVO_API_KEY
         - name: NEXTAUTH_URL
           value: https://trackpromises.eduluma.org
         - name: TRACK_PROMISES_DEFAULT_TENANT
@@ -80,10 +93,16 @@ metadata:
   namespace: track-promises-prod
   labels:
     app: track-promises-web
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: track-promises
+    app.kubernetes.io/name: track-promises
 spec:
   type: ClusterIP
   selector:
     app: track-promises-web
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: track-promises
+    app.kubernetes.io/name: track-promises
   ports:
   - port: 3000
     targetPort: http

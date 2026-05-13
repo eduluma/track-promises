@@ -1,5 +1,7 @@
 # Track Promises
 
+[sample deployment](https://trackpromises.eduluma.org/tamilnadu/2026)
+
 Track Promises is a civic accountability web app for collecting public political promises, tracking their progress, and letting registered users submit delivery-stage assessments for each promise.
 
 The product should be designed for high-traffic public browsing, bursty voting activity, and long-lived historical records. The foundation must support millions of visits and millions of promise, vote, and audit records without forcing an early rewrite.
