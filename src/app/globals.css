@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-heading: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-body: "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-body-tamil: "Noto Sans Tamil", "Latha", "Arial Unicode MS", sans-serif;
+  --font-body-malayalam: "Noto Sans Malayalam", "Kartika", "Arial Unicode MS", sans-serif;
+  --font-body-devanagari: "Noto Sans Devanagari", "Nirmala UI", "Arial Unicode MS", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.55) 38%, rgba(243, 236, 226, 0.82)),
+    linear-gradient(135deg, rgba(84, 105, 75, 0.12), rgba(16, 33, 47, 0.04));
+  color: #10212f;
+  font-family:
+    var(--font-body),
+    var(--font-body-tamil),
+    var(--font-body-malayalam),
+    var(--font-body-devanagari),
+    sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    var(--font-heading),
+    var(--font-body-tamil),
+    var(--font-body-malayalam),
+    var(--font-body-devanagari),
+    serif;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(161, 69, 36, 0.18);
+}

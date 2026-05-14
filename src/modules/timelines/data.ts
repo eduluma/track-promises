@@ -1,0 +1,135 @@
+import { resolveLocalizedText, type LocalizedText } from "@/modules/i18n/localized-content";
+import type { SupportedLocale } from "@/modules/i18n/config";
+
+export type Timeline = {
+    id: string;
+    tenantId: string;
+    slug: string;
+    slugTranslations?: LocalizedText;
+    title: string;
+    titleTranslations?: LocalizedText;
+    summary: string;
+    summaryTranslations?: LocalizedText;
+    officeTitle: string;
+    officeTitleTranslations?: LocalizedText;
+    officeHolder: string;
+    officeHolderTranslations?: LocalizedText;
+    resultsPublishedAt: string | null;
+    termStartAt: string | null;
+    termLengthMonths: number;
+    default: boolean;
+};
+
+const timelineRecords: Timeline[] = [
+    {
+        id: "timeline-tamilnadu-2026",
+        tenantId: "tenant-tamilnadu",
+        slug: "2026",
+        slugTranslations: {
+            ta: "சட்டப்பேரவை-2026"
+        },
+        title: "Tamil Nadu 2026",
+        titleTranslations: {
+            ta: "தமிழ்நாடு 2026"
+        },
+        summary: "Track the 2026 state cycle, office context, and every promise record under a stable jurisdiction and timeline URL.",
+        summaryTranslations: {
+            ta: "2026 தமிழ்நாடு சட்டப்பேரவை சுற்றை, ஆட்சி பின்னணியை, மற்றும் அதே URL கீழ் உள்ள ஒவ்வொரு வாக்குறுதியையும் கண்காணிக்கவும்."
+        },
+        officeTitle: "Chief Minister",
+        officeTitleTranslations: {
+            ta: "முதல்வர்"
+        },
+        officeHolder: "M. K. Stalin",
+        officeHolderTranslations: {
+            ta: "மு. க. ஸ்டாலின்"
+        },
+        resultsPublishedAt: "2026-05-04T00:00:00.000Z",
+        termStartAt: "2026-05-10T00:00:00.000Z",
+        termLengthMonths: 60,
+        default: true
+    },
+    {
+        id: "timeline-tamilnadu-demo",
+        tenantId: "tenant-tamilnadu",
+        slug: "demo",
+        title: "Tamil Nadu Demo",
+        summary: "Legacy seeded demo timeline kept for local development fixtures and transition-period database seeds.",
+        officeTitle: "Chief Minister",
+        officeHolder: "Demo seed context",
+        resultsPublishedAt: null,
+        termStartAt: "2026-01-01T00:00:00.000Z",
+        termLengthMonths: 12,
+        default: false
+    },
+    {
+        id: "timeline-india-2029",
+        tenantId: "tenant-india-2029",
+        slug: "2029",
+        title: "India 2029",
+        summary: "Track the 2029 national cycle with separate public context and promise records under a country and timeline path.",
+        officeTitle: "Prime Minister",
+        officeHolder: "Pending 2029 result",
+        resultsPublishedAt: null,
+        termStartAt: null,
+        termLengthMonths: 60,
+        default: true
+    },
+    {
+        id: "timeline-kerala-2026",
+        tenantId: "tenant-kerala",
+        slug: "2026",
+        title: "Kerala 2026",
+        summary: "Track the 2026 Kerala assembly cycle across multiple competing fronts under one state timeline.",
+        officeTitle: "Chief Minister",
+        officeHolder: "Pinarayi Vijayan",
+        resultsPublishedAt: "2026-05-04T00:00:00.000Z",
+        termStartAt: null,
+        termLengthMonths: 60,
+        default: true
+    }
+];
+
+export function localizeTimeline(timeline: Timeline, locale?: SupportedLocale | null): Timeline {
+    if (!locale) {
+        return timeline;
+    }
+
+    return {
+        ...timeline,
+        title: resolveLocalizedText(timeline.title, timeline.titleTranslations, locale),
+        summary: resolveLocalizedText(timeline.summary, timeline.summaryTranslations, locale),
+        officeTitle: resolveLocalizedText(timeline.officeTitle, timeline.officeTitleTranslations, locale),
+        officeHolder: resolveLocalizedText(timeline.officeHolder, timeline.officeHolderTranslations, locale)
+    };
+}
+
+export function listTimelinesForTenant(tenantId: string, locale?: SupportedLocale | null) {
+    return timelineRecords.filter((timeline) => timeline.tenantId === tenantId).map((timeline) => localizeTimeline(timeline, locale));
+}
+
+export function resolveTimelineSlug(tenantId: string, slugOrAlias: string) {
+    return timelineRecords.find((timeline) => timeline.tenantId === tenantId && (timeline.slug === slugOrAlias || Object.values(timeline.slugTranslations ?? {}).includes(slugOrAlias)))?.slug ?? null;
+}
+
+export function getLocalizedTimelineSlug(tenantId: string, slug: string, locale?: SupportedLocale | null) {
+    const timeline = timelineRecords.find((record) => record.tenantId === tenantId && record.slug === slug) ?? null;
+
+    if (!timeline) {
+        return slug;
+    }
+
+    return resolveLocalizedText(timeline.slug, timeline.slugTranslations, locale ?? null);
+}
+
+export function getTimelineBySlug(tenantId: string, slug: string, locale?: SupportedLocale | null) {
+    const timeline = timelineRecords.find((record) => record.tenantId === tenantId && record.slug === slug) ?? null;
+
+    return timeline ? localizeTimeline(timeline, locale) : null;
+}
+
+export function getDefaultTimelineForTenant(tenantId: string, locale?: SupportedLocale | null) {
+    const timeline = timelineRecords.find((record) => record.tenantId === tenantId && record.default) ?? null;
+
+    return timeline ? localizeTimeline(timeline, locale) : null;
+}

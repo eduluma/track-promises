@@ -1,0 +1,61 @@
+{
+    "tenantSlug": "westbengal",
+    "timelineSlug": "2026",
+    "recentElectionOverview": {
+        "election": "West Bengal Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The BJP won 207 of 294 seats and 45.85% of the vote in West Bengal, while the AITC-led opposition front fell to 80 seats and 40.80%.",
+        "winnerTitle": "Winning party",
+        "winnerName": "Bharatiya Janata Party",
+        "winnerParty": "BJP",
+        "totalVotesCast": 63753070,
+        "turnoutPercent": 92.93,
+        "registeredVoters": 70459284,
+        "resultBreakdown": [
+            {
+                "label": "Bharatiya Janata Party",
+                "party": "BJP",
+                "votes": 29224804,
+                "voteSharePercent": 45.85,
+                "seats": 207,
+                "isWinner": true
+            },
+            {
+                "label": "All India Trinamool Congress",
+                "alliance": "AITC+",
+                "party": "AITC",
+                "votes": 26013377,
+                "voteSharePercent": 40.8,
+                "seats": 80
+            },
+            {
+                "label": "Indian National Congress",
+                "party": "INC",
+                "votes": 1890858,
+                "voteSharePercent": 2.97,
+                "seats": 2
+            },
+            {
+                "label": "Aam Janata Unnayan Party",
+                "party": "AJUP",
+                "votes": 470649,
+                "voteSharePercent": 0.74,
+                "seats": 2
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI West Bengal party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S25.htm"
+            },
+            {
+                "label": "ECI West Bengal vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S25.htm"
+            },
+            {
+                "label": "Wikipedia 2026 West Bengal election summary",
+                "url": "https://en.wikipedia.org/wiki/2026_West_Bengal_Legislative_Assembly_election"
+            }
+        ]
+    }
+}

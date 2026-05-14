@@ -1,0 +1,27 @@
+# Production overrides — m1s docker-desktop k8s, namespace: track-promises-prod
+# Deploy: helm upgrade --install track-promises deploy/helm/track-promises \
+#   -n track-promises-prod --create-namespace -f deploy/helm/track-promises/values-prod.yaml
+
+global:
+  image:
+    pullPolicy: Always
+    tag: latest
+
+web:
+  replicaCount: 1
+  ingress:
+    host: trackpromises.eduluma.org
+  env:
+    NEXTAUTH_URL: https://trackpromises.eduluma.org
+    TRACK_PROMISES_PLATFORM_DOMAIN: trackpromises.eduluma.org
+    TRACK_PROMISES_API_BASE_URL: http://track-promises-api:4000
+    TRACK_PROMISES_SHOW_DEMO_ACCOUNTS: "false"
+
+api:
+  replicaCount: 1
+  ingress:
+    host: trackpromises-api.eduluma.org
+
+migrate:
+  image:
+    repository: ghcr.io/eduluma/track-promises-migrate

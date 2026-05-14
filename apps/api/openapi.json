@@ -1,0 +1,973 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Track Promises API",
+    "version": "0.1.0",
+    "description": "Write-path API service for voting, promise administration, and moderation workflows."
+  },
+  "components": {
+    "schemas": { }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "tags": [
+          "system"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "service"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ok"
+                      ]
+                    },
+                    "service": {
+                      "type": "string",
+                      "enum": [
+                        "track-promises-api"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/votes": {
+      "post": {
+        "summary": "Cast or change a vote",
+        "tags": [
+          "votes"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "promiseId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "tenantSlug": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "not_started",
+                      "started",
+                      "in_progress",
+                      "mostly_done",
+                      "completed"
+                    ]
+                  }
+                },
+                "required": [
+                  "promiseId",
+                  "tenantSlug",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "x-track-promises-user",
+            "required": false,
+            "description": "Base64-encoded user context forwarded by the web runtime."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "summary",
+                    "event"
+                  ],
+                  "properties": {
+                    "summary": {
+                      "type": "object",
+                      "required": [
+                        "counts",
+                        "completionPercent",
+                        "dominantVote",
+                        "currentVote",
+                        "totalVotes",
+                        "eventCount"
+                      ],
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "required": [
+                            "not_started",
+                            "started",
+                            "in_progress",
+                            "mostly_done",
+                            "completed"
+                          ],
+                          "properties": {
+                            "not_started": {
+                              "type": "integer"
+                            },
+                            "started": {
+                              "type": "integer"
+                            },
+                            "in_progress": {
+                              "type": "integer"
+                            },
+                            "mostly_done": {
+                              "type": "integer"
+                            },
+                            "completed": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "completionPercent": {
+                          "type": "integer"
+                        },
+                        "dominantVote": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "currentVote": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "totalVotes": {
+                          "type": "integer"
+                        },
+                        "eventCount": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "event": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "tenantId",
+                            "promiseId",
+                            "userId",
+                            "previousValue",
+                            "newValue",
+                            "eventType",
+                            "createdAt"
+                          ],
+                          "properties": {
+                            "tenantId": {
+                              "type": "string"
+                            },
+                            "promiseId": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "previousValue": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "not_started",
+                                    "started",
+                                    "in_progress",
+                                    "mostly_done",
+                                    "completed"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "newValue": {
+                              "type": "string",
+                              "enum": [
+                                "not_started",
+                                "started",
+                                "in_progress",
+                                "mostly_done",
+                                "completed"
+                              ]
+                            },
+                            "eventType": {
+                              "type": "string",
+                              "enum": [
+                                "created",
+                                "changed"
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "voteCategory": {
+                              "type": "string",
+                              "enum": [ "verified", "unverified", "guest" ]
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/promises": {
+      "post": {
+        "summary": "Create a promise",
+        "tags": [
+          "promises"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tenantSlug": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "timelineSlug": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 5
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 20
+                  },
+                  "category": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "jurisdiction": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "election": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "personParty": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "planned",
+                      "in_progress",
+                      "fulfilled",
+                      "delayed",
+                      "disputed"
+                    ]
+                  }
+                },
+                "required": [
+                  "tenantSlug",
+                  "timelineSlug",
+                  "title",
+                  "description",
+                  "category",
+                  "jurisdiction",
+                  "election",
+                  "personParty",
+                  "status"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "x-track-promises-user",
+            "required": false,
+            "description": "Base64-encoded user context forwarded by the web runtime."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "promise",
+                    "tenantSlug",
+                    "timelineSlug"
+                  ],
+                  "properties": {
+                    "promise": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "tenantId",
+                        "timelineSlug",
+                        "title",
+                        "description",
+                        "category",
+                        "jurisdiction",
+                        "election",
+                        "personParty",
+                        "status",
+                        "createdAt",
+                        "updatedAt",
+                        "sources",
+                        "statusHistory"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "tenantId": {
+                          "type": "string"
+                        },
+                        "timelineSlug": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "jurisdiction": {
+                          "type": "string"
+                        },
+                        "election": {
+                          "type": "string"
+                        },
+                        "personParty": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "sources": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "statusHistory": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "previousStatus",
+                              "newStatus",
+                              "reason",
+                              "changedAt"
+                            ],
+                            "properties": {
+                              "previousStatus": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "newStatus": {
+                                "type": "string"
+                              },
+                              "reason": {
+                                "type": "string"
+                              },
+                              "changedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "tenantSlug": {
+                      "type": "string"
+                    },
+                    "timelineSlug": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/moderation/reviews/{reviewId}": {
+      "post": {
+        "summary": "Resolve a moderation review",
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve_account",
+                      "limit_account",
+                      "dismiss"
+                    ]
+                  }
+                },
+                "required": [
+                  "decision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "reviewId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "x-track-promises-user",
+            "required": false,
+            "description": "Base64-encoded user context forwarded by the web runtime."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "review"
+                  ],
+                  "properties": {
+                    "review": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "tenantId",
+                        "subjectType",
+                        "subjectId",
+                        "reason",
+                        "status",
+                        "decision",
+                        "createdAt",
+                        "updatedAt",
+                        "assignedModeratorId",
+                        "metadata"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "tenantId": {
+                          "type": "string"
+                        },
+                        "subjectType": {
+                          "type": "string",
+                          "enum": [
+                            "account",
+                            "vote",
+                            "source"
+                          ]
+                        },
+                        "subjectId": {
+                          "type": "string"
+                        },
+                        "reason": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "open",
+                            "in_review",
+                            "resolved"
+                          ]
+                        },
+                        "decision": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "approve_account",
+                                "limit_account",
+                                "dismiss"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "assignedModeratorId": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string"
+                            },
+                            "requestedState": {
+                              "type": "string"
+                            },
+                            "abuseSignals": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4300",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "system",
+      "description": "Operational endpoints"
+    },
+    {
+      "name": "votes",
+      "description": "Vote submission endpoints"
+    },
+    {
+      "name": "promises",
+      "description": "Promise administration endpoints"
+    },
+    {
+      "name": "moderation",
+      "description": "Moderation workflow endpoints"
+    }
+  ]
+}

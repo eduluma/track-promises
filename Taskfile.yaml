@@ -1,0 +1,310 @@
+version: '3'
+
+vars:
+  COMPOSE_CMD: docker compose
+  ENV_SETUP: if [ -f .env ]; then set -a && . ./.env && set +a; fi
+  K8S_ENV_SETUP: if [ -f .env.k8s ]; then set -a && . ./.env.k8s && set +a; else echo ".env.k8s not found" >&2; exit 1; fi
+  REQUIRE_DATABASE_URL: if [ -z "${DATABASE_URL:-}" ] || [ "$DATABASE_URL" = "CHANGE_ME" ]; then echo "DATABASE_URL is not configured. Update .env or .env.k8s with a real Postgres connection string." >&2; exit 1; fi
+  NS: track-promises-prod
+  K8S_DB_LOCAL_PORT: 55432
+  WEB_IMAGE: ghcr.io/eduluma/track-promises-web
+  API_IMAGE: ghcr.io/eduluma/track-promises-api
+  MIGRATE_IMAGE: ghcr.io/eduluma/track-promises-migrate
+  GIT_TAG:
+    sh: git rev-parse --short HEAD 2>/dev/null || echo "local"
+  APP_VERSION:
+    sh: printf "v%s.%s" "$(git rev-list --count HEAD 2>/dev/null || echo 0)" "$(git rev-parse --short HEAD 2>/dev/null || echo local)"
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      # - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} config >/tmp/track-promises-compose.out'
+      - task -a
+
+  config:
+    desc: Validate Docker Compose configuration
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} config >/tmp/track-promises-compose.out'
+
+  migrate:
+    desc: Apply database migrations against the local Docker Compose PostgreSQL service
+    deps:
+      - config
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d postgres'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} --profile tools run --rm migrate'
+
+  up:
+    desc: Recreate web and api containers and apply database migrations (leaves postgres running)
+    deps:
+      - config
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} up -d postgres'
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} --profile tools run --rm migrate'
+      - '{{.ENV_SETUP}}; APP_VERSION={{.APP_VERSION}} {{.COMPOSE_CMD}} up -d --force-recreate --remove-orphans web api'
+
+  down:
+    desc: Stop the local Docker Compose stack
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} down'
+
+  logs:
+    desc: Tail Docker Compose logs
+    cmds:
+      - '{{.ENV_SETUP}}; {{.COMPOSE_CMD}} logs -f --tail=100'
+
+  deploy:
+    desc: Build the app and deploy the local Docker Compose stack
+    deps:
+      - build
+    cmds:
+      - task: up
+
+  # ── Database utilities ────────────────────────────────────────────────────
+  db:shell:
+    desc: Open an interactive psql shell to the local PostgreSQL (reads DATABASE_URL from .env)
+    cmds:
+      - '{{.ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; psql "$DATABASE_URL"'
+
+  db:users:
+    desc: List all users in the k8s DB from .env.k8s (id, email, role, state, email_verified, created_at)
+    cmds:
+      - |
+        {{.K8S_ENV_SETUP}}
+        {{.REQUIRE_DATABASE_URL}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, email, role, state, email_verified, created_at FROM users ORDER BY created_at;"
+    silent: false
+
+  db:promises:
+    desc: List all promises in the DB (id, tenant_id, status, title)
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        {{.REQUIRE_DATABASE_URL}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, tenant_id, status, title FROM promises ORDER BY tenant_id, id;"
+    silent: false
+
+  db:counts:
+    desc: Show row counts for every main table
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        {{.REQUIRE_DATABASE_URL}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c "
+          SELECT 'users'             AS table_name, count(*) FROM users
+          UNION ALL SELECT 'tenants',               count(*) FROM tenants
+          UNION ALL SELECT 'promises',              count(*) FROM promises
+          UNION ALL SELECT 'promise_sources',       count(*) FROM promise_sources
+          UNION ALL SELECT 'votes',                 count(*) FROM votes
+          UNION ALL SELECT 'vote_events',           count(*) FROM vote_events
+          UNION ALL SELECT 'vote_snapshots',        count(*) FROM vote_snapshots
+          UNION ALL SELECT 'timelines',             count(*) FROM timelines
+          UNION ALL SELECT 'alliances',             count(*) FROM alliances
+          UNION ALL SELECT 'moderation_reviews',    count(*) FROM moderation_reviews
+          UNION ALL SELECT 'audit_logs',            count(*) FROM audit_logs
+          ORDER BY 1;"
+    silent: false
+
+  db:votes:
+    desc: List all votes in the DB (id, user_id, promise_id, value, vote_category)
+    cmds:
+      - |
+        {{.ENV_SETUP}}
+        {{.REQUIRE_DATABASE_URL}}
+        PAGER=cat psql "$DATABASE_URL" --no-psqlrc -P pager=off -c \
+          "SELECT id, user_id, promise_id, value, vote_category FROM votes ORDER BY user_id, promise_id;"
+    silent: false
+
+  db:seed:
+    desc: Seed missing foundation data (safe — skips rows that already exist, preserves real user data)
+    cmds:
+      - '{{.ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; npm run db:seed'
+
+  db:seed:k8s:
+    desc: Seed the k8s-targeted DB using .env defaults plus .env.k8s overrides
+    cmds:
+      - '{{.ENV_SETUP}}; {{.K8S_ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; TRACK_PROMISES_INCLUDE_SAMPLE_SEED_DATA=true TRACK_PROMISES_K8S_NAMESPACE={{.NS}} TRACK_PROMISES_K8S_DB_LOCAL_PORT={{.K8S_DB_LOCAL_PORT}} ./scripts/with-k8s-db-port-forward.sh npm run db:seed'
+    silent: false
+
+  db:seed:force:
+    desc: "DANGER: Wipe all tables and reload seed data from scratch (destroys real user accounts and votes)"
+    cmds:
+      - '{{.ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; npm run db:seed -- --force'
+
+  db:seed:k8s:force:
+    desc: "DANGER: Wipe the k8s-targeted DB and reload seed data from .env + .env.k8s"
+    cmds:
+      - '{{.ENV_SETUP}}; {{.K8S_ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; TRACK_PROMISES_INCLUDE_SAMPLE_SEED_DATA=true TRACK_PROMISES_K8S_NAMESPACE={{.NS}} TRACK_PROMISES_K8S_DB_LOCAL_PORT={{.K8S_DB_LOCAL_PORT}} ./scripts/with-k8s-db-port-forward.sh npm run db:seed -- --force'
+    silent: false
+
+  db:port-forward:k8s:
+    desc: Start port-forward to the k8s PostgreSQL service (stays open)
+    cmds:
+      - |
+        echo "Port-forwarding PostgreSQL from {{.NS}} to localhost:{{.K8S_DB_LOCAL_PORT}}..."
+        echo "Press Ctrl+C to stop"
+        echo ""
+        kubectl port-forward -n {{.NS}} svc/track-promises-postgres {{.K8S_DB_LOCAL_PORT}}:5432
+
+  db:migrate:
+    desc: Apply pending Drizzle migrations against the local PostgreSQL
+    cmds:
+      - '{{.ENV_SETUP}}; {{.REQUIRE_DATABASE_URL}}; npm run db:migrate'
+
+  # ── Kubernetes (m1s docker-desktop) ──────────────────────────────────────
+  k8s:ns:
+    desc: Create the track-promises-prod namespace
+    cmds:
+      - kubectl apply -f deploy/k8s/00-namespace.yaml
+
+  k8s:apply:
+    desc: Apply plain kubectl manifests in order (secrets must already exist)
+    cmds:
+      - kubectl apply -f deploy/k8s/02-postgres.yaml
+      - kubectl delete job track-promises-migrate -n track-promises-prod --ignore-not-found=true
+      - kubectl apply -f deploy/k8s/03-migrate-job.yaml
+      - kubectl wait --for=condition=complete --timeout=10m job/track-promises-migrate -n track-promises-prod
+      - kubectl apply -f deploy/k8s/04-web.yaml
+      - kubectl apply -f deploy/k8s/05-api.yaml
+
+  k8s:logs:
+    desc: Tail logs for all track-promises pods
+    cmds:
+      - kubectl logs -n track-promises-prod -l app.kubernetes.io/name=track-promises -f --max-log-requests 5
+
+  k8s:status:
+    desc: Show pod and service status in track-promises-prod
+    cmds:
+      - kubectl get all -n track-promises-prod
+
+  # ── Helm (m1s docker-desktop) ─────────────────────────────────────────────
+  helm:lint:
+    desc: Lint the Helm chart
+    cmds:
+      - helm lint deploy/helm/track-promises -f deploy/helm/track-promises/values-prod.yaml
+
+  helm:diff:
+    desc: Diff pending Helm changes (requires helm-diff plugin)
+    cmds:
+      - helm diff upgrade track-promises deploy/helm/track-promises
+          -n track-promises-prod
+          -f deploy/helm/track-promises/values-prod.yaml
+
+  helm:up:
+    desc: Install or upgrade the Helm release to track-promises-prod
+    cmds:
+      - helm upgrade --install track-promises deploy/helm/track-promises
+          --namespace track-promises-prod --create-namespace
+          --wait --wait-for-jobs --timeout 10m
+          -f deploy/helm/track-promises/values-prod.yaml
+
+  helm:down:
+    desc: Uninstall the Helm release (keeps namespace and PVCs)
+    cmds:
+      - helm uninstall track-promises -n track-promises-prod
+
+  # ── Image build & push ────────────────────────────────────────────────────
+  ghcr:login:
+    desc: Authenticate Docker to ghcr.io (requires GHCR_TOKEN env var or .env)
+    cmds:
+      - '{{.ENV_SETUP}}; echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin'
+
+  image:build:
+    desc: Build web, api, and migrate Docker images tagged with git SHA + latest
+    cmds:
+      - echo "🏗  Building {{.WEB_IMAGE}}:{{.GIT_TAG}}"
+      - docker build --build-arg APP_VERSION={{.APP_VERSION}} -t {{.WEB_IMAGE}}:{{.GIT_TAG}} -t {{.WEB_IMAGE}}:latest -f Dockerfile.web .
+      - echo "🏗  Building {{.API_IMAGE}}:{{.GIT_TAG}}"
+      - docker build -t {{.API_IMAGE}}:{{.GIT_TAG}} -t {{.API_IMAGE}}:latest -f Dockerfile.api .
+      - echo "🏗  Building {{.MIGRATE_IMAGE}}:{{.GIT_TAG}}"
+      - docker build -t {{.MIGRATE_IMAGE}}:{{.GIT_TAG}} -t {{.MIGRATE_IMAGE}}:latest -f Dockerfile.migrate .
+
+  image:push:
+    desc: Push web, api, and migrate images to ghcr.io
+    cmds:
+      - |
+        set -eu
+        push_with_retry() {
+          image="$1"
+          attempt=1
+          max_attempts=3
+
+          while [ "$attempt" -le "$max_attempts" ]; do
+            echo "📤 Pushing $image (attempt $attempt/$max_attempts)"
+
+            if docker push "$image"; then
+              return 0
+            fi
+
+            if [ "$attempt" -eq "$max_attempts" ]; then
+              echo "❌ Failed to push $image after $max_attempts attempts" >&2
+              return 1
+            fi
+
+            attempt=$((attempt + 1))
+            echo "⚠️ Push failed for $image, retrying..." >&2
+          done
+        }
+
+        push_with_retry "{{.WEB_IMAGE}}:{{.GIT_TAG}}"
+        push_with_retry "{{.WEB_IMAGE}}:latest"
+        push_with_retry "{{.API_IMAGE}}:{{.GIT_TAG}}"
+        push_with_retry "{{.API_IMAGE}}:latest"
+        push_with_retry "{{.MIGRATE_IMAGE}}:{{.GIT_TAG}}"
+        push_with_retry "{{.MIGRATE_IMAGE}}:latest"
+
+  image:build-push:
+    desc: Build and push both images in one step
+    cmds:
+      - task: image:build
+      - task: image:push
+
+  # ── k8s:regcred — create image pull secret ────────────────────────────────
+  k8s:regcred:
+    desc: "Create regcred pull secret in {{.NS}} (copies from re-dev if exists, else creates fresh)"
+    cmds:
+      - kubectl apply -f deploy/k8s/00-namespace.yaml
+      - |
+        if kubectl get secret regcred -n {{.NS}} >/dev/null 2>&1; then
+          echo "✅ regcred already exists in {{.NS}}"
+        elif kubectl get secret regcred -n re-dev >/dev/null 2>&1; then
+          echo "📋 Copying regcred from re-dev → {{.NS}}..."
+          kubectl get secret regcred -n re-dev -o json \
+            | jq 'del(.metadata.namespace,.metadata.resourceVersion,.metadata.uid,.metadata.creationTimestamp,.metadata.annotations,.metadata.labels)' \
+            | kubectl apply -n {{.NS}} -f -
+          echo "✅ regcred copied to {{.NS}}"
+        else
+          echo "⚠️  No regcred found in re-dev. Creating from env vars..."
+          '{{.ENV_SETUP}}'; kubectl create secret docker-registry regcred \
+            --docker-server=ghcr.io \
+            --docker-username="$GHCR_USER" \
+            --docker-password="$GHCR_TOKEN" \
+            -n {{.NS}} --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ regcred created in {{.NS}}"
+        fi
+
+  # ── k8s:deploy:prod — full production deploy ──────────────────────────────
+  k8s:deploy:prod:
+    desc: "Full prod deploy: build → push to ghcr → ensure regcred → helm upgrade → rollout status"
+    cmds:
+      - echo "🚀 Deploying track-promises to {{.NS}} (tag={{.GIT_TAG}})"
+      - task: image:build
+      - task: image:push
+      - task: k8s:regcred
+      - echo "📦 Helm upgrade --install..."
+      - |
+        helm upgrade --install track-promises deploy/helm/track-promises \
+          --namespace {{.NS}} --create-namespace \
+          -f deploy/helm/track-promises/values-prod.yaml \
+          --set web.image.tag={{.GIT_TAG}} \
+          --set api.image.tag={{.GIT_TAG}} \
+          --set migrate.image.tag={{.GIT_TAG}} \
+          --wait --timeout=3m
+      - echo "📊 Rollout status..."
+      - kubectl rollout status deployment/track-promises-web -n {{.NS}} --timeout=120s || true
+      - kubectl rollout status deployment/track-promises-api -n {{.NS}} --timeout=120s || true
+      - echo ""
+      - kubectl get pods -n {{.NS}}

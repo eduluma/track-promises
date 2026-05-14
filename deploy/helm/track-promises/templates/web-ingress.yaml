@@ -1,0 +1,33 @@
+{{- if .Values.web.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "track-promises.fullname" . }}-web
+  labels:
+    {{- include "track-promises.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.web.ingress.tls.enabled }}
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.web.ingress.className }}
+  {{- if .Values.web.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.web.ingress.host }}
+    secretName: {{ .Values.web.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.web.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "track-promises.fullname" . }}-web
+            port:
+              number: {{ .Values.web.service.port }}
+{{- end }}

@@ -1,0 +1,479 @@
+{
+    "tenant": {
+        "slug": "kerala",
+        "name": "Kerala",
+        "jurisdiction": "Kerala",
+        "country": "India"
+    },
+    "timeline": {
+        "slug": "2026",
+        "year": 2026,
+        "election": "Kerala Assembly Election 2026"
+    },
+    "recentElectionOverview": {
+        "election": "Kerala Legislative Assembly election 2026",
+        "year": 2026,
+        "summary": "The Congress-led United Democratic Front returned to power in Kerala with 102 of 140 seats and 46.54% of the vote, ending a decade of Left Democratic Front rule.",
+        "winnerTitle": "Winning alliance",
+        "winnerName": "United Democratic Front",
+        "winnerParty": "Congress-led alliance",
+        "totalVotesCast": 21595055,
+        "turnoutPercent": 79.7,
+        "registeredVoters": 27142952,
+        "resultBreakdown": [
+            {
+                "label": "United Democratic Front",
+                "alliance": "UDF",
+                "party": "Congress-led alliance",
+                "votes": 10051695,
+                "voteSharePercent": 46.54,
+                "seats": 102,
+                "isWinner": true
+            },
+            {
+                "label": "Left Democratic Front",
+                "alliance": "LDF",
+                "party": "CPI(M)-led alliance",
+                "votes": 8128438,
+                "voteSharePercent": 37.64,
+                "seats": 35
+            },
+            {
+                "label": "National Democratic Alliance",
+                "alliance": "NDA",
+                "party": "BJP-led alliance",
+                "votes": 3066385,
+                "voteSharePercent": 14.2,
+                "seats": 3
+            }
+        ],
+        "sources": [
+            {
+                "label": "ECI Kerala party-wise results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S11.htm"
+            },
+            {
+                "label": "ECI Kerala vote-share results",
+                "url": "https://results.eci.gov.in/ResultAcGenMay2026/voteshareresult-S11.htm"
+            },
+            {
+                "label": "Wikipedia 2026 Kerala election summary and alliance table",
+                "url": "https://en.wikipedia.org/wiki/2026_Kerala_Legislative_Assembly_election"
+            }
+        ]
+    },
+    "alliances": [
+        {
+            "id": "kerala-2026-ldf",
+            "slug": "ldf",
+            "name": "Left Democratic Front",
+            "memberParties": [
+                "Communist Party of India (Marxist)",
+                "Communist Party of India"
+            ],
+            "promises": [
+                {
+                    "id": "kerala-2026-ldf-poverty-eradication",
+                    "title": "Eradicate absolute poverty for 5 lakh families",
+                    "description": "Lift 5 lakh families out of absolute poverty as part of the LDF's Nava Kerala programme.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - LDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-ldfs-manifesto-vows-to-eradicate-absolute-poverty-hike-welfare-pensions-to-3000/article70814666.ece",
+                            "excerpt": "The LDF manifesto vowed to eradicate absolute poverty by uplifting 5 lakh families."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-pension-hike",
+                    "title": "Raise social welfare pension to Rs. 3,000",
+                    "description": "Increase Kerala's social welfare pension from Rs. 2,000 to Rs. 3,000 per month.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - LDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-ldfs-manifesto-vows-to-eradicate-absolute-poverty-hike-welfare-pensions-to-3000/article70814666.ece",
+                            "excerpt": "The LDF manifesto promised to hike social welfare pension to Rs. 3,000 per month."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-youth-campus-jobs",
+                    "title": "Assure campus-placement jobs for Kerala-educated youth",
+                    "description": "Create job opportunities for youth educated in Kerala through structured campus placement pipelines.",
+                    "category": "Jobs",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The LDF said Kerala-educated youth would be assured job opportunities through campus placements and skill programmes."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-back-to-campus",
+                    "title": "Launch Back to Campus skill-enhancement scheme",
+                    "description": "Start a Back to Campus programme to refresh and expand employability skills for youth and returning learners.",
+                    "category": "Jobs",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The LDF included a Back to Campus scheme for skill enhancement in its employment platform."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-universal-health-coverage",
+                    "title": "Provide universal health coverage",
+                    "description": "Offer universal health coverage with effectively unlimited treatment benefits under the LDF health platform.",
+                    "category": "Health",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The LDF's health platform promised universal health coverage and a unified digital health record for citizens."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-life-mission-2",
+                    "title": "Continue Life Mission 2.0 toward a no-homeless State",
+                    "description": "Advance Life Mission 2.0 with the stated goal of taking Kerala toward a no-homeless State.",
+                    "category": "Housing",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The LDF said Life Mission 2.0 would continue as part of a no-homeless-State objective."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-ldf-rapid-transit-expansion",
+                    "title": "Build rapid transit systems in Thiruvananthapuram and Kozhikode",
+                    "description": "Develop rapid transit connectivity in Thiruvananthapuram and Kozhikode and extend metro-style public transport planning beyond Kochi.",
+                    "category": "Transport",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "Left Democratic Front",
+                    "personParty": "Communist Party of India (Marxist)",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The LDF promised rapid transit systems in Thiruvananthapuram and Kozhikode, alongside expanded metro-style connectivity."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "kerala-2026-udf",
+            "slug": "udf",
+            "name": "United Democratic Front",
+            "memberParties": [
+                "Indian National Congress",
+                "Indian Union Muslim League"
+            ],
+            "promises": [
+                {
+                    "id": "kerala-2026-udf-college-girls-stipend",
+                    "title": "Provide Rs. 1,000 per month for college-going girls",
+                    "description": "Pay Rs. 1,000 per month to college-going girls as part of the UDF's women and youth welfare package.",
+                    "category": "Education",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - UDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-polls-congress-led-udf-manifesto-promises-indira-guarantees-five-dream-projects-and-boost-for-health-higher-education-sectors/article70814680.ece",
+                            "excerpt": "The UDF manifesto promised Rs. 1,000 per month for college-going girls."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-pension-hike",
+                    "title": "Raise welfare pensions to Rs. 3,000",
+                    "description": "Increase all welfare pensions in Kerala to Rs. 3,000 per month under the UDF plan.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - UDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-polls-congress-led-udf-manifesto-promises-indira-guarantees-five-dream-projects-and-boost-for-health-higher-education-sectors/article70814680.ece",
+                            "excerpt": "The UDF promised to raise welfare pensions to Rs. 3,000 per month."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-young-entrepreneur-loans",
+                    "title": "Offer interest-free loans up to Rs. 5 lakh for young entrepreneurs",
+                    "description": "Provide interest-free loans up to Rs. 5 lakh for young entrepreneurs starting or scaling businesses in Kerala.",
+                    "category": "Jobs",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The UDF proposed interest-free loans of up to Rs. 5 lakh for young entrepreneurs."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-free-bus-travel-women",
+                    "title": "Provide free KSRTC bus travel for women",
+                    "description": "Allow women to travel free in KSRTC buses under the UDF mobility guarantee.",
+                    "category": "Transport",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The UDF promised free bus travel for women in KSRTC buses."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-oommen-chandy-insurance",
+                    "title": "Launch Oommen Chandy Health Insurance with Rs. 25 lakh coverage",
+                    "description": "Create the Oommen Chandy Health Insurance scheme with Rs. 25 lakh household coverage.",
+                    "category": "Health",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - UDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-polls-congress-led-udf-manifesto-promises-indira-guarantees-five-dream-projects-and-boost-for-health-higher-education-sectors/article70814680.ece",
+                            "excerpt": "The UDF proposed Oommen Chandy Health Insurance with Rs. 25 lakh coverage per household."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-five-lakh-houses",
+                    "title": "Build 5 lakh houses in five years",
+                    "description": "Construct 5 lakh houses over five years for homeless households under the UDF housing programme.",
+                    "category": "Housing",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - UDF manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-polls-congress-led-udf-manifesto-promises-indira-guarantees-five-dream-projects-and-boost-for-health-higher-education-sectors/article70814680.ece",
+                            "excerpt": "The UDF manifesto promised 5 lakh houses in five years for the homeless."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-udf-mission-samudra",
+                    "title": "Launch Mission Samudra for coastal and maritime connectivity",
+                    "description": "Roll out Mission Samudra to integrate Kerala's coastline and improve maritime connectivity and related infrastructure.",
+                    "category": "Infrastructure",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "United Democratic Front",
+                    "personParty": "Indian National Congress",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The UDF proposed Mission Samudra to integrate Kerala's coastline and maritime connectivity."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "kerala-2026-nda",
+            "slug": "nda",
+            "name": "National Democratic Alliance",
+            "memberParties": [
+                "Bharatiya Janata Party"
+            ],
+            "promises": [
+                {
+                    "id": "kerala-2026-nda-bhakshya-arogya-card",
+                    "title": "Issue Bhakshya-Arogya Suraksha Card with Rs. 2,500 monthly support",
+                    "description": "Provide a Bhakshya-Arogya Suraksha Card carrying Rs. 2,500 monthly support for poor and BPL women.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - NDA manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-2026-aiims-high-speed-rail-network-on-bjp-manifesto/article70807317.ece",
+                            "excerpt": "The NDA promised a Bhakshya-Arogya Suraksha Card with Rs. 2,500 monthly support for poor and BPL women."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-nda-pension-hike",
+                    "title": "Raise social welfare pension to Rs. 3,000",
+                    "description": "Increase social welfare pension in Kerala to Rs. 3,000 per month under the NDA pledge.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - Kerala manifesto comparison",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-election-2026-manifesto-comparision-ldf-udf-bjp-nda-congress-cpim/article70818483.ece",
+                            "excerpt": "The NDA, like the other fronts, promised to raise social welfare pension to Rs. 3,000."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-nda-free-water",
+                    "title": "Provide 20,000 litres of free water per household",
+                    "description": "Supply 20,000 litres of free water per household every month under the NDA household relief package.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - NDA manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-2026-aiims-high-speed-rail-network-on-bjp-manifesto/article70807317.ece",
+                            "excerpt": "The NDA manifesto promised 20,000 litres of free water per household per month."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-nda-free-lpg-festivals",
+                    "title": "Provide two free LPG cylinders during Onam and Christmas",
+                    "description": "Distribute two free LPG cylinders per year to households, timed around Onam and Christmas.",
+                    "category": "Welfare",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - NDA manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-2026-aiims-high-speed-rail-network-on-bjp-manifesto/article70807317.ece",
+                            "excerpt": "The NDA promised two free LPG cylinders every year during Onam and Christmas."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-nda-aiims",
+                    "title": "Establish an AIIMS in Kerala",
+                    "description": "Set up an AIIMS institution in Kerala as the flagship NDA healthcare infrastructure promise.",
+                    "category": "Health",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - NDA manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-2026-aiims-high-speed-rail-network-on-bjp-manifesto/article70807317.ece",
+                            "excerpt": "The NDA manifesto proposed establishing an AIIMS in Kerala."
+                        }
+                    ]
+                },
+                {
+                    "id": "kerala-2026-nda-high-speed-rail",
+                    "title": "Build a high-speed rail network from Thiruvananthapuram to Kannur",
+                    "description": "Construct a high-speed rail corridor connecting Thiruvananthapuram to Kannur under the NDA transport platform.",
+                    "category": "Transport",
+                    "state": "Kerala",
+                    "year": 2026,
+                    "election": "Kerala Assembly Election 2026",
+                    "alliance": "National Democratic Alliance",
+                    "personParty": "Bharatiya Janata Party",
+                    "status": "planned",
+                    "sources": [
+                        {
+                            "publisher": "The Hindu - NDA manifesto coverage",
+                            "url": "https://www.thehindu.com/elections/kerala-assembly/kerala-assembly-polls-2026-aiims-high-speed-rail-network-on-bjp-manifesto/article70807317.ece",
+                            "excerpt": "The NDA promised a high-speed rail network from Thiruvananthapuram to Kannur."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

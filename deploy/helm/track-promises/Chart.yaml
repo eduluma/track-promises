@@ -1,0 +1,6 @@
+apiVersion: v2
+name: track-promises
+description: Track Promises — civic accountability app (Next.js web + Hono API + PostgreSQL)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
