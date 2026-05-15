@@ -42,6 +42,14 @@ export function canManagePromises(user: DemoUser) {
   return user.role === "promise_editor" || user.role === "tenant_admin" || user.role === "platform_admin";
 }
 
+export function canManageTenantLocales(user: DemoUser) {
+  return user.role === "tenant_admin" || user.role === "platform_admin";
+}
+
+export function canViewAuditLogs(user: DemoUser) {
+  return user.role === "tenant_admin" || user.role === "platform_admin";
+}
+
 export function canReviewModeration(user: DemoUser) {
   return user.role === "moderator" || user.role === "tenant_admin" || user.role === "platform_admin";
 }

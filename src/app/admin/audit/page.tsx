@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AuditLogPanel } from "@/components/admin/audit-log-panel";
-import { canAccessTenant, canManagePromises } from "@/lib/permissions";
+import { canAccessTenant, canViewAuditLogs } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getLocalizedHref, getRequestMessages } from "@/modules/i18n/request";
 import { listAuditLogsForTenant } from "@/modules/audit/logs";
@@ -21,7 +21,7 @@ export default async function AuditPage({ searchParams }: AuditPageProps) {
         redirect(await getLocalizedHref(`/login?redirectTo=${encodeURIComponent(auditHref)}`));
     }
 
-    if (!canManagePromises(user)) {
+    if (!canViewAuditLogs(user)) {
         redirect(homeHref);
     }
 

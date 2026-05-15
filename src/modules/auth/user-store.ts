@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { runQuery } from "@/db/client";
 import { users } from "@/db/schema";
 import type { AccountState, UserRole } from "@/lib/permissions";
+import { resolveSeedTenantIds } from "@/modules/auth/demo-users";
 
 export type PersistedUserRecord = {
     id: string;
@@ -25,6 +26,11 @@ export type PersistedUserRecord = {
 const GUEST_PASSWORD_HASH = hashSync("track-promises-guest-account", 12);
 
 function rowToPersistedUser(row: typeof users.$inferSelect): PersistedUserRecord {
+    const tenantIds = resolveSeedTenantIds({
+        id: row.id,
+        email: row.email
+    });
+
     return {
         id: row.id,
         email: row.email,
@@ -38,7 +44,7 @@ function rowToPersistedUser(row: typeof users.$inferSelect): PersistedUserRecord
         trustScore: row.trustScore,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
-        tenantIds: [],
+        tenantIds,
         abuseFlags: []
     };
 }

@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
                         state: dbUser.state,
                         emailVerified: dbUser.emailVerified,
                         phoneVerified: dbUser.phoneVerified,
-                        tenantIds: []
+                        tenantIds: dbUser.tenantIds
                     };
                 } catch (err) {
                     console.error("[authorize] DB lookup failed:", err);
@@ -113,7 +113,7 @@ export const authOptions: NextAuthOptions = {
                     const dbUser = await getPersistedUserById(tokenUserId);
 
                     if (dbUser) {
-                        applyTokenUserState(token, { ...dbUser, tenantIds: [] });
+                        applyTokenUserState(token, dbUser);
                     }
                 } catch (err) {
                     console.error("[jwt] user refresh failed:", err);

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/navigation/language-switcher";
 import SessionActions from "@/components/auth/session-actions";
-import { canManagePromises, canReviewModeration } from "@/lib/permissions";
+import { canManagePromises, canManageTenantLocales, canReviewModeration, canViewAuditLogs } from "@/lib/permissions";
 import { isVerifiedAccount } from "@/modules/auth/identifiers";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getLocalizedHref, getRequestLocalizationContext, getRequestMessages } from "@/modules/i18n/request";
@@ -12,6 +12,7 @@ export async function SiteHeader() {
     const messages = await getRequestMessages();
     const localization = await getRequestLocalizationContext();
     const homeHref = await getLocalizedHref("/");
+    const adminReportsHref = await getLocalizedHref("/admin");
     const adminPromiseHref = await getLocalizedHref("/admin/promises/new");
     const tenantLocalesHref = await getLocalizedHref("/admin/tenants/localization");
     const auditHref = await getLocalizedHref("/admin/audit");
@@ -20,6 +21,44 @@ export async function SiteHeader() {
     const signupHref = await getLocalizedHref("/signup");
     const loginHref = await getLocalizedHref("/login");
     const needsVerification = user && user.role !== "guest" && !isVerifiedAccount(user);
+    const accountMenuItems = [
+        user
+            ? {
+                href: accountHref,
+                label: messages.account.title
+            }
+            : null,
+        user?.role === "platform_admin"
+            ? {
+                href: adminReportsHref,
+                label: messages.navigation.reports
+            }
+            : null,
+        user && canManagePromises(user)
+            ? {
+                href: adminPromiseHref,
+                label: messages.navigation.newPromise
+            }
+            : null,
+        user && canReviewModeration(user)
+            ? {
+                href: moderationHref,
+                label: messages.navigation.moderation
+            }
+            : null,
+        user && canManageTenantLocales(user)
+            ? {
+                href: tenantLocalesHref,
+                label: messages.navigation.tenantLocales
+            }
+            : null,
+        user && canViewAuditLogs(user)
+            ? {
+                href: auditHref,
+                label: messages.navigation.audit
+            }
+            : null
+    ].filter((item): item is { href: typeof accountHref; label: string } => item !== null);
 
     return (
         <header className="relative z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
@@ -32,24 +71,6 @@ export async function SiteHeader() {
                         <Link href={homeHref} className="transition hover:text-ink">
                             {messages.navigation.home}
                         </Link>
-                        {user && canManagePromises(user) ? (
-                            <>
-                                <Link href={adminPromiseHref} className="transition hover:text-ink">
-                                    {messages.navigation.newPromise}
-                                </Link>
-                                <Link href={tenantLocalesHref} className="transition hover:text-ink">
-                                    {messages.navigation.tenantLocales}
-                                </Link>
-                                <Link href={auditHref} className="transition hover:text-ink">
-                                    {messages.navigation.audit}
-                                </Link>
-                            </>
-                        ) : null}
-                        {user && canReviewModeration(user) ? (
-                            <Link href={moderationHref} className="transition hover:text-ink">
-                                {messages.navigation.moderation}
-                            </Link>
-                        ) : null}
                     </nav>
                 </div>
                 <div className="flex items-center gap-3">
@@ -58,23 +79,12 @@ export async function SiteHeader() {
                         supportedLocales={localization.supportedLocales}
                         label={messages.navigation.language}
                     />
-                    {user ? (
-                        <Link
-                            href={accountHref}
-                            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${needsVerification
-                                ? "border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300"
-                                : "border-ink/10 text-ink/70 hover:border-moss/30 hover:text-ink"}`}
-                        >
-                            <span>{messages.account.title}</span>
-                            {needsVerification ? (
-                                <span className="rounded-full bg-amber-200/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-900">
-                                    {messages.account.verifyCta}
-                                </span>
-                            ) : null}
-                        </Link>
-                    ) : null}
                     <SessionActions
                         isAuthenticated={Boolean(user)}
+                        accountLabel={messages.account.title}
+                        needsVerification={Boolean(needsVerification)}
+                        verificationLabel={messages.account.verifyCta}
+                        menuItems={accountMenuItems}
                         messages={messages.navigation}
                         hrefs={{
                             signup: signupHref,

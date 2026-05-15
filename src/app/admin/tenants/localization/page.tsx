@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { TenantLocaleSettingsPanel } from "@/components/admin/tenant-locale-settings-panel";
 import { resolveTenantLocalizationSettings } from "@/config/resolve-config";
-import { canAccessTenant, canManagePromises } from "@/lib/permissions";
+import { canAccessTenant, canManageTenantLocales } from "@/lib/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getLocalizedHref, getRequestMessages } from "@/modules/i18n/request";
 import { listTenants } from "@/modules/tenants/data";
@@ -21,7 +21,7 @@ export default async function TenantLocalizationPage({ searchParams }: TenantLoc
         redirect(await getLocalizedHref(`/login?redirectTo=${encodeURIComponent(localizationHref)}`));
     }
 
-    if (!canManagePromises(user)) {
+    if (!canManageTenantLocales(user)) {
         redirect(homeHref);
     }
 

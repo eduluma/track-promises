@@ -158,6 +158,18 @@ export function getDemoUserById(id: string) {
     return demoUsers.find((user) => user.id === id) ?? null;
 }
 
+export function getDemoUserByEmail(email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    return demoUsers.find((user) => user.email.toLowerCase() === normalizedEmail) ?? null;
+}
+
+export function resolveSeedTenantIds(identity: { id?: string | null; email?: string | null }) {
+    const matchedUser = (identity.id ? getDemoUserById(identity.id) : null)
+        ?? (identity.email ? getDemoUserByEmail(identity.email) : null);
+
+    return matchedUser?.tenantIds ?? [];
+}
+
 export function deriveDisplayName(type: IdentifierType, value: string, provided?: string): string {
     if (provided?.trim()) return provided.trim();
     switch (type) {

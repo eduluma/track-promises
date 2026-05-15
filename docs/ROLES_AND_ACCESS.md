@@ -149,12 +149,14 @@ Registration should be as frictionless as possible — a single identifier is en
 | PAN card number | Alternative government ID                        |
 
 **Flow:**
+
 1. User provides one identifier (email, phone, Aadhaar, or PAN).
 2. Account is created with `state: "unverified"`, `role: "user"`.
 3. SMS code or email link sent; on verification, `state` transitions to `verified`.
 4. Accounts that trigger abuse signals during signup are placed in `state: "readonly"` and queued for moderation review.
 
 Relevant TODO items:
+
 - Implement self-service signup (one-identifier model).
 - Wire registration to DB (replace in-memory demo users).
 - Support SMS and email verification for India-context tenants, with OTP-based login still available as a future enhancement.

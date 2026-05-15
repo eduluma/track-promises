@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { canAccessTenant, canManagePromises, canReviewModeration, canUserVote, getVoteCategory } from "@/lib/permissions";
+import { canAccessTenant, canManagePromises, canManageTenantLocales, canReviewModeration, canUserVote, canViewAuditLogs, getVoteCategory } from "@/lib/permissions";
+import { resolveSeedTenantIds } from "@/modules/auth/demo-users";
 
 describe("permission rules", () => {
     it("allows verified and moderator-approved accounts to vote", () => {
@@ -116,5 +117,31 @@ describe("permission rules", () => {
                 role: "moderator"
             })
         ).toBe(true);
+    });
+
+    it("keeps tenant locale and audit access off the promise editor role", () => {
+        const editorUser = {
+            id: "editor-user",
+            emailVerified: true,
+            state: "moderator_approved" as const,
+            role: "promise_editor" as const
+        };
+        const tenantAdminUser = {
+            id: "tenant-admin-user",
+            emailVerified: true,
+            state: "moderator_approved" as const,
+            role: "tenant_admin" as const
+        };
+
+        expect(canManageTenantLocales(editorUser)).toBe(false);
+        expect(canViewAuditLogs(editorUser)).toBe(false);
+        expect(canManageTenantLocales(tenantAdminUser)).toBe(true);
+        expect(canViewAuditLogs(tenantAdminUser)).toBe(true);
+    });
+
+    it("restores seeded tenant assignments for persisted operational accounts", () => {
+        expect(resolveSeedTenantIds({ email: "robertranjan+alice@gmail.com" })).toEqual(["tenant-tamilnadu"]);
+        expect(resolveSeedTenantIds({ id: "moderator-user" })).toEqual(["tenant-tamilnadu"]);
+        expect(resolveSeedTenantIds({ email: "someone-else@example.com" })).toEqual([]);
     });
 });

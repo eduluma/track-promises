@@ -5,6 +5,7 @@ export type AppMessages = {
         brand: string;
         home: string;
         language: string;
+        reports: string;
         newPromise: string;
         tenantLocales: string;
         audit: string;
@@ -237,6 +238,36 @@ export type AppMessages = {
     };
     admin: {
         eyebrow: string;
+        reportTitle: string;
+        reportSummary: string;
+        reportTotalUsers: string;
+        reportVerifiedUsers: string;
+        reportModeratorApprovedUsers: string;
+        reportRecentUsers: string;
+        reportOperationalRoles: string;
+        reportSearchTitle: string;
+        reportSearchSummary: string;
+        reportUserSearchLabel: string;
+        reportUserSearchPlaceholder: string;
+        reportUserSearchSubmit: string;
+        reportUserSearchHint: string;
+        reportUserSearchEmpty: string;
+        reportUserTableName: string;
+        reportUserTableContact: string;
+        reportUserTableRole: string;
+        reportUserTableState: string;
+        reportUserTableTrust: string;
+        reportUserTableCreated: string;
+        reportTenantsTitle: string;
+        reportTenantsSummary: string;
+        reportTenantTableTenant: string;
+        reportTenantTablePromises: string;
+        reportTenantTableVotes: string;
+        reportTenantTableVoters: string;
+        reportTenantTableOpenReviews: string;
+        reportTenantTableResolvedReviews: string;
+        reportTenantTableAuditEvents: string;
+        reportTenantTableLatestActivity: string;
         auditTitle: string;
         auditSummary: string;
         moderationEyebrow: string;
@@ -272,6 +303,7 @@ const englishMessages: AppMessages = {
         brand: "Track Promises",
         home: "Home",
         language: "Language",
+        reports: "Reports",
         newPromise: "New promise",
         tenantLocales: "Tenant locales",
         audit: "Audit",
@@ -523,6 +555,36 @@ const englishMessages: AppMessages = {
     },
     admin: {
         eyebrow: "Admin",
+        reportTitle: "Platform reports",
+        reportSummary: "Review user growth, search individual accounts, and compare promise, voting, moderation, and audit activity across tenants from one place.",
+        reportTotalUsers: "Total registered users",
+        reportVerifiedUsers: "Verified users",
+        reportModeratorApprovedUsers: "Moderator-approved users",
+        reportRecentUsers: "New users in 30 days",
+        reportOperationalRoles: "Operational roles",
+        reportSearchTitle: "User search",
+        reportSearchSummary: "Search by display name, email, phone number, or user id to inspect account state and trust score.",
+        reportUserSearchLabel: "Find a user",
+        reportUserSearchPlaceholder: "Search by name, email, phone, or user id",
+        reportUserSearchSubmit: "Search users",
+        reportUserSearchHint: "Matches display name, email, phone number, and internal user id. Guest accounts are excluded.",
+        reportUserSearchEmpty: "No users matched that search.",
+        reportUserTableName: "Name",
+        reportUserTableContact: "Contact",
+        reportUserTableRole: "Role",
+        reportUserTableState: "State",
+        reportUserTableTrust: "Trust score",
+        reportUserTableCreated: "Created",
+        reportTenantsTitle: "Tenant summary",
+        reportTenantsSummary: "Track where platform activity is concentrated with per-tenant promise, vote, moderation, and audit totals.",
+        reportTenantTableTenant: "Tenant",
+        reportTenantTablePromises: "Promises",
+        reportTenantTableVotes: "Votes",
+        reportTenantTableVoters: "Unique voters",
+        reportTenantTableOpenReviews: "Open reviews",
+        reportTenantTableResolvedReviews: "Resolved reviews",
+        reportTenantTableAuditEvents: "Audit events",
+        reportTenantTableLatestActivity: "Latest activity",
         auditTitle: "Audit activity",
         auditSummary: "Track promise creation, moderation decisions, snapshot captures, and reconciliation runs by tenant.",
         moderationEyebrow: "Moderation",
@@ -555,6 +617,7 @@ const localizedMessages: Partial<Record<SupportedLocale, MessageOverrides>> = {
         navigation: {
             home: "முகப்பு",
             language: "மொழி",
+            reports: "அறிக்கைகள்",
             newPromise: "புதிய வாக்குறுதி",
             tenantLocales: "டெனன்ட் மொழிகள்",
             audit: "தணிக்கை",
@@ -806,6 +869,36 @@ const localizedMessages: Partial<Record<SupportedLocale, MessageOverrides>> = {
         },
         admin: {
             eyebrow: "நிர்வாகம்",
+            reportTitle: "தள அறிக்கைகள்",
+            reportSummary: "பயனர் வளர்ச்சி, தனிப்பட்ட கணக்கு தேடல், மேலும் டெனன்ட் வாரியாக வாக்குறுதி, வாக்கு, மறுஆய்வு, தணிக்கை செயல்பாடுகளை ஒரே இடத்தில் பாருங்கள்.",
+            reportTotalUsers: "மொத்த பதிவு செய்யப்பட்ட பயனர்கள்",
+            reportVerifiedUsers: "சரிபார்க்கப்பட்ட பயனர்கள்",
+            reportModeratorApprovedUsers: "மோடரேட்டர் ஒப்புதல் பெற்ற பயனர்கள்",
+            reportRecentUsers: "கடைசி 30 நாட்களில் புதிய பயனர்கள்",
+            reportOperationalRoles: "இயக்க நிர்வாகப் பங்குகள்",
+            reportSearchTitle: "பயனர் தேடல்",
+            reportSearchSummary: "கணக்கின் நிலையும் நம்பிக்கை மதிப்பையும் பார்க்க பெயர், மின்னஞ்சல், கைபேசி எண், அல்லது பயனர் ஐடி மூலம் தேடுங்கள்.",
+            reportUserSearchLabel: "ஒரு பயனரைத் தேடுங்கள்",
+            reportUserSearchPlaceholder: "பெயர், மின்னஞ்சல், கைபேசி, அல்லது பயனர் ஐடி",
+            reportUserSearchSubmit: "பயனர்களைத் தேடுங்கள்",
+            reportUserSearchHint: "பெயர், மின்னஞ்சல், கைபேசி எண், மற்றும் உள் பயனர் ஐடியுடன் பொருந்தும். விருந்தினர் கணக்குகள் சேர்க்கப்படாது.",
+            reportUserSearchEmpty: "அந்த தேடலுக்கு பொருந்திய பயனர்கள் எவரும் இல்லை.",
+            reportUserTableName: "பெயர்",
+            reportUserTableContact: "தொடர்பு",
+            reportUserTableRole: "பங்கு",
+            reportUserTableState: "நிலை",
+            reportUserTableTrust: "நம்பிக்கை மதிப்பு",
+            reportUserTableCreated: "உருவாக்கப்பட்ட தேதி",
+            reportTenantsTitle: "டெனன்ட் சுருக்கம்",
+            reportTenantsSummary: "எந்த டெனன்ட்களில் செயல்பாடு அதிகம் உள்ளது என்பதை வாக்குறுதி, வாக்கு, மறுஆய்வு, மற்றும் தணிக்கை மொத்தங்களுடன் பார்க்கலாம்.",
+            reportTenantTableTenant: "டெனன்ட்",
+            reportTenantTablePromises: "வாக்குறுதிகள்",
+            reportTenantTableVotes: "வாக்குகள்",
+            reportTenantTableVoters: "தனித்த பயனர்கள்",
+            reportTenantTableOpenReviews: "திறந்த மறுஆய்வுகள்",
+            reportTenantTableResolvedReviews: "தீர்க்கப்பட்ட மறுஆய்வுகள்",
+            reportTenantTableAuditEvents: "தணிக்கை நிகழ்வுகள்",
+            reportTenantTableLatestActivity: "அண்மைய செயல்பாடு",
             auditTitle: "தணிக்கை செயல்பாடு",
             auditSummary: "டெனன்ட் அடிப்படையில் வாக்குறுதி உருவாக்கம், moderation முடிவுகள், snapshot பதிவுகள், reconciliation ஓட்டங்களை கண்காணிக்கவும்.",
             moderationEyebrow: "மதிப்பாய்வு",

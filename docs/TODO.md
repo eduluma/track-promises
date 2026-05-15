@@ -132,10 +132,13 @@
 - [ ] Add editorial review queues.
 - [ ] Add public methodology page.
 - [ ] Add abuse detection signals for suspicious voting patterns.
+- [x] Add first platform admin reporting slice with user totals, account search, and tenant activity summaries.
 - [ ] Add admin dashboard for moderation and operational health.
 - [ ] Add richer source trails and evidence review.
 - [ ] Add tenant admin screens for categories, statuses, voting windows, branding, and feature flags.
 - [x] Add community scoring system: rolling-window trust score, halving-inspired auto-adjust config, auto-promotion path, and soft endorsements as an alternate route to `moderator_approved` without requiring two local witnesses.
+- [x] Group authenticated header actions under an account dropdown and align role-based menu access so promise editors only see promise-creation tools while moderators retain moderation access.
+- [x] Preserve seeded tenant assignments in persisted auth sessions so operational role menus continue to reach tenant-scoped admin pages.
 
 ## Phase 5: Platform Maturity
 
